@@ -1,0 +1,131 @@
+<DOCTYPE! html>
+
+<html>
+
+<head>
+
+	<title>Lista de visitas</title>
+
+	<script src="js/javascript.js"></script>
+
+</head>
+
+<body>
+	
+	<pre id="content" style="white-space: pre-wrap;"></pre>
+
+		
+	<div id="renderList"></div>
+
+
+	<script type='text/javascript'>
+		
+		var CLIENT_ID = '1076689087258-d8spnjvnsvl9cu9kdkag83d87d3ru13m.apps.googleusercontent.com';
+		var API_KEY = 'AIzaSyAGbWVUH8uxVss41zpiBG-N0NILPTfkons';
+
+		  var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+		  var SCOPES = 'https://www.googleapis.com/auth/drive';
+
+
+		  
+		  
+		  function handleClientLoad() {
+			gapi.load('client:auth2', initClient);
+		  }
+		  
+		  function initClient() {
+			gapi.client.init({
+			  apiKey: API_KEY,
+			  clientId: CLIENT_ID,
+			  discoveryDocs: DISCOVERY_DOCS,
+			  scope: SCOPES
+			}).then(function () {
+			  // Listen for sign-in state changes.
+			  gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+
+			  // Handle the initial sign-in state.
+			  updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+			}, function(error) {
+			  appendPre(JSON.stringify(error, null, 2));
+			});
+		  }
+		  
+		  function updateSigninStatus(isSignedIn) {
+			if (isSignedIn) {
+			  listFolder();
+			}
+		  }
+		  
+		  function appendPre(message) {
+			var pre = document.getElementById('content');
+			var textContent = document.createTextNode(message + '\n');
+			pre.appendChild(textContent);
+		  }
+		  
+		  
+//		function onVisitClick(id){		
+//			window.location.href = 'visit.html?visit_id=' + id;
+//		}
+		
+		function getUrlVars() {
+			var vars = {};
+			var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+				vars[key] = value;
+			});
+			return vars;
+		}
+		
+		function listFolder() {
+		   var fileId = getUrlVars()['device_id'];
+
+			gapi.client.drive.files.list({
+			  'folderId' : fileId,
+			  'pageSize': 100,
+			  'fields': "nextPageToken, files(id, name)",
+			  'q': `'${fileId}' in parents`
+			}).then(function(response) {
+			  appendPre('Lista de visitas:');
+			  var files = response.result.files;
+			  if (files && files.length > 0) {
+				var ul = document.createElement('ul');
+				ul.setAttribute('id','folder_list');
+				ul.setAttribute('title','Lista de Visitas');
+				document.getElementById('renderList').appendChild(ul);
+				files.forEach(renderProductList);
+
+				function renderProductList(element, index, arr) {
+					var a = document.createElement('a');
+					var li = document.createElement('li');
+					
+					a.textContent = element.name;
+					a.setAttribute('id',element.id);
+					//aux.setAttribute('class','item');
+					a.setAttribute('href', 'visit.html?visit_id=' + a.getAttribute('id'));
+					
+					li.appendChild(a);
+
+					//li.onclick = function(){onDeviceClick(this.getAttribute('id'))};
+
+					ul.appendChild(li);
+					
+					//li.innerHTML=li.innerHTML + element.name;
+				}
+			  } else {
+				appendPre('No files found.');
+			  }
+			});
+		}
+		
+	</script>  
+	
+	<script async defer src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};handleClientLoad()"
+      onreadystatechange="if (this.readyState === 'complete') this.onload()">
+    </script>
+	
+
+
+</body>
+
+
+</html>
