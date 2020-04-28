@@ -657,7 +657,7 @@
 					var json =  JSON.parse(response.body); //response.body contains the string value of the file
 					var plot_id = json['plot_id'];
 					var plots_jsons;
-					readTextFile("/resources/json/parcelas.json", function(text){
+					readTextFile("resources/json/parcelas.json", function(text){
 						plots_jsons = JSON.parse(text);
 						
 						for(var j = 0; j < plots_jsons.features.length; j++){
