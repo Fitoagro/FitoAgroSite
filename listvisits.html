@@ -1,22 +1,23 @@
-<DOCTYPE! html>
-
+<!DOCTYPE html>
 <html>
-
 <head>
-
 	<title>Lista de visitas</title>
-
 	<script src="js/javascript.js"></script>
-
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+		  integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
-	
-	<pre id="content" style="white-space: pre-wrap;"></pre>
+	<div class="header">
+		<img src="resources/images/fitoagro_logo.png" style="height: 50px; align-self: center">
+	</div>
 
-		
-	<div id="renderList"></div>
-
+	<div class="content">
+		<h3 style="align-self: center">Registo de visitas</h3>
+		<pre id="content" style="white-space: pre-wrap;"></pre>
+		<div id="renderList"></div>
+	</div>
 
 	<script type='text/javascript'>
 		
@@ -90,6 +91,7 @@
 				var ul = document.createElement('ul');
 				ul.setAttribute('id','folder_list');
 				ul.setAttribute('title','Lista de Visitas');
+				ul.setAttribute('class', 'list-group');
 				document.getElementById('renderList').appendChild(ul);
 				files.forEach(renderProductList);
 
@@ -100,9 +102,10 @@
 					a.textContent = element.name;
 					a.setAttribute('id',element.id);
 					//aux.setAttribute('class','item');
-					a.setAttribute('href', 'visit.html?visit_id=' + a.getAttribute('id'));
+					a.setAttribute('href', 'visit.html?device_id=' + fileId + '&visit_id=' + a.getAttribute('id'));
 					
 					li.appendChild(a);
+					li.setAttribute('class', 'list-group-item');
 
 					//li.onclick = function(){onDeviceClick(this.getAttribute('id'))};
 

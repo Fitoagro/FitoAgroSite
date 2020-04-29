@@ -3,23 +3,38 @@
   <head>
     <title>Página principal</title>
     <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="style.css">
   </head>
-  <body>
-	  
-    <p>FitoAgro - Registo de visitas</p>
 
-    <!--Add buttons to initiate auth sequence and sign out-->
-    <button id="authorize_button" style="display: none;">Login</button>
-    <button id="signout_button" style="display: none;">Logout</button>
+  <body>
+    <div class="header">
+      <img src="resources/images/fitoagro_logo.png" style="height: 50px; align-self: center">
+      <div style="margin-left: auto; align-self: center">
+          <!--Add buttons to initiate auth sequence and sign out-->
+          <button type="button" class="btn btn-secondary" style="background-color: lightgray; color: black; display: none;" id="authorize_button">Login</button>
+          <button type="button" class="btn btn-secondary" style="background-color: lightgray; color: black; display: none" id="signout_button">Logout</button>
+      </div>
+    </div>
+
+    <div class="content">
+    <h3 style="align-self: center">Registo de visitas</h3>
 
     <pre id="content" style="white-space: pre-wrap;"></pre>
 	
 	<div id="renderList"></div>
+
+    </div>
 	
     <script type="text/javascript">
       // Client ID and API key from the Developer Console
       var CLIENT_ID = '697021054229-c7jjbfpfmjkrnoqjo2pg7nfj7v1a1f95.apps.googleusercontent.com';
       var API_KEY = 'AIzaSyCMSb0abab-1ALwctezS4mWo8AalLXI9KI';
+      /** LOCALHOST ONLY **/
+      //var CLIENT_ID = '1076689087258-d8spnjvnsvl9cu9kdkag83d87d3ru13m.apps.googleusercontent.com';
+      //var API_KEY = 'AIzaSyAGbWVUH8uxVss41zpiBG-N0NILPTfkons';
+
 
       // Array of API discovery doc URLs for APIs used by the quickstart
       var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
@@ -128,6 +143,7 @@
 			var ul = document.createElement('ul');
 			ul.setAttribute('id','folder_list');
 			ul.setAttribute('title','Lista de Dispositivos');
+			ul.setAttribute('class', 'list-group');
 			document.getElementById('renderList').appendChild(ul);
 			files.forEach(renderProductList);
 
@@ -139,8 +155,9 @@
 				a.setAttribute('id',element.id);
 				//aux.setAttribute('class','item');
 				a.setAttribute('href', 'listvisits.html?device_id=' + a.getAttribute('id'));
-				
+
 				li.appendChild(a);
+				li.setAttribute('class', 'list-group-item');
 
 				//li.onclick = function(){onDeviceClick(this.getAttribute('id'))};
 

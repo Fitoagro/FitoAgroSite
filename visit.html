@@ -1,4 +1,4 @@
-<DOCTYPE! html>
+<!DOCTYPE html>
 
 <html>
 
@@ -12,107 +12,34 @@
 
 <script src="https://api.mapbox.com/mapbox-gl-js/v1.9.0/mapbox-gl.js"></script>
 <link href="https://api.mapbox.com/mapbox-gl-js/v1.9.0/mapbox-gl.css" rel="stylesheet" />
-
-<style>
-  body { margin:0; padding:0; }
-  
-  #map { position:absolute; height: 100%; top:0; bottom:0; width:49%; }
-  
-  #info {position:absolute; height: 100%; top:0px; bottom:0; left:0px; width:100%; visibility: hidden;}
-  
-  .column {
-	  float: left;
-	  width: 50%;
-
-  }
-  
- .image_thumbnail {height: 150px; width:150px; margin:15px;}
-
- .row:after {
-	  content: "";
-	  display: table;
-	  clear: both;
- }
- 
- #menu {
-	position: relative;
-	background: #fff;
-	padding: 10px;
-	font-family: 'Open Sans', sans-serif;
-
-	}
-	
- .gallery {
-	display: none;
-  }
-	
-.marker_image {
-  background-image: url('resources/images/blue_marker_photo.png');
-  background-size: cover;
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.marker_voice {
-  background-image: url('resources/images/blue_marker_mic.png');
-  background-size: cover;
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.mapboxgl-popup {
-  max-width: 200px;
-}
-
-.mapboxgl-popup-content {
-  text-align: center;
-  font-family: 'Open Sans', sans-serif;
-}
-
-</style>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+		  integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="style.css">
 
 </head>
 
 <body>
 
+	<div id="info" style="display: flex; flex-direction: row; overflow-x: hidden; overflow-y: scroll">
 
+		<div style="flex-direction: column; height:200%; width:15%; background-color: darkseagreen;
+			padding: 16px 8px 0 8px;">
+			<div style="display: flex; flex-direction: column; position: sticky; top:16px">
+			<img src="resources/images/fitoagro_logo.png" style="height: 50px; align-self: center">
+			<br>
 
-
-		
-
-	
-	
-	<div id="info">
-		
-		<div class="row">
-		
-			<div class="column">
-				
-				<div id="map"></div>
-				<div id="menu">
-					<input
-						id="streets-v11"
-						type="radio"
-						name="rtoggle"
-						value="streets"
-						checked="checked"/>
-					<label for="streets">streets</label>
-					<input id="light-v10" type="radio" name="rtoggle" value="light" />
-					<label for="light">light</label>
-					<input id="dark-v10" type="radio" name="rtoggle" value="dark" />
-					<label for="dark">dark</label>
-					<input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
-					<label for="outdoors">outdoors</label>
-					<input id="satellite-v9" type="radio" name="rtoggle" value="satellite" />
-					<label for="satellite">satellite</label>
-				</div>
+			<button type="button" onclick="window.location.href='index.html'" class="btn btn-secondary "
+					style="background-color: whitesmoke; color: black; width: fit-content; align-self: center" ><- Mudar Dispositivo</button>
+			<br>
+			<pre id="content" style="white-space: pre-wrap;"></pre>
+			<div id="renderList"></div>
 			</div>
+		</div>
+
+		<div class="row" style=" padding: 16px 16px 16px 48px;">
 			
-			<div class="column" style="overflow-y: scroll; height:100%;">
+			<div style=" display: flex; flex-direction: row; height:100%;">
+				<div style="flex-direction: column; width: fit-content; padding-right: 64px;">
 					<h1 id="plot_name" ></h1>
 					
 					<br>
@@ -154,31 +81,51 @@
 						<a id="no_notes"> Sem notas. </a>
 						<ul id= "notes_ul"/>
 					</div>
-					
-					<br>
 
-					<div  class="gallery" id="photo_gallery" >
-						<h3> Fotografias </h3>
+				</div>
+
+				<div class="column">
+
+					<div id="map" style="margin-top: 16px;"></div>
+					<div id="menu">
+						<input
+								id="streets-v11"
+								type="radio"
+								name="rtoggle"
+								value="streets"
+								checked="checked"/>
+						<label for="streets">streets</label>
+						<input id="light-v10" type="radio" name="rtoggle" value="light" />
+						<label for="light">light</label>
+						<input id="dark-v10" type="radio" name="rtoggle" value="dark" />
+						<label for="dark">dark</label>
+						<input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
+						<label for="outdoors">outdoors</label>
+						<input id="satellite-v9" type="radio" name="rtoggle" value="satellite" />
+						<label for="satellite">satellite</label>
 					</div>
-					
-					<br>
+				</div>
 
-					<div  class="gallery" id="audio_gallery">
-						<h3> Áudios </h3>
-					</div>
 
-												
 			</div>
 
+			<div class="column" style="width: 100%">
+
+				<br>
+
+				<div  class="gallery" id="photo_gallery" >
+					<h3> Fotografias </h3>
+				</div>
+
+				<br>
+
+				<div  class="gallery" id="audio_gallery">
+					<h3> Áudios </h3>
+				</div>
+			</div>
 		</div>
-		
-
-
-
 	</div>
-	
-	
-	
+
 
 
 
@@ -426,6 +373,7 @@
 			if (isSignedIn) {
 				var profile = auth2.currentUser.get().getBasicProfile();
 				userName = profile.getName();
+			 listVisits();
 			 listFolder();
 			}
 		  }
@@ -870,8 +818,58 @@
 				}
 			});
 		}
-		
-		
+
+		function appendPre(message) {
+			var pre = document.getElementById('content');
+			var textContent = document.createTextNode(message + '\n');
+			pre.appendChild(textContent);
+		}
+
+		function listVisits() {
+			var fileId = getUrlVars()['device_id'];
+			console.log(fileId);
+
+			gapi.client.drive.files.list({
+				'folderId' : fileId,
+				'pageSize': 100,
+				'fields': "nextPageToken, files(id, name)",
+				'q': `'${fileId}' in parents`
+			}).then(function(response) {
+				appendPre('  Lista de visitas:');
+				var files = response.result.files;
+				if (files && files.length > 0) {
+					var ul = document.createElement('ul');
+					ul.setAttribute('id','folder_list');
+					ul.setAttribute('title','Lista de Visitas');
+					ul.setAttribute('class', 'list-group');
+					document.getElementById('renderList').appendChild(ul);
+					files.forEach(renderProductList);
+
+					function renderProductList(element, index, arr) {
+						var a = document.createElement('a');
+						var li = document.createElement('li');
+
+						a.textContent = element.name;
+						a.setAttribute('id',element.id);
+						//aux.setAttribute('class','item');
+						a.setAttribute('href', 'visit.html?device_id=' + fileId + '&visit_id=' + a.getAttribute('id'));
+
+						li.appendChild(a);
+						li.setAttribute('class', 'list-group-item');
+						li.style.backgroundColor = "whitesmoke";
+
+						//li.onclick = function(){onDeviceClick(this.getAttribute('id'))};
+
+						ul.appendChild(li);
+
+						//li.innerHTML=li.innerHTML + element.name;
+					}
+				} else {
+					appendPre('No files found.');
+				}
+			});
+		}
+
 		function listFolder() {
 		   var fileId = getUrlVars()['visit_id'];
 		   var json_id = '';
