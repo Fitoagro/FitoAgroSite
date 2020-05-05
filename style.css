@@ -79,11 +79,9 @@ h3{
 #menu {
     position: relative;
     padding: 8px;
-    background-color: grey;
-    color: white;
+    background-color: lightgrey;
+    color: #454545;
     border-radius: 0 0 5px 0;
-    box-shadow: 2px 2px 3px lightgrey;
-
     width: 100%;
     font-family: 'Open Sans', sans-serif;
 }
