@@ -6,6 +6,7 @@
 <meta charset=utf-8 />
 <title>Informação da visita</title>
 <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<script src="https://kit.fontawesome.com/16512b04b3.js" crossorigin="anonymous"></script>
 
 <script src='https://api.mapbox.com/mapbox.js/v3.3.0/mapbox.js'></script>
 <link href='https://api.mapbox.com/mapbox.js/v3.3.0/mapbox.css' rel='stylesheet' />
@@ -20,67 +21,64 @@
 
 <body>
 
-	<div id="info" style="display: flex; flex-direction: row; overflow-x: hidden; overflow-y: scroll">
-
-		<div style="flex-direction: column; height:200%; width:15%; background-color: darkseagreen;
-			padding: 16px 8px 0 8px;">
-			<div style="display: flex; flex-direction: column; position: sticky; top:16px">
-			<img src="resources/images/fitoagro_logo.png" style="height: 50px; align-self: center">
-			<br>
-
-			<button type="button" onclick="window.location.href='index.html'" class="btn btn-secondary "
-					style="background-color: whitesmoke; color: black; width: fit-content; align-self: center" ><- Mudar Dispositivo</button>
-			<br>
-			<pre id="content" style="white-space: pre-wrap;"></pre>
-			<div id="renderList"></div>
-			</div>
+	<div class="header">
+		<img src="resources/images/fitoagro_logo.png" onclick="window.location.href = 'index.html'" style="height: 50px; align-self: center; cursor: pointer">
+		<div style="margin-left: auto; align-self: center">
+			<!--Add buttons to initiate auth sequence and sign out-->
+			<button type="button" class="btn light-button" onclick="handleSignoutClick()" style="background-color: lightgray; color: black; display: flex" id="signout_button">Logout</button>
 		</div>
+	</div>
 
-		<div class="row" style=" padding: 16px 16px 16px 48px;">
+	<div style=" display: inline; height: 50px; width:50px; position: sticky; top: 150px; left: 3%; z-index: 2; cursor: pointer">
+		<i class="fas fa-arrow-circle-left" style="font-size: 50px; color: #00574B;margin-top: 30px" onclick="window.history.back()"></i>
+	</div>
+
+	<div id="info" style="display: flex; flex-direction: row; overflow-x: hidden; overflow-y: scroll;">
+
+
+		<div class="row" style="height: inherit; padding: 16px 16px 0 48px;">
 			
-			<div style=" display: flex; flex-direction: row; height:100%;">
+			<div style=" height: 100%; display: flex; flex-direction: row">
 				<div style="flex-direction: column; width: fit-content; padding-right: 64px;">
+
 					<h1 id="plot_name" ></h1>
-					
-					<br>
-
-						
-					<a id="number_photos_text" size="6">Fotografias: </a>
-					<a id="number_photos"></a>
 
 					<br>
-					<br>
-					
-					<a id="number_voice_records_text" size="6">Anotações vocais:</a>
-					<a id="number_voice_records" ></a>
+					<div style="display: flex; flex-direction: row; align-items: baseline;">
+						<i class="fas fa-camera" style="font-size: 20px; color: #008577"></i>
+						&nbsp;&nbsp;
+						<a id="number_photos" style="font-size: 20px"></a>
 
-					<br>
-					<br>
-					
-					<a id="begin_text" size="6">Início:</a>
+						<i class="fas fa-microphone" style="margin-left: 20px; font-size: 20px; color: #008577"></i>
+						&nbsp;&nbsp;
+						<a id="number_voice_records" style="font-size: 20px"></a>
+					</div>
+					<br><br>
+
+					<a id="begin_text" style="font-weight: bold; font-size: 22px; color: #008577">Início:</a>
+					&nbsp;&nbsp;
 					<a id="begin"></a>
 
-					<br>
-					<br>
+					<br><br>
 					
-					<a id="duration_text">Duração:</a>
+					<a id="duration_text" style="font-weight: bold; font-size: 22px; color: #008577">Duração:</a>
+					&nbsp;&nbsp;
 					<a id="duration"></a>
 					
 					<br>
 					<br>
-					
-					<div id='notes'>
-						<h3> Adicionar nota </h3>
-						<textarea id="note" rows="4" cols="50"></textarea>		
-						<button id="add_note">Enviar</button>
-					</div>
-					<br>
-					
+
 					<div  id="note_gallery">
-						<h3> Notas </h3>
+						<a style="font-weight: bold; font-size: 22px; color: #008577"> Notas: </a>
+						&nbsp;&nbsp;
 						<a id="no_notes"> Sem notas. </a>
 						<ul id= "notes_ul"/>
 					</div>
+					<div id='notes' style="display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end">
+						<textarea placeholder="Adicionar notas..." id="note" rows="4" cols="50"></textarea>
+						<button class="btn light-button" style="margin-top:6px;width: fit-content; background-color: lightgrey; color: #00574B" id="add_note">Submeter <i class="fas fa-paper-plane"></i></button>
+					</div>
+
 
 				</div>
 
@@ -92,16 +90,20 @@
 								id="streets-v11"
 								type="radio"
 								name="rtoggle"
-								value="streets"
-								checked="checked"/>
+								value="streets"/>
 						<label for="streets">streets</label>
+						&nbsp;&nbsp;
 						<input id="light-v10" type="radio" name="rtoggle" value="light" />
 						<label for="light">light</label>
+						&nbsp;&nbsp;
 						<input id="dark-v10" type="radio" name="rtoggle" value="dark" />
 						<label for="dark">dark</label>
+						&nbsp;&nbsp;
 						<input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
 						<label for="outdoors">outdoors</label>
-						<input id="satellite-v9" type="radio" name="rtoggle" value="satellite" />
+						&nbsp;&nbsp;
+						<input id="satellite-v9" type="radio" name="rtoggle" value="satellite"
+							   checked="checked" />
 						<label for="satellite">satellite</label>
 					</div>
 				</div>
@@ -109,25 +111,20 @@
 
 			</div>
 
-			<div class="column" style="width: 100%">
-
-				<br>
+			<div id="gallery" class="column" style=" display: none; width: 100%; margin-top: 48px">
 
 				<div  class="gallery" id="photo_gallery" >
-					<h3> Fotografias </h3>
+					<p style="font-weight: bold; font-size: 22px; color: #008577"> Fotografias </p>
 				</div>
 
 				<br>
 
 				<div  class="gallery" id="audio_gallery">
-					<h3> Áudios </h3>
+					<p style="font-weight: bold; font-size: 22px; color: #008577"> Anotações Vocais </p>
 				</div>
 			</div>
 		</div>
 	</div>
-
-
-
 
 	<script type='text/javascript'>
 	
@@ -139,6 +136,14 @@
 
 		  var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
 		  var SCOPES = 'https://www.googleapis.com/auth/drive';
+
+		/**
+		 *  Sign out the user upon button click.
+		 */
+		function handleSignoutClick() {
+			gapi.auth2.getAuthInstance().signOut();
+			window.location.href = 'index.html';
+		}
 		  
 		  var mFocus;
 		  var mPoints;
@@ -152,7 +157,7 @@
 		  
 		  var map = new mapboxgl.Map({
 				container: 'map',
-				style: 'mapbox://styles/mapbox/streets-v11',
+				style: 'mapbox://styles/mapbox/satellite-v9',
 				zoom: 0
 			});
 
@@ -373,7 +378,6 @@
 			if (isSignedIn) {
 				var profile = auth2.currentUser.get().getBasicProfile();
 				userName = profile.getName();
-			 listVisits();
 			 listFolder();
 			}
 		  }
@@ -671,7 +675,7 @@
 			  var files = response.result.files;
 			  if (files && files.length > 0) {
 					var div = document.getElementById("photo_gallery");
-				  	div.style.display = "block"
+				  	div.style.display = "block";
 					for(var i = 0; i < files.length; i++){
 					
 						files_map[files[i].name] = files[i].id;
@@ -825,51 +829,6 @@
 			pre.appendChild(textContent);
 		}
 
-		function listVisits() {
-			var fileId = getUrlVars()['device_id'];
-			console.log(fileId);
-
-			gapi.client.drive.files.list({
-				'folderId' : fileId,
-				'pageSize': 100,
-				'fields': "nextPageToken, files(id, name)",
-				'q': `'${fileId}' in parents`
-			}).then(function(response) {
-				appendPre('  Lista de visitas:');
-				var files = response.result.files;
-				if (files && files.length > 0) {
-					var ul = document.createElement('ul');
-					ul.setAttribute('id','folder_list');
-					ul.setAttribute('title','Lista de Visitas');
-					ul.setAttribute('class', 'list-group');
-					document.getElementById('renderList').appendChild(ul);
-					files.forEach(renderProductList);
-
-					function renderProductList(element, index, arr) {
-						var a = document.createElement('a');
-						var li = document.createElement('li');
-
-						a.textContent = element.name;
-						a.setAttribute('id',element.id);
-						//aux.setAttribute('class','item');
-						a.setAttribute('href', 'visit.html?device_id=' + fileId + '&visit_id=' + a.getAttribute('id'));
-
-						li.appendChild(a);
-						li.setAttribute('class', 'list-group-item');
-						li.style.backgroundColor = "whitesmoke";
-
-						//li.onclick = function(){onDeviceClick(this.getAttribute('id'))};
-
-						ul.appendChild(li);
-
-						//li.innerHTML=li.innerHTML + element.name;
-					}
-				} else {
-					appendPre('No files found.');
-				}
-			});
-		}
-
 		function listFolder() {
 		   var fileId = getUrlVars()['visit_id'];
 		   var json_id = '';
@@ -921,6 +880,9 @@
 					getVisitJSON(json_id);
 				if(gpx_id != '')
 					getGPX(gpx_id);
+
+				if(photo_id != '' || audio_id != '')
+					document.getElementById("gallery").style.display = "block";
 					
 			  } else {
 				appendPre('No files found.');
