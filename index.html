@@ -14,7 +14,8 @@
       <img src="resources/images/fitoagro_logo.png" style="height: 50px; align-self: center; cursor: pointer" onclick="window.location.reload()">
       <div style="margin-left: auto; align-self: center">
           <!--Add buttons to initiate auth sequence and sign out-->
-          <button type="button" class="btn light-button" style="background-color: lightgray; color: black; display: none" id="signout_button">Logout</button>
+          <div id="user_name"> </div>
+          <button type="button" class="btn light-button" style="background-color: lightgray; color: black; display: none; float: right;  " id="signout_button">Logout</button>
       </div>
     </div>
 
@@ -97,6 +98,7 @@
 
       var loginForm = document.getElementById('login');
       var authorizeButton = document.getElementById('authorize_button');
+      var userName = document.getElementById('user_name');
       var signoutButton = document.getElementById('signout_button');
       var content = document.getElementById('content');
 
@@ -105,6 +107,7 @@
       var dates = [];
 
       var lastDevice;
+      var fullName;
 
       /**
        *  On load, called to load the auth2 library and API client library.
@@ -127,6 +130,7 @@
           // Listen for sign-in state changes.
           gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
 
+
           // Handle the initial sign-in state.
           updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
           authorizeButton.onclick = handleAuthClick;
@@ -142,14 +146,23 @@
        */
       function updateSigninStatus(isSignedIn) {
         if (isSignedIn) {
+
+          var currentUser = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
+          fullName = currentUser.getName();
+          
           authorizeButton.style.display = 'none';
           loginForm.style.display = 'none';
-          signoutButton.style.display = 'block';
+          signoutButton.style.display = 'inline-block';
+          userName.innerHTML = fullName;
+          userName.style.display = 'inline-block';
+
           content.style.display = 'flex';
           listFolder('1RgkniTJ-VtkilglCzo8dAqALLIgFffWg', setDevices);
         } else {
           authorizeButton.style.display = 'inline-block';
           loginForm.style.display = 'flex';
+          userName.innerText ="";
+          userName.style.display = 'none';
           signoutButton.style.display = 'none';
           content.style.display = 'none';
         }
