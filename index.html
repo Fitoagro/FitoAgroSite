@@ -35,18 +35,18 @@
         <div style="margin-left: auto; margin-right: 16px">
           <!--Add buttons to initiate auth sequence and sign out-->
           <div class="dropdown">
-            <button type="button" class="btn light-button" style="background-color: #008577; color: white; border-radius: 50%" id="filter">
-            <i class="fas fa-filter"></i></button>
+            <button type="button" class="btn light-button" style="background-color: #008577; color: white; border-radius: 50%" id="sorting">
+            <i style="font-size: 20px" class="fas fa-sort"></i></button>
             <ul class="dropdown-menu multi-level dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu">
               <li class="dropdown-submenu">
                 <a tabindex="-1">Agrupar por</a>
                 <ul class="dropdown-menu" role="menu" style="margin-left:1px; margin-top: 1px">
-                  <li id="groupby-date" onclick="updateList(this.id)" style="padding: 8px 8px 8px 24px">
-                    <a tabindex="-1">Data <i id="groupby-date-icon" style="visibility: hidden; margin-left: 10px; color: #008577" class="fas fa-check-circle"></i></a>
+                  <li id="groupby-plot" onclick="updateList(this.id)" style="padding: 8px 8px 8px 24px">
+                    <a tabindex="-1">Parcela <i id="groupby-plot-icon" style="visibility: hidden; margin-left: 10px; color: #008577" class="fas fa-check-circle"></i></a>
                   </li>
                   <li class="divider"><hr style="height: 1px; margin: 0; padding: 0"></li>
                   <li id="groupby-device" onclick="updateList(this.id)" style="padding: 8px 8px 8px 24px">
-                    <a>Dispositivo <i id="groupby-device-icon"style="margin-left: 10px; color: #008577" class="fas fa-check-circle"></i></a>
+                    <a>Técnico <i id="groupby-device-icon"style="margin-left: 10px; color: #008577" class="fas fa-check-circle"></i></a>
                   </li>
                   <li class="divider"><hr style="height: 1px; margin: 0; padding: 0"></li>
                   <li id="groupby-none" onclick="updateList(this.id)" style="padding: 8px 8px 8px 24px">
@@ -104,7 +104,7 @@
 
       var devices = [];
       var visits = [];
-      var dates = [];
+      var plots = [];
 
       var lastDevice;
       var fullName;
@@ -183,6 +183,10 @@
         gapi.auth2.getAuthInstance().signOut();
 		document.getElementById("renderList").innerHTML = "";
 		document.getElementById('visits').innerHTML = "";
+        document.getElementById('visits').removeChild('h3');
+		visits = [];
+		devices = [];
+		plots = [];
       }
 
       /**
@@ -209,7 +213,7 @@
            gapi.client.drive.files.list({
           'folderId' : fileId,
           'pageSize': 100,
-          'fields': "nextPageToken, files(id, name)",
+          'fields': "nextPageToken, files(id, name, owners)",
 		  'q': `'${fileId}' in parents`
         }).then(function(response) {
           var files = response.result.files;
@@ -217,7 +221,7 @@
 
           if(fun.name === "setVisits"){
             if(visits.length === 0)
-              appendPre('Lista de Visitas:');
+              appendPre('Visitas de Campo:');
 
             if (files.length > 0) {
               /*var ul = document.createElement('ul');
@@ -288,7 +292,7 @@
               filtered = sort(id, filtered);
               if(filtered.length > 0) {
                 var deviceName = document.createElement('h5');
-                deviceName.innerText = devices[i].name + '\n';
+                deviceName.innerText = devices[i].technician + '\n';
                 deviceName.style.fontFamily = fontFamily;
                 div.appendChild(deviceName);
                 var deviceDiv = document.createElement('div');
@@ -307,27 +311,27 @@
             if(!id.includes("groupby"))
               updateSort();
             break;
-          case "groupby-date":
-            for(var i=0; i< dates.length; i++){
-              dates = dates.sort(function (a, b) {
-                return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+          case "groupby-plot":
+            for(var i=0; i< plots.length; i++){
+              plots = plots.sort(function (a, b) {
+                return ((a < b) ? -1 : ((a > b) ? 1 : 0));
               });
-              filtered = visits.filter(value => refactorVisitName(value.name).date === dates[i]);
+              filtered = visits.filter(value => refactorVisitName(value.name).name === plots[i]);
               filtered = sort(id, filtered);
-              var dateTitle = document.createElement('h5');
-              dateTitle.innerText = dates[i] + '\n';
-              dateTitle.style.fontFamily = fontFamily;
-              div.appendChild(dateTitle);
-              var dateDiv = document.createElement('div');
-              dateDiv.style.display = "flex";
-              dateDiv.style.flexDirection = "row";
-              dateDiv.style.flexWrap = "wrap";
-              dateDiv.style.justifyContent = "flex-start";
-              dateDiv.style.alignItems = "flex-start";
-              dateDiv.style.width = "100%";
-              div.append(dateDiv);
+              var plotTitle = document.createElement('h5');
+              plotTitle.innerText = plots[i] + '\n';
+              plotTitle.style.fontFamily = fontFamily;
+              div.appendChild(plotTitle);
+              var plotDiv = document.createElement('div');
+              plotDiv.style.display = "flex";
+              plotDiv.style.flexDirection = "row";
+              plotDiv.style.flexWrap = "wrap";
+              plotDiv.style.justifyContent = "flex-start";
+              plotDiv.style.alignItems = "flex-start";
+              plotDiv.style.width = "100%";
+              div.append(plotDiv);
               for(var j=0; j< filtered.length; j++) {
-                render(dateDiv, filtered[j]);
+                render(plotDiv, filtered[j]);
               }
             }
             if(!id.includes("groupby"))
@@ -371,27 +375,13 @@
                 }
                 function sortByDateAsc(visits) {
                 visits.sort(function (a, b) { //sort by name asc
-                  var aResult = refactorVisitName(a.name);
-                  var bResult = refactorVisitName(b.name);
-                  if (aResult === null || bResult === null)
-                    return ((a.name < b.name) ? -1 : ((a.name > b.name) ? 1 : 0));
-                  else {
-                    return ((aResult.date + " " + aResult.hour < bResult.date + " " + bResult.hour) ? 1
-                            : ((aResult.date + " " + aResult.hour > bResult.date + " " + bResult.hour) ? -1 : 0));
-                  }
+                    return ((a.name < b.name) ? 1 : ((a.name > b.name) ? -1 : 0));
                 });
                 return visits;
               }
                 function sortByDateDesc(visits) {
                 visits.sort(function (a, b) { //sort by name desc
-                  var aResult = refactorVisitName(a.name);
-                  var bResult = refactorVisitName(b.name);
-                  if (aResult === null || bResult === null)
-                    return ((a.name < b.name) ? 1 : ((a.name > b.name) ? -1 : 0));
-                  else {
-                    return ((aResult.date + " " + aResult.hour < bResult.date + " " + bResult.hour) ? -1
-                            : ((aResult.date + " " + aResult.hour > bResult.date + " " + bResult.hour) ? 1 : 0));
-                  }
+                    return ((a.name < b.name) ? -1 : ((a.name > b.name) ? 1 : 0));
                 });
                 return visits;
               }
@@ -439,17 +429,20 @@
           box.onclick = function () {
             window.location.href = 'visit.html?visit_id=' + element.id;
           };
-          var title = document.createElement('h4');
+          var title = document.createElement('h5');
           var result = refactorVisitName(element.name);
           title.setAttribute('id',element.id);
           //aux.setAttribute('class','item');
           title.setAttribute('href', 'listvisits.html?device_id=' + element.device);
           if(result != null){
             title.textContent = result.name;
-            var date = document.createElement('p');
-            date.textContent = result.date + " " + result.hour;
+            var date = document.createElement('a');
+            date.textContent = result.date;
+            var hour = document.createElement('a');
+            hour.textContent = result.hour;
             box.appendChild(title);
             box.appendChild(date);
+            box.appendChild(hour);
           }else{
             title.textContent = element.name;
             box.appendChild(title);
@@ -463,22 +456,56 @@
       }
 
       function setDevices(element, index, arr) {
-        devices.push({id: element.id, name: element.name });
-        lastDevice = element.id;
-        listFolder(element.id, setVisits);
+        if (element.name !== "mas.correia@campus.fct.unl.pt") { /** Testing Device */
+          devices.push({id: element.id, name: element.name, technician: element.owners[0].displayName});
+          lastDevice = element.id;
+          listFolder(element.id, setVisits);
+        }
       }
 
       function setVisits(element, index, arr) {
-        var date = refactorVisitName(element.name).date;
-        if(!dates.includes(date))
-          dates.push(date);
+        var plot = refactorVisitName(element.name).name;
+        if(!plots.includes(plot))
+          plots.push(plot);
         visits.push({id: element.id, name: element.name, device: element.device });
       }
 
       function refactorVisitName(visitName) {
         var result = visitName.split(".");
+
+        function getMonth(monthNumber) {
+          switch (monthNumber) {
+            case "01":
+              return "Janeiro";
+            case "02":
+              return "Fevereiro";
+            case "03":
+              return "Março";
+            case "04":
+              return "Abril";
+            case "05":
+              return "Maio";
+            case "06":
+              return "Junho";
+            case "07":
+              return "Julho";
+            case "08":
+              return "Agosto";
+            case "09":
+              return "Setembro";
+            case "10":
+              return "Outubro";
+            case "11":
+              return "Novembro";
+            case "12":
+              return "Dezembro";
+            default:
+              return monthNumber;
+          }
+        }
+
         if(result.length === 6) {
-          var date = result[0] + "/" + result[1] + "/" + result[2];
+          var date = result[2] + " de " + getMonth(result[1]) + " " + result[0];
           var hour = result[3] + ":" + result[4];
           var name = result[5];
           return {date: date, hour: hour, name: name};
