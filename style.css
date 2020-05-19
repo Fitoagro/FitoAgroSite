@@ -60,7 +60,7 @@ h3{
 
 #map { position:relative; height: 85%; top:0; bottom:0; width:100%; }
 
-#info { height: calc(100% - 100px); top:0px; left:0; margin-top: -48px; overflow: hidden; padding-right: 10%; padding-left: 10%; width:100%; visibility: hidden; }
+#info { height: calc(100% - 100px); top:0px; left:0; overflow: hidden; width:100%; visibility: hidden; }
 
 .column {
     float: left;
@@ -89,6 +89,7 @@ h3{
 
 .gallery {
     display: none;
+    padding: 16px 24px 0 24px;
 }
 
 .marker_image {

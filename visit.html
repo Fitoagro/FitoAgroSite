@@ -30,15 +30,16 @@
 	</div>
 </div>
 
-<div style=" display: inline; height: 50px; width:50px; position: sticky; top: 150px; left: 3%; z-index: 2; cursor: pointer">
+<div style=" display: inline-flex; float: left; height: 50px; width:50px; position: sticky; top: 75px; left: 3%; z-index: 2; cursor: pointer">
 	<i class="fas fa-arrow-circle-left" style="font-size: 50px; color: #00574B;margin-top: 30px" onclick="window.history.back()"></i>
 </div>
 
+<div class="content" style="display: flex; margin-left: 10%; margin-right: 10%">
 <div id="info" style="display: flex; flex-direction: row;">
 
-	<div style="height: 100%; display: flex; flex-direction: row; flex-wrap:wrap; justify-content: space-between; justify-items: flex-start; padding: 16px 48px 0 48px;">
+	<div style="width: 100%; height: 100%; display: flex; flex-direction: row; flex-wrap:wrap; justify-content: space-between; justify-items: flex-start; padding: 16px 24px 0 24px;">
 
-			<div style="flex-direction: column; width: fit-content;">
+			<div style="flex-direction: column; width: fit-content; flex-wrap: wrap">
 
 				<h1 id="plot_name" ></h1>
 
@@ -81,7 +82,7 @@
 
 			</div>
 
-			<div style="display: flex; flex-direction: column; width: 450px; height: 500px;">
+			<div style="display: flex; flex-direction: column; justify-content: center; max-width: 600px; width: 500px; height: 500px;">
 
 				<div id="map" style="margin-top: 16px;"></div>
 				<div id="menu">
@@ -106,18 +107,18 @@
 					<label for="satellite">satellite</label>
 				</div>
 			</div>
+	</div>
+</div>
+	<div id="gallery" class="column" style=" display: none; width: 100%; margin-top: 48px">
 
-		<div id="gallery" class="column" style=" display: none; width: 100%; margin-top: 48px">
+		<div  class="gallery" id="photo_gallery" >
+			<p style="font-weight: bold; font-size: 22px; color: #008577"> Fotografias </p>
+		</div>
 
-			<div  class="gallery" id="photo_gallery" >
-				<p style="font-weight: bold; font-size: 22px; color: #008577"> Fotografias </p>
-			</div>
+		<br>
 
-			<br>
-
-			<div  class="gallery" id="audio_gallery">
-				<p style="font-weight: bold; font-size: 22px; color: #008577"> Anotações Vocais </p>
-			</div>
+		<div  class="gallery" id="audio_gallery">
+			<p style="font-weight: bold; font-size: 22px; color: #008577"> Anotações Vocais </p>
 		</div>
 	</div>
 </div>
