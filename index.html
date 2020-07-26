@@ -203,18 +203,63 @@
         pre.appendChild(textContent);
       }
 
-	   function listFolder(fileId, fun) {
-        //var fileId = '1RgkniTJ-VtkilglCzo8dAqALLIgFffWg';
-	   //var fileId = '12lF0WtOU_nrbB67uz7MKADgos57_9GA-'
-         if(fun.name === "setVisits"){
-           var device = lastDevice;
-         }
+	  //  function listFolder(fileId, fun) {
+      //   //var fileId = '1RgkniTJ-VtkilglCzo8dAqALLIgFffWg';
+	  //  //var fileId = '12lF0WtOU_nrbB67uz7MKADgos57_9GA-'
+      //    if(fun.name === "setVisits"){
+      //      var device = lastDevice;
+      //    }
+      //
+      //      gapi.client.drive.files.list({
+      //     'folderId' : fileId,
+      //     'pageSize': 100,
+      //     'fields': "nextPageToken, files(id, name, owners)",
+		//   'q': `'${fileId}' in parents`
+      //   }).then(function(response) {
+      //     var files = response.result.files;
+      //     //Everything is loaded
+      //
+      //     if(fun.name === "setVisits"){
+      //       if(visits.length === 0)
+      //         appendPre('Visitas de Campo:');
+      //
+      //       if (files.length > 0) {
+      //         /*var ul = document.createElement('ul');
+      //         ul.setAttribute('id','folder_list');
+      //         ul.setAttribute('title','Lista de Visitas');
+      //         ul.setAttribute('class', 'list-group');*/
+      //         var div = document.getElementById('renderList');
+      //         files.forEach(renderProductList);
+      //         console.log(devices);
+      //
+      //         function renderProductList(element, index, arr) {
+      //           element.device = device;
+      //           render(div, element);
+      //         }
+      //       } else {
+      //         appendPre('Sem visitas');
+      //       }
+      //     }
+      //
+      //     files.forEach(fun);
+      //     updateList(currentGrouping);
+      //
+      //   });
+      // }
 
-           gapi.client.drive.files.list({
+
+      function listFolder(fileId, fun) {
+        //var fileId = '1RgkniTJ-VtkilglCzo8dAqALLIgFffWg';
+        //var fileId = '12lF0WtOU_nrbB67uz7MKADgos57_9GA-'
+        if(fun.name === "setVisits"){
+          var device = lastDevice;
+        }
+
+        gapi.client.drive.files.list({
           'folderId' : fileId,
           'pageSize': 100,
           'fields': "nextPageToken, files(id, name, owners)",
-		  'q': `'${fileId}' in parents`
+          'q': `'${fileId}' in parents`
         }).then(function(response) {
           var files = response.result.files;
           //Everything is loaded
@@ -224,26 +269,45 @@
               appendPre('Visitas de Campo:');
 
             if (files.length > 0) {
-              /*var ul = document.createElement('ul');
-              ul.setAttribute('id','folder_list');
-              ul.setAttribute('title','Lista de Visitas');
-              ul.setAttribute('class', 'list-group');*/
-              var div = document.getElementById('renderList');
-              files.forEach(renderProductList);
-              console.log(devices);
+              var i;
+              for (i = 0; i < files.length; i++) {
+                var aux = files[i].id;
+                gapi.client.drive.files.list({
+                  'folderId': aux,
+                  'pageSize': 100,
+                  'fields': "nextPageToken, files(id, name, owners)",
+                  'q': `'${aux}' in parents`
+                }).then(function (response) {
 
-              function renderProductList(element, index, arr) {
-                element.device = device;
-                render(div, element);
+
+                  var aux2 = response.result.files;
+                  /*var ul = document.createElement('ul');
+                ul.setAttribute('id','folder_list');
+                ul.setAttribute('title','Lista de Visitas');
+                ul.setAttribute('class', 'list-group');*/
+                  var div = document.getElementById('renderList');
+                  aux2.forEach(renderProductList);
+                  console.log(devices);
+
+                  function renderProductList(element, index, arr) {
+                    element.device = device;
+                    render(div, element);
+                  }
+
+
+                });
+
               }
+
+
             } else {
               appendPre('Sem visitas');
             }
           }
 
+
           files.forEach(fun);
           updateList(currentGrouping);
-
         });
       }
 
