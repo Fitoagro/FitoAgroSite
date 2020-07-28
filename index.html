@@ -11,7 +11,9 @@
 
   <body>
     <div class="header">
-      <img src="resources/images/fitoagro_logo.png" style="height: 50px; align-self: center; cursor: pointer" onclick="window.location.reload()">
+      <img src="resources/images/fitoagro_logo.png" style="height: 50px; align-self: center; cursor: pointer; margin-right: 32px">
+      <div id="visits_tab" onclick="window.location.reload()" style="cursor:pointer; padding:8px; font-size: 20px; text-decoration: underline; color: white">Visitas</div>
+      <div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; padding:8px; font-size: 20px; color: white">Estatísticas</div>
       <div style="margin-left: auto; align-self: center">
           <!--Add buttons to initiate auth sequence and sign out-->
           <div id="user_name"> </div>
@@ -45,8 +47,8 @@
                     <a tabindex="-1">Parcela <i id="groupby-plot-icon" style="visibility: hidden; margin-left: 10px; color: #008577" class="fas fa-check-circle"></i></a>
                   </li>
                   <li class="divider"><hr style="height: 1px; margin: 0; padding: 0"></li>
-                  <li id="groupby-device" onclick="updateList(this.id)" style="padding: 8px 8px 8px 24px">
-                    <a>Técnico <i id="groupby-device-icon"style="margin-left: 10px; color: #008577" class="fas fa-check-circle"></i></a>
+                  <li id="groupby-technician" onclick="updateList(this.id)" style="padding: 8px 8px 8px 24px">
+                    <a>Técnico <i id="groupby-technician-icon"style="margin-left: 10px; color: #008577" class="fas fa-check-circle"></i></a>
                   </li>
                   <li class="divider"><hr style="height: 1px; margin: 0; padding: 0"></li>
                   <li id="groupby-none" onclick="updateList(this.id)" style="padding: 8px 8px 8px 24px">
@@ -82,7 +84,7 @@
 
       var currentOrder = "orderby-date";
       var orderDirection = 1; //1 = descending ; 0 = asccending
-      var currentGrouping = "groupby-device";
+      var currentGrouping = "groupby-technician";
 
       // Client ID and API key from the Developer Console
       var CLIENT_ID = '697021054229-c7jjbfpfmjkrnoqjo2pg7nfj7v1a1f95.apps.googleusercontent.com';
@@ -102,7 +104,7 @@
       var signoutButton = document.getElementById('signout_button');
       var content = document.getElementById('content');
 
-      var devices = [];
+      var users = [];
       var visits = [];
       var plots = [];
 
@@ -113,6 +115,7 @@
        *  On load, called to load the auth2 library and API client library.
        */
       function handleClientLoad() {
+        sessionStorage.clear();
         gapi.load('client:auth2', initClient);
       }
 
@@ -157,7 +160,7 @@
           userName.style.display = 'inline-block';
 
           content.style.display = 'flex';
-          listFolder('1RgkniTJ-VtkilglCzo8dAqALLIgFffWg', setDevices);
+          listUsers();
         } else {
           authorizeButton.style.display = 'inline-block';
           loginForm.style.display = 'flex';
@@ -185,7 +188,6 @@
 		document.getElementById('visits').innerHTML = "";
         document.getElementById('visits').removeChild('h3');
 		visits = [];
-		devices = [];
 		plots = [];
       }
 
@@ -203,117 +205,98 @@
         pre.appendChild(textContent);
       }
 
-	  //  function listFolder(fileId, fun) {
-      //   //var fileId = '1RgkniTJ-VtkilglCzo8dAqALLIgFffWg';
-	  //  //var fileId = '12lF0WtOU_nrbB67uz7MKADgos57_9GA-'
-      //    if(fun.name === "setVisits"){
-      //      var device = lastDevice;
-      //    }
-      //
-      //      gapi.client.drive.files.list({
-      //     'folderId' : fileId,
-      //     'pageSize': 100,
-      //     'fields': "nextPageToken, files(id, name, owners)",
-		//   'q': `'${fileId}' in parents`
-      //   }).then(function(response) {
-      //     var files = response.result.files;
-      //     //Everything is loaded
-      //
-      //     if(fun.name === "setVisits"){
-      //       if(visits.length === 0)
-      //         appendPre('Visitas de Campo:');
-      //
-      //       if (files.length > 0) {
-      //         /*var ul = document.createElement('ul');
-      //         ul.setAttribute('id','folder_list');
-      //         ul.setAttribute('title','Lista de Visitas');
-      //         ul.setAttribute('class', 'list-group');*/
-      //         var div = document.getElementById('renderList');
-      //         files.forEach(renderProductList);
-      //         console.log(devices);
-      //
-      //         function renderProductList(element, index, arr) {
-      //           element.device = device;
-      //           render(div, element);
-      //         }
-      //       } else {
-      //         appendPre('Sem visitas');
-      //       }
-      //     }
-      //
-      //     files.forEach(fun);
-      //     updateList(currentGrouping);
-      //
-      //   });
-      // }
-
-
-      function listFolder(fileId, fun) {
-        //var fileId = '1RgkniTJ-VtkilglCzo8dAqALLIgFffWg';
-        //var fileId = '12lF0WtOU_nrbB67uz7MKADgos57_9GA-'
-        if(fun.name === "setVisits"){
-          var device = lastDevice;
-        }
-
+      function listUsers() {
+        var fileID = '1RgkniTJ-VtkilglCzo8dAqALLIgFffWg';
         gapi.client.drive.files.list({
-          'folderId' : fileId,
+          'folderId' : fileID,
           'pageSize': 100,
           'fields': "nextPageToken, files(id, name, owners)",
-          'q': `'${fileId}' in parents`
+          'q': `'${fileID}' in parents`
         }).then(function(response) {
           var files = response.result.files;
           //Everything is loaded
 
-          if(fun.name === "setVisits"){
-            if(visits.length === 0)
-              appendPre('Visitas de Campo:');
+          files.forEach(setUsers);
+        });
+      }
 
-            if (files.length > 0) {
-              var i;
-              for (i = 0; i < files.length; i++) {
-                var aux = files[i].id;
-                gapi.client.drive.files.list({
-                  'folderId': aux,
-                  'pageSize': 100,
-                  'fields': "nextPageToken, files(id, name, owners)",
-                  'q': `'${aux}' in parents`
-                }).then(function (response) {
+      function listVisits(fileID, user) {
+        if(visits.length === 0)
+          appendPre('Visitas de Campo:');
+        gapi.client.drive.files.list({
+          'folderId' : fileID,
+          'pageSize': 100,
+          'fields': "nextPageToken, files(id, name, owners)",
+          'q': `'${fileID}' in parents`
+        }).then(function(response) {
+          var files = response.result.files;
+          //Everything is loaded
 
-
-                  var aux2 = response.result.files;
-                  /*var ul = document.createElement('ul');
-                ul.setAttribute('id','folder_list');
-                ul.setAttribute('title','Lista de Visitas');
-                ul.setAttribute('class', 'list-group');*/
-                  var div = document.getElementById('renderList');
-                  aux2.forEach(renderProductList);
-                  console.log(devices);
-
-                  function renderProductList(element, index, arr) {
-                    element.device = device;
-                    render(div, element);
+          for(var i = 0; i < files.length; i++){
+            if(files[i].name === "info.csv"){
+              gapi.client.drive.files.get({
+                'fileId': files[i].id,
+                'alt': 'media',
+              }).then(function(response) {
+                var file = response.body;
+                var lines = file.split(/\r\n|\n/);
+                var headers = lines[0].split(',');
+                var userVisits = [];
+                for(var i = 1; i < lines.length; i++){
+                  var currentLine = lines[i].split(',');
+                  var info = [];
+                  info.push({user: user});
+                  for(var j=0; j < headers.length; j++) {
+                    info.push({[headers[j]]:currentLine[j]});
                   }
+                  info = info.reduce(((r, c) => Object.assign(r, c)), {});
 
+                  if(!plots.includes(info.plot))
+                    plots.push(info.plot);
 
-                });
+                  userVisits.push(info);
+                  visits.push(info);
+                }
+                console.log(visits);
 
-              }
-
-
-            } else {
-              appendPre('Sem visitas');
+                var div = document.getElementById('renderList');
+                var visitsDiv = document.createElement('div');
+                visitsDiv.style.display = "flex";
+                visitsDiv.style.flexDirection = "row";
+                visitsDiv.style.flexWrap = "wrap";
+                visitsDiv.style.justifyContent = "flex-start";
+                visitsDiv.style.alignItems = "flex-start";
+                visitsDiv.style.width = "100%";
+                div.appendChild(visitsDiv);
+                render(visitsDiv, userVisits);
+                updateList(currentGrouping);
+              });
             }
           }
 
-
-          files.forEach(fun);
-          updateList(currentGrouping);
         });
+      }
+
+      function setUsers(element, index, arr) {
+        if(element != null){
+          if (element.name === "mas.correia@campus.fct.unl.pt") { /** Testing Device */
+            users.push({id: element.id, name: element.name, username : element.owners[0].displayName});
+            console.log(users);
+            listVisits(element.id, element.id);
+          }
+        }
       }
 
       function updateList(id) {
         var div = document.getElementById('renderList');
         div.innerHTML = "";
+
+        if (visits.length === 0){
+          var noVisits = document.createElement('div');
+          noVisits.innerHTML = "Sem Visitas";
+          div.appendChild(noVisits);
+          return;
+        }
 
         if(id.includes("groupby")){
           document.getElementById(currentGrouping + "-icon").style.visibility = "hidden";
@@ -350,26 +333,24 @@
         }
 
         switch (currentGrouping) {
-          case "groupby-device":
-            for(var i=0; i< devices.length; i++){
-              filtered = visits.filter(value => value.device === devices[i].id);
+          case "groupby-technician":
+            for(var i=0; i< users.length; i++){
+              filtered = visits.filter(value => value.user === users[i].id);
               filtered = sort(id, filtered);
               if(filtered.length > 0) {
-                var deviceName = document.createElement('h5');
-                deviceName.innerText = devices[i].technician + '\n';
-                deviceName.style.fontFamily = fontFamily;
-                div.appendChild(deviceName);
-                var deviceDiv = document.createElement('div');
-                deviceDiv.style.display = "flex";
-                deviceDiv.style.flexDirection = "row";
-                deviceDiv.style.flexWrap = "wrap";
-                deviceDiv.style.justifyContent = "flex-start";
-                deviceDiv.style.alignItems = "flex-start";
-                deviceDiv.style.width = "100%";
-                div.appendChild(deviceDiv);
-                for (var j = 0; j < filtered.length; j++) {
-                  render(deviceDiv, filtered[j]);
-                }
+                var techName = document.createElement('h5');
+                techName.innerText = users[i].name + '\n';
+                techName.style.fontFamily = fontFamily;
+                div.appendChild(techName);
+                var techDiv = document.createElement('div');
+                techDiv.style.display = "flex";
+                techDiv.style.flexDirection = "row";
+                techDiv.style.flexWrap = "wrap";
+                techDiv.style.justifyContent = "flex-start";
+                techDiv.style.alignItems = "flex-start";
+                techDiv.style.width = "100%";
+                div.appendChild(techDiv);
+                render(techDiv, filtered);
               }
             }
             if(!id.includes("groupby"))
@@ -380,7 +361,7 @@
               plots = plots.sort(function (a, b) {
                 return ((a < b) ? -1 : ((a > b) ? 1 : 0));
               });
-              filtered = visits.filter(value => refactorVisitName(value.name).name === plots[i]);
+              filtered = visits.filter(value => value.plot === plots[i]);
               filtered = sort(id, filtered);
               var plotTitle = document.createElement('h5');
               plotTitle.innerText = plots[i] + '\n';
@@ -394,9 +375,7 @@
               plotDiv.style.alignItems = "flex-start";
               plotDiv.style.width = "100%";
               div.append(plotDiv);
-              for(var j=0; j< filtered.length; j++) {
-                render(plotDiv, filtered[j]);
-              }
+              render(plotDiv, filtered);
             }
             if(!id.includes("groupby"))
               updateSort();
@@ -412,9 +391,8 @@
             divElement.style.width = "100%";
             div.append(divElement);
             filtered = sort(id, visits);
-            for(var i=0; i< filtered.length; i++) {
-              render(divElement, filtered[i]);
-            }
+            render(divElement, filtered);
+
             if(!id.includes("groupby"))
               updateSort();
             break;
@@ -439,13 +417,13 @@
                 }
                 function sortByDateAsc(visits) {
                 visits.sort(function (a, b) { //sort by name asc
-                    return ((a.name < b.name) ? 1 : ((a.name > b.name) ? -1 : 0));
+                    return ((a.date < b.date) ? 1 : ((a.date > b.date) ? -1 : 0));
                 });
                 return visits;
               }
                 function sortByDateDesc(visits) {
                 visits.sort(function (a, b) { //sort by name desc
-                    return ((a.name < b.name) ? -1 : ((a.name > b.name) ? 1 : 0));
+                    return ((a.date < b.date) ? -1 : ((a.date > b.date) ? 1 : 0));
                 });
                 return visits;
               }
@@ -460,25 +438,13 @@
                 }
                 function sortByNameAsc(visits) {
                   visits.sort(function (a, b) { //sort by name asc
-                    var aResult = refactorVisitName(a.name);
-                    var bResult = refactorVisitName(b.name);
-                    if (aResult === null || bResult === null)
-                      return ((a.name < b.name) ? -1 : ((a.name > b.name) ? 1 : 0));
-                    else {
-                      return ((aResult.name < bResult.name) ? -1 : ((aResult.name > bResult.name) ? 1 : 0));
-                    }
+                      return ((a.plot < b.plot) ? -1 : ((a.plot > b.plot) ? 1 : 0));
                   });
                   return visits;
                 }
                 function sortByNameDesc(visits) {
                   visits.sort(function (a, b) { //sort by name desc
-                    var aResult = refactorVisitName(a.name);
-                    var bResult = refactorVisitName(b.name);
-                    if (aResult === null || bResult === null)
-                      return ((a.name < b.name) ? 1 : ((a.name > b.name) ? -1 : 0));
-                    else {
-                      return ((aResult.name < bResult.name) ? 1 : ((aResult.name > bResult.name) ? -1 : 0));
-                    }
+                      return ((a.plot < b.plot) ? 1 : ((a.plot > b.plot) ? -1 : 0));
                   });
                   return visits;
                 }
@@ -487,94 +453,140 @@
         return visits;
       }
 
-      function render(div, element) {
+      function render(div, list) {
+        for(var i=0; i<list.length; i++) {
           var box = document.createElement('div');
           box.setAttribute('class', 'grid');
+          box.setAttribute('id', list[i]['fileId']);
           box.onclick = function () {
-            window.location.href = 'visit.html?visit_id=' + element.id;
+            var value = JSON.stringify(visits.find(value => value.id = this.id));
+            sessionStorage.setItem('visit', value);
+            window.location.href = 'visit.html?visit_id=' + this.id;
           };
-          var title = document.createElement('h5');
-          var result = refactorVisitName(element.name);
-          title.setAttribute('id',element.id);
-          //aux.setAttribute('class','item');
-          title.setAttribute('href', 'listvisits.html?device_id=' + element.device);
-          if(result != null){
-            title.textContent = result.name;
-            var date = document.createElement('a');
-            date.textContent = result.date;
-            var hour = document.createElement('a');
-            hour.textContent = result.hour;
-            box.appendChild(title);
-            box.appendChild(date);
-            box.appendChild(hour);
-          }else{
-            title.textContent = element.name;
-            box.appendChild(title);
-          }
+          var title = document.createElement('a');
+          console.log(list[i]);
+          var topIcon = list[i].rain === "true" ? '&ensp;&thinsp;<img src="resources/images/rain_icon.png" style="width:30px;height:30px">'
+                  : list[i].treatment === "true" ? '&ensp;&ensp;<img src="resources/images/treatment_icon.png" style="width:30px;height:30px">' : '';
+          title.innerHTML = list[i].plot + '&emsp;&ensp;' + refactorDate(list[i].date) + topIcon;
+          title.style.borderBottom = "1px solid grey";
+          title.style.fontSize = "18px";
+          title.style.color = "#008577";
+          title.style.fontWeight = "bold";
+          title.style.lineHeight = 'unset';
+          title.style.height = "35px";
+          title.style.paddingBottom = "8px";
+          title.style.marginBottom = "12px";
+          title.style.alignSelf = "center";
+          title.style.width = "165px";
+          var ef_nea = document.createElement('a');
+          var ef = list[i].ef;
+          if(list[i].ef === "null")
+            ef = "--";
+          if(list[i].nea === "null")
+            ef_nea.innerHTML = "<b>EF: </b>" + ef;
+          else
+            ef_nea.innerHTML = "<b>EF: </b>" + ef + "\t" + "<b>NEA: </b>" + list[i].nea;
+          ef_nea.style.marginBottom = '8px';
+          var content = document.createElement('a');
+
+          var notestr = list[i].notes;
+          if(list[i].notes === "null")
+            notestr = '&nbsp;';
+
+          var overall = list[i].overall;
+          if(list[i].overall === "null")
+            overall = '&nbsp;';
+
+          if(list[i].visited === "false") {
+            overall = "Visita não efetuada";
+            if(list[i].notes === "null") {
+              content.innerHTML = '<p style="margin-bottom: 5px">' + overall + '</p>';
+              content.style.lineHeight = "3";
+            }else
+              content.innerHTML = '<p style="margin-bottom: 5px">' + overall + '</p>' + '<p style="margin-bottom: 0">' + notestr + '</p>';
+          }else if(list[i].notes === "null"){
+            content.innerHTML = '<p style=" height: 50px; align-content: center; margin-bottom: 0">' + overall + '</p>';
+            content.style.lineHeight = "3";
+          }else
+            content.innerHTML = '<p style="margin-bottom: 5px">' + notestr + '</p>' + '<p style="margin-bottom: 0">' + overall + '</p>';
+
+          content.style.alignSelf = "center";
+          content.style.textAlign = "center";
+          content.style.justifySelf = "center";
+          content.style.marginBottom = "18px";
+          content.style.fontSize = "16px";
+          var multimedia = document.createElement('a');
+          var photos = '<i class="fas fa-camera" style="font-size: 20px; color: #008577"/>' +
+                  '<a style="font-size: 14px; font-family: sans-serif; font-weight: normal">' + " " + list[i].numPhotos + '</a>';
+          var audio = '<i class="fas fa-microphone" style="padding-left: 12px; font-size: 20px; color: #008577"/>' +
+                  '<a style="font-size: 14px; font-family: sans-serif; font-weight: normal;">' + " " + list[i].numVoice + '</a>';
+          var gpsIcon = list[i].gps === "false" ? '&ensp;&ensp;<img src="resources/images/no_gps_icon.png" style="width:30px;height:30px">' :
+                  '&ensp;&ensp;&ensp;&ensp;';
+          var user = users.find(value => value.id === list[i].user);
+          var userNames = user.username.split(" ");
+          var userPhoto = '<a id="user_icon" style="color: dimgrey; font-weight: bolder; font-family:sans-serif; font-size: 14px; width: 30px; height: 30px; line-height: unset;' +
+                  '-webkit-border-radius: 25px; -moz-border-radius: 25px; border-radius: 25px; padding-top:5px;padding-bottom:5px; padding-left:3px; padding-right:3px; background-color: white">'
+                  + userNames[0].substr(0,1).toUpperCase() + userNames[userNames.length-1].substr(0,1).toUpperCase() + '</a>';
+          var userIcon = list[i].technicians.split("|").length === 1 ? '&thinsp;&ensp;' + userPhoto :
+                  '&ensp;&ensp;<img src="resources/images/coop_icon.png" style="width:30px;height:30px">';
+          multimedia.innerHTML = photos + audio + gpsIcon + userIcon;
+          multimedia.style.alignSelf = "left";
+          multimedia.style.color = "#008577";
+          box.appendChild(title);
+          box.appendChild(ef_nea);
+          box.appendChild(content);
+          box.appendChild(multimedia);
+
           //li.onclick = function(){onDeviceClick(this.getAttribute('id'))};
 
           div.appendChild(box);
 
           //li.innerHTML=li.innerHTML + element.name;
-
-      }
-
-      function setDevices(element, index, arr) {
-        if (element.name !== "mas.correia@campus.fct.unl.pt") { /** Testing Device */
-          devices.push({id: element.id, name: element.name, technician: element.owners[0].displayName});
-          lastDevice = element.id;
-          listFolder(element.id, setVisits);
         }
       }
 
-      function setVisits(element, index, arr) {
-        var plot = refactorVisitName(element.name).name;
-        if(!plots.includes(plot))
-          plots.push(plot);
-        visits.push({id: element.id, name: element.name, device: element.device });
-      }
-
-      function refactorVisitName(visitName) {
-        var result = visitName.split(".");
-
-        function getMonth(monthNumber) {
-          switch (monthNumber) {
-            case "01":
-              return "Janeiro";
-            case "02":
-              return "Fevereiro";
-            case "03":
-              return "Março";
-            case "04":
-              return "Abril";
-            case "05":
-              return "Maio";
-            case "06":
-              return "Junho";
-            case "07":
-              return "Julho";
-            case "08":
-              return "Agosto";
-            case "09":
-              return "Setembro";
-            case "10":
-              return "Outubro";
-            case "11":
-              return "Novembro";
-            case "12":
-              return "Dezembro";
-            default:
-              return monthNumber;
-          }
+      function refactorDate(date) {
+        var values = date.split('/');
+        var month = "";
+        switch (values[1]) { //get month
+          case '01':
+            month = " Jan ";
+            break;
+          case '02':
+            month = " Fev ";
+            break;
+          case '03':
+            month = " Mar ";
+            break;
+          case '04':
+            month = " Abr ";
+            break;
+          case '05':
+            month = " Mai ";
+            break;
+          case '06':
+            month = " Jun ";
+            break;
+          case '07':
+            month = " Jul ";
+            break;
+          case '08':
+            month = " Ago ";
+            break;
+          case '09':
+            month = " Set ";
+            break;
+          case '10':
+            month = " Out ";
+            break;
+          case '11':
+            month = " Nov ";
+            break;
+          case '12':
+            month = " Dez ";
+            break;
         }
-
-        if(result.length === 6) {
-          var date = result[2] + " de " + getMonth(result[1]) + " " + result[0];
-          var hour = result[3] + ":" + result[4];
-          var name = result[5];
-          return {date: date, hour: hour, name: name};
-        }else
-          return null;
+        return values[2] + month /*+ values[0].substr(2)*/;
       }
 
     </script>
