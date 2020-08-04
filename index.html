@@ -11,12 +11,12 @@
 
   <body>
     <div class="header">
-      <img src="resources/images/fitoagro_logo.png" style="height: 50px; align-self: center; cursor: pointer; margin-right: 32px">
-      <div id="visits_tab" onclick="window.location.reload()" style="cursor:pointer; padding:8px; font-size: 20px; text-decoration: underline; color: white">Visitas</div>
-      <div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; padding:8px; font-size: 20px; color: white">Estatísticas</div>
+      <img src="resources/images/fitoagro_logo.png" style="height: 40px; padding-bottom: 4px; align-self: center; margin-right: 64px">
+      <div id="visits_tab" onclick="window.location.reload()" style="visibility: hidden; cursor:pointer; margin-right: 20px; padding:6px; font-size: 18px; text-decoration: underline; color: white">Visitas</div>
+      <div id="stats_tab" onclick="window.location.href = 'stats.html'" style="visibility: hidden; cursor:pointer; padding:6px; font-size: 18px; color: white">Estatísticas</div>
       <div style="margin-left: auto; align-self: center">
           <!--Add buttons to initiate auth sequence and sign out-->
-          <div id="user_name"> </div>
+          <div id="user_name" style="font-size: 22px"> </div>
           <button type="button" class="btn light-button" style="background-color: lightgray; color: black; display: none; float: right;  " id="signout_button">Logout</button>
       </div>
     </div>
@@ -152,7 +152,10 @@
 
           var currentUser = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
           fullName = currentUser.getName();
-          
+
+          document.getElementById("visits_tab").style.visibility = "visible";
+          document.getElementById("stats_tab").style.visibility = "visible";
+
           authorizeButton.style.display = 'none';
           loginForm.style.display = 'none';
           signoutButton.style.display = 'inline-block';
@@ -162,6 +165,8 @@
           content.style.display = 'flex';
           listUsers();
         } else {
+          document.getElementById("visits_tab").style.visibility = "hidden";
+          document.getElementById("stats_tab").style.visibility = "hidden";
           authorizeButton.style.display = 'inline-block';
           loginForm.style.display = 'flex';
           userName.innerText ="";
@@ -457,10 +462,13 @@
         for(var i=0; i<list.length; i++) {
           var box = document.createElement('div');
           box.setAttribute('class', 'grid');
-          box.setAttribute('id', list[i]['fileId']);
+          box.setAttribute('id', list[i].fileId);
           box.onclick = function () {
-            var value = JSON.stringify(visits.find(value => value.id = this.id));
-            sessionStorage.setItem('visit', value);
+            var visit = visits.find(value => value.fileId === this.id);
+            sessionStorage.setItem('visit', JSON.stringify(visit));
+            sessionStorage.setItem('users', JSON.stringify(users));
+            var plotVisits = visits.filter(value => value.plot === visit.plot);
+            sessionStorage.setItem('plotVisits', JSON.stringify(plotVisits));
             window.location.href = 'visit.html?visit_id=' + this.id;
           };
           var title = document.createElement('a');

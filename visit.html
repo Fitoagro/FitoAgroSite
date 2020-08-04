@@ -6,6 +6,8 @@
 	<meta charset=utf-8 />
 	<title>Informação da visita</title>
 	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<script type='text/javascript' src='https://eu-west-1a.online.tableau.com/javascripts/api/viz_v1.js'></script>
+
 	<script src="https://kit.fontawesome.com/16512b04b3.js" crossorigin="anonymous"></script>
 
 	<script src='https://api.mapbox.com/mapbox.js/v3.3.0/mapbox.js'></script>
@@ -22,108 +24,124 @@
 <body>
 
 <div class="header">
-	<img src="resources/images/fitoagro_logo.png" style="height: 50px; align-self: center; cursor: pointer; margin-right: 32px">
-	<div id="visits_tab" onclick="window.location.href = 'index.html'" style="cursor:pointer; padding:8px; font-size: 20px; color: white">Visitas</div>
-	<div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; padding:8px; font-size: 20px; color: white">Estatísticas</div>
+	<img src="resources/images/fitoagro_logo.png" style="height: 40px; padding-bottom: 4px; align-self: center; margin-right: 64px">
+	<div id="visits_tab" onclick="window.location.href = 'index.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 18px; color: white">Visitas</div>
+	<div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; padding:6px; font-size: 18px; color: white">Estatísticas</div>
 	<div style="margin-left: auto; align-self: center">
 		<!--Add buttons to initiate auth sequence and sign out-->
-		<div id="user_name"> </div>
+		<div id="user_name"  style="font-size: 22px"> </div>
 		<button onclick="handleSignoutClick()" type="button" class="btn light-button" style="background-color: lightgray; color: black; display: inline-block; float: right;  " id="signout_button">Logout</button>
 	</div>
 </div>
 
-<div style=" display: inline-flex; float: left; height: 50px; width:50px; position: sticky; top: 75px; left: 3%; z-index: 2; cursor: pointer">
-	<i class="fas fa-arrow-circle-left" style="font-size: 50px; color: #00574B;margin-top: 30px" onclick="window.history.back()"></i>
+<div style="display: flex; flex-direction: row; align-items: center; margin-top: 16px; padding-bottom: 8px; border-bottom: 1px solid lightgrey;
+margin-left: 32px; margin-right: 32px">
+	<span  id="last_visit_area" style="margin-right:auto; cursor: default">
+		<i class="fas fa-chevron-left" style="font-size: 20px;"></i>&emsp;
+		<a id="last_visit" style="width: 170px;font-size: 15px;"></a>
+	</span>
+	<h4 id="plot_name" style="text-align: center; color: #008577; font-weight:bold;"></h4>
+	<span id="next_visit_area" style="margin-left: auto; cursor: default">
+		<a id="next_visit" style="font-size: 15px; width: 170px; text-align: right"></a>&emsp;
+		<i class="fas fa-chevron-right" style="font-size: 20px;"></i>
+	</span>
 </div>
 
-<div class="content" style="display: flex; margin-left: 10%; margin-right: 10%">
+<div class="content" style="display: flex; margin-left: 2%; margin-right: 2%">
 <div id="info" style="display: flex; flex-direction: row;">
 
-	<div style="width: 100%; height: 100%; display: flex; flex-direction: row; flex-wrap:wrap; justify-content: space-between; justify-items: flex-start; padding: 16px 24px 0 24px;">
+	<div style="width: 100%; height: 100%; display: flex; flex-direction: row; flex-wrap:wrap; justify-content: space-between; justify-items: flex-start; padding: 16px 24px 0 20px;">
 
-			<div style="flex-direction: column; width: fit-content; flex-wrap: wrap">
+			<div style="flex-direction: column; min-width: 55%; flex-wrap: wrap;">
 
-				<h1 id="plot_name" ></h1>
+				<div style="display: flex; flex-direction: row">
+					<span style="width: 40%">
+						<a id="begin_text" style="font-weight: bold; font-size: 18px; color: black">Início:</a>&emsp;
+						<a id="begin"></a>
+					</span>
 
-				<br>
-				<div style="display: flex; flex-direction: row; align-items: baseline;">
-					<i class="fas fa-camera" style="font-size: 20px; color: #008577"></i>
-					&nbsp;&nbsp;
-					<a id="number_photos" style="font-size: 20px"></a>
-
-					<i class="fas fa-microphone" style="margin-left: 20px; font-size: 20px; color: #008577"></i>
-					&nbsp;&nbsp;
-					<a id="number_voice_records" style="font-size: 20px"></a>
+					<span style="width: 40%; margin-left: 10%">
+						<a id="duration_text" style="font-weight: bold; font-size: 18px; color: black">Duração:</a>&emsp;
+						<a id="duration"></a>
+					</span>
 				</div>
-				<br><br>
+				<div style="display: flex; flex-direction: row; margin-top: 10px">
+					<span style="width: 40%">
+						<a style="font-weight: bold; font-size: 18px; color: black">Técnico:</a>&emsp;
+						<a id="technician"></a>
+					</span>
 
-				<a id="begin_text" style="font-weight: bold; font-size: 22px; color: #008577">Início:</a>
-				&nbsp;&nbsp;
-				<a id="begin"></a>
+					<span style="width:40%; margin-left: 10%">
+						<a style="font-weight: bold; font-size: 18px; color: black">E. Fenológico:</a>&emsp;
+						<a id="ef"></a>
+					</span>
+				</div>
 
-				<br><br>
-
-				<a id="duration_text" style="font-weight: bold; font-size: 22px; color: #008577">Duração:</a>
-				&nbsp;&nbsp;
-				<a id="duration"></a>
-
-				<br>
-				<br>
-
-				<div  id="note_gallery">
-					<a style="font-weight: bold; font-size: 22px; color: #008577"> Notas: </a>
-					&nbsp;&nbsp;
+				<div  id="note_gallery" style="margin-top: 10px;">
+					<a style="font-weight: bold; font-size: 18px; color: black"> Notas: </a>&emsp;
 					<a id="no_notes"> Sem notas. </a>
 					<ul id= "notes_ul"/>
 				</div>
+				<!--
 				<div id='notes' style="display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end">
 					<textarea placeholder="Adicionar notas..." id="note" rows="4" cols="50"></textarea>
 					<button class="btn light-button" style="margin-top:6px;width: fit-content; background-color: lightgrey; color: #00574B" id="add_note">Submeter <i class="fas fa-paper-plane"></i></button>
 				</div>
+				-->
+				<div class='tableauPlaceholder' style='width: 600px; height: 400px; margin-bottom: 20px'>
+					<object class='tableauViz' width='600' height='400' style='display:none;'>
+						<param name='host_url' value='https%3A%2F%2Feu-west-1a.online.tableau.com%2F' />
+						<param name='site_root' value='&#47;t&#47;teachingandresearchinginteractivedatavisualizationdifct' />
+						<param name='name' value='AnaliticaObservaes&#47;CapturasObservaesporinimigo' />
+						<param name='tabs' value='no' />
+						<param name='toolbar' value='no' />
+						<param name='showAppBanner' value='false' />
+					</object>
+				</div>
 
 
 			</div>
 
-			<div style="display: flex; flex-direction: column; justify-content: center; max-width: 600px; width: 500px; height: 500px;">
+			<div style="display: flex; flex-direction: column; justify-content: center; min-width:45%; max-width: 600px; height: max-content;">
 
-				<div id="map" style="margin-top: 16px;"></div>
-				<div id="menu">
-					<input
-							id="streets-v11"
-							type="radio"
-							name="rtoggle"
-							value="streets"/>
-					<label for="streets">streets</label>
-					&nbsp;&nbsp;
+				<div style="display: flex; flex-direction: row; align-items: center;">
+					<a style="font-size: 18px; color: #008577; font-weight: bold">Multimédia: </a>
+					<span style="margin-left: auto; color: #008577">
+						<i class="fas fa-camera" style="font-size: 20px; color: #008577"></i>
+						<a id="number_photos" style="font-size: 16px; font-weight: bold"></a>
+
+						<i class="fas fa-microphone" style="margin-left: 20px; font-size: 20px; color: #008577"></i>
+						<a id="number_voice_records" style="font-size: 16px; font-weight: bold"></a>
+					</span>
+				</div>
+				<div style="display: flex; flex-direction: row; align-items: center;">
+
+					<i class="fas fa-chevron-circle-left" style="font-size: 20px"></i>
+
+						<div  class="gallery" id="photo_gallery" >
+						</div>
+						<br>
+						<div  class="gallery" id="audio_gallery">
+						</div>
+
+					<i class="fas fa-chevron-circle-right" style="font-size: 20px"></i>
+				</div>
+
+				<div id="menu" style="margin-top: 16px;">
 					<input id="light-v10" type="radio" name="rtoggle" value="light" />
-					<label for="light">light</label>
-					&nbsp;&nbsp;
-					<input id="dark-v10" type="radio" name="rtoggle" value="dark" />
-					<label for="dark">dark</label>
+					<label for="light">Básico</label>
 					&nbsp;&nbsp;
 					<input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
-					<label for="outdoors">outdoors</label>
+					<label for="outdoors">Exterior</label>
 					&nbsp;&nbsp;
 					<input id="satellite-v9" type="radio" name="rtoggle" value="satellite"
 						   checked="checked" />
-					<label for="satellite">satellite</label>
+					<label for="satellite">Satélite</label>
 				</div>
+				<div id="map"></div>
 			</div>
 	</div>
-</div>
-	<div id="gallery" class="column" style=" display: none; width: 100%; margin-top: 48px">
 
-		<div  class="gallery" id="photo_gallery" >
-			<p style="font-weight: bold; font-size: 22px; color: #008577"> Fotografias </p>
-		</div>
-
-		<br>
-
-		<div  class="gallery" id="audio_gallery">
-			<p style="font-weight: bold; font-size: 22px; color: #008577"> Anotações Vocais </p>
-		</div>
-	</div>
-</div>
 
 <script type='text/javascript'>
 
@@ -143,6 +161,10 @@
 		gapi.auth2.getAuthInstance().signOut();
 		window.location.href = 'index.html';
 	}
+
+	var users = [];
+	var visit = [];
+	var plotVisits = [];
 
 	var mFocus;
 	var mPoints;
@@ -181,7 +203,7 @@
 
 
 
-	var input = document.getElementById('note');
+	/*var input = document.getElementById('note');
 	var button = document.getElementById('add_note');
 
 	button.onclick = function(){
@@ -270,7 +292,7 @@
 
 			input.value = '';
 		}
-	}
+	}*/
 
 
 
@@ -381,7 +403,8 @@
 			user.innerHTML = userName;
 			user.style.display = 'inline-block';
 			listFolder();
-		}
+		}else
+			window.location.href = "index.html";
 	}
 
 	//		  function appendPre(message) {
@@ -623,7 +646,7 @@
 					if(idparcela == plot_id){
 
 
-						document.getElementById('plot_name').innerHTML = plots_jsons.features[j].properties['nomeparcela'];
+						/*document.getElementById('plot_name').innerHTML = plots_jsons.features[j].properties['nomeparcela'];
 
 						document.getElementById('number_photos').innerHTML = json['number_photos'];
 
@@ -656,7 +679,7 @@
 
 						document.getElementById('duration').innerHTML = msToTime(difference);
 
-						document.getElementById("info").style.visibility = "visible";
+						document.getElementById("info").style.visibility = "visible";/*/
 
 						var coordinates =  plots_jsons.features[j].geometry.coordinates;
 						var toFocus = coordinates[0][0];
@@ -707,7 +730,7 @@
 					var min = name.substring(10,12);
 
 
-					var title = day + "/" + month + "/" + year + " " + hour + ":" + min;
+					var title = /*day + "/" + month + "/" + year + " " + */hour + ":" + min;
 
 					var image_container = document.createElement('a');
 					image_container.href = 'https://drive.google.com/uc?export=view&id=' + files[i].id;
@@ -744,7 +767,7 @@
 			if (files && files.length > 0) {
 				var div = document.getElementById("audio_gallery");
 
-				div.style.display = "block"
+				div.style.display = "block";
 
 				for(var i = 0; i < files.length; i++){
 					files_map[files[i].name] = files[i].id;
@@ -762,6 +785,8 @@
 						});*/
 
 					var a = document.createElement('a');
+					a.style.fontWeight = 'bold';
+					a.style.paddingLeft = '150px';
 					var br1 = document.createElement('br');
 					var br2 = document.createElement('br');
 					var br3 = document.createElement('br');
@@ -777,7 +802,7 @@
 					var hour = time.substring(0,2);
 					var minutes = time.substring(2,4);
 
-					a.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;" + day_of_month + "/" + month + "/" + year + " " + hour + ":" + minutes;
+					a.innerHTML = /*day_of_month + "/" + month + "/" + year + " " +*/ hour + ":" + minutes;
 
 
 					var audio = document.createElement('audio');
@@ -786,11 +811,11 @@
 					audio.src      = 'https://drive.google.com/uc?export=download&id=' + files[i].id;
 					audio.type     = 'audio/mp3';
 
-					div.appendChild(a);
-					div.appendChild(br1);
 					div.appendChild(audio);
 					div.appendChild(br2);
 					div.appendChild(br3);
+					div.appendChild(a);
+					div.appendChild(br1);
 
 
 				}
@@ -882,8 +907,49 @@
 					getPhotos(photo_id);
 				if(audio_id != '')
 					getAudios(audio_id);
-				if(json_id != '')
+				if(json_id != '') {
 					getVisitJSON(json_id);
+					// TODO: se o session storage tiver vazio, ir buscar ficheiro e carregar visitas do pob
+					users = [];
+					users = JSON.parse(sessionStorage.getItem("users"));
+					visit = [];
+					visit = JSON.parse(sessionStorage.getItem("visit"));
+					plotVisits = [];
+					plotVisits = JSON.parse(sessionStorage.getItem("plotVisits"));
+					var visitIndex = plotVisits.findIndex(value => value.fileId === visit.fileId);
+					var lastVisit = (visitIndex === 0 ? "Sem visita anterior" : refactorDate(plotVisits[visitIndex-1].date));
+					var nextVisit = (visitIndex === plotVisits.length-1 ? "Sem visita seguinte" : refactorDate(plotVisits[visitIndex+1].date));
+					document.getElementById('plot_name').innerHTML = visit.plotName + ` (${visit.plot})`;
+					document.getElementById('last_visit').innerHTML = lastVisit;
+					document.getElementById('last_visit_area').fileId = (lastVisit === "Sem visita anterior" ? null : plotVisits[visitIndex-1].fileId);
+					document.getElementById('last_visit_area').style.color = (lastVisit === "Sem visita anterior" ? 'darkgrey' : 'black');
+					document.getElementById('last_visit_area').style.cursor = (lastVisit === "Sem visita anterior" ? 'default' : 'pointer');
+					document.getElementById('last_visit_area').onclick = function(){
+						if(this.fileId != null){
+							sessionStorage.setItem("visit", JSON.stringify(plotVisits.find(value => value.fileId === this.fileId)));
+							window.location.href = 'visit.html?visit_id=' + this.fileId;
+						}
+					};
+					document.getElementById('next_visit').innerHTML = nextVisit;
+					document.getElementById('next_visit_area').style.color = (nextVisit === "Sem visita seguinte" ? 'darkgrey' : 'black');
+					document.getElementById('next_visit_area').style.cursor = (nextVisit === "Sem visita seguinte" ? 'default' : 'pointer');
+					document.getElementById('next_visit_area').fileId = (nextVisit === "Sem visita seguinte" ? null : plotVisits[visitIndex+1].fileId);
+					document.getElementById('next_visit_area').onclick = function(){
+						if(this.fileId != null){
+							sessionStorage.setItem("visit", JSON.stringify(plotVisits.find(value => value.fileId === this.fileId)));
+							window.location.href = 'visit.html?visit_id=' + this.fileId;
+						}
+					};
+					document.getElementById('number_photos').innerHTML = visit.numPhotos;
+					document.getElementById('number_voice_records').innerHTML = visit.numVoice;
+					document.getElementById('begin').innerHTML = refactorDate(visit.date) + " às " + visit.tBegin;
+					document.getElementById('duration').innerHTML = secondsToTime(visit.duration);
+					console.log(users);
+					document.getElementById('technician').innerHTML = users.find(value => value.id === visit.user).username;
+					document.getElementById('ef').innerHTML = visit.ef;
+					document.getElementById("info").style.visibility = "visible";
+
+				}
 				if(gpx_id != '')
 					getGPX(gpx_id);
 
@@ -894,6 +960,69 @@
 				appendPre('No files found.');
 			}
 		});
+	}
+
+	function secondsToTime(seconds) {
+		if(seconds < 60)
+			return seconds + " segundos";
+		else {
+			var minutes = Math.round(seconds / 60);
+			if(minutes < 60)
+				return minutes + " minutos";
+			else{
+				var hours = Math.trunc(minutes / 60);
+				if(Math.round(minutes - hours*60) > 0)
+					return hours + " horas e " + Math.round(minutes - hours*60) + " minutos";
+				else
+					return hours + " horas";
+			}
+
+		}
+	}
+
+
+	function refactorDate(date) {
+		var values = date.split('/');
+		var month = "";
+		switch (values[1]) { //get month
+			case '01':
+				month = " Jan ";
+				break;
+			case '02':
+				month = " Fev ";
+				break;
+			case '03':
+				month = " Mar ";
+				break;
+			case '04':
+				month = " Abr ";
+				break;
+			case '05':
+				month = " Mai ";
+				break;
+			case '06':
+				month = " Jun ";
+				break;
+			case '07':
+				month = " Jul ";
+				break;
+			case '08':
+				month = " Ago ";
+				break;
+			case '09':
+				month = " Set ";
+				break;
+			case '10':
+				month = " Out ";
+				break;
+			case '11':
+				month = " Nov ";
+				break;
+			case '12':
+				month = " Dez ";
+				break;
+		}
+		return values[2] + month /*+ values[0].substr(2)*/;
 	}
 
 </script>
