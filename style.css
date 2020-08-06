@@ -20,8 +20,8 @@ body{
     padding: 16px;
     display: none;
     flex-direction: column;
-    margin-left: 8%;
-    margin-right: 8%;
+    margin-left: 5%;
+    margin-right: 5%;
 }
 
 h3, h6{
@@ -59,7 +59,7 @@ h3, h6{
     opacity: 0.7;
 }
 
-#map { position:relative; height: 300px; min-height: 200px; top:-40px; bottom:0; width:100%; }
+#map { position:relative; height: 300px; min-height: 300px; top:-40px; bottom:0; width:100%; }
 
 #info { height: calc(90% - 100px); top:0px; left:0; overflow: hidden; width:100%; visibility: hidden; }
 

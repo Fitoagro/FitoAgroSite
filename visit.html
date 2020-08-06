@@ -114,7 +114,7 @@ margin-left: 32px; margin-right: 32px">
 						<a id="number_voice_records" style="font-size: 16px; font-weight: bold"></a>
 					</span>
 				</div>
-				<div style="display: flex; flex-direction: row; align-items: center;">
+				<div id='gallery' style="display: flex; flex-direction: row; align-items: center;">
 
 					<i class="fas fa-chevron-circle-left" style="font-size: 20px"></i>
 
@@ -299,10 +299,10 @@ margin-left: 32px; margin-right: 32px">
 	function reloadMap(){
 
 		if(map.getLayer('plot'))
-			map.removeLayer('plot')
+			map.removeLayer('plot');
 
 		if(map.getLayer('route'))
-			map.removeLayer('route')
+			map.removeLayer('route');
 
 
 		if(!map.getSource('plot'))
@@ -425,7 +425,7 @@ margin-left: 32px; margin-right: 32px">
 		this.mFocus = toFocus;
 		this.mPlot = plot;
 
-		map.flyTo({ center: toFocus, zoom: 16, speed: 10. });
+		map.flyTo({ center: toFocus, zoom: 15, speed: 10. });
 
 		var layers = map.getStyle().layers;
 
@@ -698,7 +698,7 @@ margin-left: 32px; margin-right: 32px">
 		gapi.client.drive.files.list({
 			'folderId' : id,
 			'pageSize': 100,
-			'fields': "nextPageToken, files(id, name)",
+			'fields': "nextPageToken, files(id, name, hasThumbnail, thumbnailLink)",
 			'q': `'${id}' in parents`
 		}).then(function(response) {
 			var files = response.result.files;
@@ -709,6 +709,22 @@ margin-left: 32px; margin-right: 32px">
 
 					files_map[files[i].name] = files[i].id;
 
+                    var imgContainer = document.createElement('a');
+
+                    var a = document.createElement('a');
+                    a.style.fontWeight = 'bold';
+                    a.style.paddingLeft = '70px';
+
+                    var time = files[i].name.split("_")[5];
+                    var hour = time.substring(0,2);
+                    var min = time.substring(2,4);
+                    a.innerHTML = hour + ":" + min;
+
+
+                    div.appendChild(imgContainer);
+                    div.appendChild(document.createElement('br'));
+                    div.appendChild(a);
+
 					gapi.client.drive.files.get({
 						'fileId': files[i].id,
 						'alt': 'media',
@@ -716,17 +732,18 @@ margin-left: 32px; margin-right: 32px">
 						var b64Response = btoa(response.body);
 
 						var outputImg = document.createElement('img');
-						if(outputImg && outputImg.style) {
-							outputImg.style.width = '100px';
-						}
 						outputImg.src = 'data:image/png;base64,'+b64Response;
-						outputImg.addEventListener("click", function (e) {
+                        outputImg.setAttribute( "class", 'image_thumbnail');
+                        outputImg.addEventListener("click", function (e) {
 							var w = window.open("");
 							var aux = document.createElement('img');
 							aux.src = 'data:image/png;base64,'+b64Response;
 							w.document.write(aux.outerHTML);
 						});
-						div.appendChild(outputImg);
+						outputImg.style.objectFit = 'cover';
+
+                        imgContainer.appendChild(outputImg);
+
 					});
 
 					// var name = files[i].name.substring(6,files[i].name.length).replace('_','');
@@ -775,6 +792,7 @@ margin-left: 32px; margin-right: 32px">
 			if (files && files.length > 0) {
 				var div = document.getElementById("audio_gallery");
 
+				div.style.height = "180px";
 				div.style.display = "block";
 
 				for(var i = 0; i < files.length; i++){
@@ -795,9 +813,6 @@ margin-left: 32px; margin-right: 32px">
 					var a = document.createElement('a');
 					a.style.fontWeight = 'bold';
 					a.style.paddingLeft = '150px';
-					var br1 = document.createElement('br');
-					var br2 = document.createElement('br');
-					var br3 = document.createElement('br');
 
 					var name = files[i].name.split("_");
 
@@ -819,11 +834,13 @@ margin-left: 32px; margin-right: 32px">
 					audio.src      = 'https://drive.google.com/uc?export=download&id=' + files[i].id;
 					audio.type     = 'audio/mp3';
 
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createElement('br'));
 					div.appendChild(audio);
-					div.appendChild(br2);
-					div.appendChild(br3);
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createElement('br'));
 					div.appendChild(a);
-					div.appendChild(br1);
 
 
 				}
@@ -960,9 +977,6 @@ margin-left: 32px; margin-right: 32px">
 				}
 				if(gpx_id != '')
 					getGPX(gpx_id);
-
-				if(photo_id != '' || audio_id != '')
-					document.getElementById("gallery").style.display = "block";
 
 			} else {
 				appendPre('No files found.');
