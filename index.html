@@ -245,10 +245,10 @@
               }).then(function(response) {
                 var file = response.body;
                 var lines = file.split(/\r\n|\n/);
-                var headers = lines[0].split(',');
+                var headers = lines[0].split('|');
                 var userVisits = [];
                 for(var i = 1; i < lines.length; i++){
-                  var currentLine = lines[i].split(',');
+                  var currentLine = lines[i].split('|');
                   var info = [];
                   info.push({user: user});
                   for(var j=0; j < headers.length; j++) {
@@ -474,7 +474,7 @@
           var title = document.createElement('a');
           console.log(list[i]);
           var topIcon = list[i].rain === "true" ? '&ensp;&thinsp;<img src="resources/images/rain_icon.png" style="width:30px;height:30px">'
-                  : list[i].treatment === "true" ? '&ensp;&ensp;<img src="resources/images/treatment_icon.png" style="width:30px;height:30px">' : '';
+                  : list[i].treatment === "true" ? '&ensp;&thinsp;<img src="resources/images/treatment_icon.png" style="width:30px;height:30px">' : '';
           title.innerHTML = list[i].plot + '&emsp;&ensp;' + refactorDate(list[i].date) + topIcon;
           title.style.borderBottom = "1px solid grey";
           title.style.fontSize = "18px";
@@ -504,6 +504,15 @@
           var overall = list[i].overall;
           if(list[i].overall === "null")
             overall = '&nbsp;';
+
+          var aux = overall.split(" / ");
+          if(aux.length > 2){
+            var tooltip = document.createElement('span');
+            tooltip.setAttribute('class', 'tooltiptext');
+            tooltip.innerHTML = overall;
+            box.appendChild(tooltip);
+            overall = aux[0] +  " / " + aux[1] + " / ...";
+          }
 
           if(list[i].visited === "false") {
             overall = "Visita não efetuada";
@@ -535,8 +544,8 @@
           var userPhoto = '<a id="user_icon" style="color: dimgrey; font-weight: bolder; font-family:sans-serif; font-size: 14px; width: 30px; height: 30px; line-height: unset;' +
                   '-webkit-border-radius: 25px; -moz-border-radius: 25px; border-radius: 25px; padding-top:5px;padding-bottom:5px; padding-left:3px; padding-right:3px; background-color: white">'
                   + userNames[0].substr(0,1).toUpperCase() + userNames[userNames.length-1].substr(0,1).toUpperCase() + '</a>';
-          var userIcon = list[i].technicians.split("|").length === 1 ? '&thinsp;&ensp;' + userPhoto :
-                  '&ensp;&ensp;<img src="resources/images/coop_icon.png" style="width:30px;height:30px">';
+          var userIcon = list[i].technicians.split(";").length === 1 ? '&thinsp;&ensp;' + userPhoto :
+                  '&thinsp;&ensp;<img src="resources/images/coop_icon.png" style="width:30px;height:30px">';
           multimedia.innerHTML = photos + audio + gpsIcon + userIcon;
           multimedia.style.alignSelf = "left";
           multimedia.style.color = "#008577";

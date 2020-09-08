@@ -55,7 +55,7 @@ margin-left: 32px; margin-right: 32px">
 			<div style="flex-direction: column; min-width: 55%; flex-wrap: wrap;">
 
 				<div style="display: flex; flex-direction: row">
-					<span style="width: 40%">
+					<span style="width: 30%">
 						<a id="begin_text" style="font-weight: bold; font-size: 18px; color: black">Início:</a>&emsp;
 						<a id="begin"></a>
 					</span>
@@ -64,18 +64,30 @@ margin-left: 32px; margin-right: 32px">
 						<a id="duration_text" style="font-weight: bold; font-size: 18px; color: black">Duração:</a>&emsp;
 						<a id="duration"></a>
 					</span>
+
 				</div>
 				<div style="display: flex; flex-direction: row; margin-top: 10px">
-					<span style="width: 40%">
+					<span style="width: 100%">
 						<a style="font-weight: bold; font-size: 18px; color: black">Técnico:</a>&emsp;
 						<a id="technician"></a>
 					</span>
 
-					<span style="width:40%; margin-left: 10%">
+				</div>
+
+				<div style="display: flex; flex-direction: row; margin-top: 10px">
+
+
+				<span style="width:20%;">
 						<a style="font-weight: bold; font-size: 18px; color: black">E. Fenológico:</a>&emsp;
 						<a id="ef"></a>
 					</span>
+
+				<span style="width: 20%; margin-left: 10%">
+						<a id="nea_text" style="font-weight: bold; font-size: 18px; color: black; display: none">NEA:</a>&emsp;
+						<a id="nea"></a>
+					</span>
 				</div>
+
 
 				<div  id="note_gallery" style="margin-top: 10px;">
 					<a style="font-weight: bold; font-size: 18px; color: black"> Notas: </a>&emsp;
@@ -88,25 +100,11 @@ margin-left: 32px; margin-right: 32px">
 					<button class="btn light-button" style="margin-top:6px;width: fit-content; background-color: lightgrey; color: #00574B" id="add_note">Submeter <i class="fas fa-paper-plane"></i></button>
 				</div>
 				-->
-				<div class='tableauPlaceholder' style='width: 600px; height: 400px; margin-bottom: 20px'>
-					<object class='tableauViz' width='600' height='400' style='display:none;'>
-						<param name='host_url' value='https%3A%2F%2Feu-west-1a.online.tableau.com%2F' />
-						<param name='site_root' value='&#47;t&#47;teachingandresearchinginteractivedatavisualizationdifct' />
-						<param name='name' value='AnaliticaObservaes&#47;CapturasObservaesporinimigo' />
-						<param name='tabs' value='no' />
-						<param name='toolbar' value='no' />
-						<param name='showAppBanner' value='false' />
-					</object>
-				</div>
 
 
-			</div>
-
-			<div style="display: flex; flex-direction: column; justify-content: center; min-width:45%; max-width: 600px; height: max-content;">
-
-				<div style="display: flex; flex-direction: row; align-items: center;">
+				<div id='gallery_header' style="display: flex; flex-direction: row; align-items: center;">
 					<a style="font-size: 18px; color: #008577; font-weight: bold">Multimédia: </a>
-					<span style="margin-left: auto; color: #008577">
+					<span style="margin-left: auto; margin-right: 24px; color: #008577">
 						<i class="fas fa-camera" style="font-size: 20px; color: #008577"></i>
 						<a id="number_photos" style="font-size: 16px; font-weight: bold"></a>
 
@@ -118,14 +116,19 @@ margin-left: 32px; margin-right: 32px">
 
 					<i class="fas fa-chevron-circle-left" style="font-size: 20px"></i>
 
-						<div  class="gallery" id="photo_gallery" >
-						</div>
-						<br>
-						<div  class="gallery" id="audio_gallery">
-						</div>
+					<div  class="gallery" id="photo_gallery" >
+					</div>
+					<br>
+					<div  class="gallery" id="audio_gallery">
+					</div>
 
 					<i class="fas fa-chevron-circle-right" style="font-size: 20px"></i>
 				</div>
+
+
+			</div>
+
+			<div style="display: flex; flex-direction: column; justify-content: center; min-width:45%; max-width: 100%; height: 100%;">
 
 				<div id="menu" style="margin-top: 16px;">
 					<input id="light-v10" type="radio" name="rtoggle" value="light" />
@@ -140,6 +143,19 @@ margin-left: 32px; margin-right: 32px">
 				</div>
 				<div id="map"></div>
 			</div>
+
+
+		<div class='tableauPlaceholder' style='width: 600px; height: 400px; margin-bottom: 20px'>
+			<object class='tableauViz' width='100%' height='400' style='display:none;'>
+				<param name='host_url' value='https%3A%2F%2Feu-west-1a.online.tableau.com%2F' />
+				<param name='site_root' value='&#47;t&#47;teachingandresearchinginteractivedatavisualizationdifct' />
+				<param name='name' value='AnaliticaObservaes&#47;CapturasObservaesporinimigo' />
+				<param name='tabs' value='no' />
+				<param name='toolbar' value='no' />
+				<param name='showAppBanner' value='false' />
+			</object>
+		</div>
+
 	</div>
 
 
@@ -693,7 +709,6 @@ margin-left: 32px; margin-right: 32px">
 		});
 	}
 
-
 	function getPhotos(id){
 		gapi.client.drive.files.list({
 			'folderId' : id,
@@ -715,10 +730,17 @@ margin-left: 32px; margin-right: 32px">
                     a.style.fontWeight = 'bold';
                     a.style.paddingLeft = '70px';
 
-                    var time = files[i].name.split("_")[5];
-                    var hour = time.substring(0,2);
-                    var min = time.substring(2,4);
-                    a.innerHTML = hour + ":" + min;
+                    var splited_name = files[i].name.split("_");
+                    var time;
+                    if(splited_name.length === 6) {
+						time = files[i].name.split("_")[5];
+
+					}else{
+						time = files[i].name.split("_")[3];
+					}
+					var hour = time.substring(0, 2);
+					var min = time.substring(2, 4);
+					a.innerHTML = hour + ":" + min;
 
 
                     div.appendChild(imgContainer);
@@ -738,7 +760,7 @@ margin-left: 32px; margin-right: 32px">
 							var w = window.open("");
 							var aux = document.createElement('img');
 							aux.src = 'data:image/png;base64,'+b64Response;
-							w.document.write(aux.outerHTML);
+							w.document.write("<style>img{height: 100%;}</style>",aux.outerHTML);
 						});
 						outputImg.style.objectFit = 'cover';
 
@@ -816,10 +838,10 @@ margin-left: 32px; margin-right: 32px">
 
 					var name = files[i].name.split("_");
 
-					var day = name[name.length -2];
-					var year = day.substring(0,4);
-					var month  = day.substring(4,6);
-					var day_of_month  = day.substring(6,8);
+					// var day = name[name.length -2];
+					// var year = day.substring(0,4);
+					// var month  = day.substring(4,6);
+					// var day_of_month  = day.substring(6,8);
 
 					var time = name[name.length -1];
 					var hour = time.substring(0,2);
@@ -828,19 +850,31 @@ margin-left: 32px; margin-right: 32px">
 					a.innerHTML = /*day_of_month + "/" + month + "/" + year + " " +*/ hour + ":" + minutes;
 
 
-					var audio = document.createElement('audio');
-					audio.id       = 'audio-player';
-					audio.controls = 'controls';
-					audio.src      = 'https://drive.google.com/uc?export=download&id=' + files[i].id;
-					audio.type     = 'audio/mp3';
+					gapi.client.drive.files.get({
+						'fileId': files[i].id,
+						'alt': 'media',
+					}).then(function(response) {
+						var b64Response = btoa(response.body);
 
-					div.appendChild(document.createElement('br'));
-					div.appendChild(document.createElement('br'));
-					div.appendChild(audio);
-					div.appendChild(document.createElement('br'));
-					div.appendChild(document.createElement('br'));
-					div.appendChild(document.createElement('br'));
-					div.appendChild(a);
+						var audio = document.createElement('audio');
+						audio.id       = 'audio-player';
+						audio.controls = 'controls';
+						audio.src      = 'data:audio/mp3;base64,'+b64Response;
+						audio.type     = 'audio/mp3';
+
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createElement('br'));
+						div.appendChild(audio);
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createElement('br'));
+						div.appendChild(a);
+
+
+					});
+
+
+
 
 
 				}
@@ -932,6 +966,20 @@ margin-left: 32px; margin-right: 32px">
 					getPhotos(photo_id);
 				if(audio_id != '')
 					getAudios(audio_id);
+
+
+				var size = 0, key;
+				for (key in files_map) {
+					if (files_map.hasOwnProperty(key)) size++;
+				}
+
+				console.log(files_map);
+				if(size === 0){
+					console.log("sem ficheiros")
+					document.getElementById("gallery_header").style.display = "none";
+					document.getElementById("gallery").style.display = "none";
+
+				}
 				if(json_id != '') {
 					getVisitJSON(json_id);
 					// TODO: se o session storage tiver vazio, ir buscar ficheiro e carregar visitas do pob
@@ -970,8 +1018,16 @@ margin-left: 32px; margin-right: 32px">
 					document.getElementById('begin').innerHTML = refactorDate(visit.date) + " às " + visit.tBegin;
 					document.getElementById('duration').innerHTML = secondsToTime(visit.duration);
 					console.log(users);
-					document.getElementById('technician').innerHTML = users.find(value => value.id === visit.user).username;
+					var technicians = visit.technicians;
+					technicians = technicians.replace(';', ' & ');
+					document.getElementById('technician').innerHTML = technicians;
 					document.getElementById('ef').innerHTML = visit.ef;
+					if(visit.nea !== "null"){
+						document.getElementById('nea_text').style.display = 'inline';
+						document.getElementById('nea').innerText = visit.nea;
+
+
+					}
 					document.getElementById("info").style.visibility = "visible";
 
 				}
