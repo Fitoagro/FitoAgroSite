@@ -192,7 +192,7 @@ margin-left: 32px; margin-right: 32px">
 			</div>
 
 
-		<div class='tableauPlaceholder' style='width: 850px; height: 750px; margin-top: 20px; margin-left: 1%; margin-bottom: 10px; border: 1px dashed lightgrey'>
+		<div id='viz' class='tableauPlaceholder' style='width: 850px; height: 750px; margin-top: 20px; margin-left: 1%; margin-bottom: 10px; border: 1px dashed lightgrey'>
 			<object class='tableauViz' width='98%' height='750' style='display:none;'>
 				<param name='host_url' value='https%3A%2F%2Feu-west-1a.online.tableau.com%2F' />
 				<param name='site_root' value='&#47;t&#47;teachingandresearchinginteractivedatavisualizationdifct' />
@@ -204,6 +204,9 @@ margin-left: 32px; margin-right: 32px">
 		</div>
 
 	</div>
+
+</div>
+</div>
 
 
 <script type='text/javascript'>
@@ -1180,7 +1183,7 @@ margin-left: 32px; margin-right: 32px">
 			if (files && files.length > 0) {
 				for(var i = 0; i < files.length; i++){
 
-					var id = files[i].id
+					var id = files[i].id;
 
 					if(files[i].name.includes('json')){
 						json_id = id;
@@ -1257,10 +1260,16 @@ margin-left: 32px; margin-right: 32px">
 					if(visit.nea !== "null"){
 						document.getElementById('nea_text').style.display = 'inline';
 						document.getElementById('nea').innerText = visit.nea;
-
-
 					}
-					document.getElementById("info").style.visibility = "visible";
+
+                    var date = visit.date.split("/");
+					var filterDate = date[0] + "-" + date[1] + "-" + date[2];
+
+					//TODO: descomentar quando as visitas forem as reais para filtrar a visualização para a visita real
+                    //var viz = document.getElementById('viz').getElementsByTagName('iframe').item(0);
+					//viz.src += `&codigoparcela=${visit.plot}&datavisita=${filterDate}`;
+
+                    document.getElementById("info").style.visibility = "visible";
 
 				}
 				if(gpx_id != '')
