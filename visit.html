@@ -102,7 +102,7 @@ margin-left: 32px; margin-right: 32px">
 				-->
 
 
-				<div id='gallery_header' style="display: flex; flex-direction: row; align-items: center;">
+				<div id='gallery_header' style="display: none; flex-direction: row; align-items: center;">
 					<a style="font-size: 18px; color: #008577; font-weight: bold">Multimédia: </a>
 					<span style="margin-left: auto; margin-right: 24px; color: #008577">
 						<i class="fas fa-camera" style="font-size: 20px; color: #008577"></i>
@@ -112,7 +112,7 @@ margin-left: 32px; margin-right: 32px">
 						<a id="number_voice_records" style="font-size: 16px; font-weight: bold"></a>
 					</span>
 				</div>
-				<div id='gallery' style="display: flex; flex-direction: row; align-items: center;">
+				<div id='gallery' style="display: none; flex-direction: row; align-items: center;">
 
 					<i class="fas fa-chevron-circle-left" style="font-size: 20px"></i>
 
@@ -496,6 +496,7 @@ margin-left: 32px; margin-right: 32px">
 			var el = document.createElement('div');
 			var popup;
 
+
 			if(wayPoints[i][0].type > 0){
 				el.className = 'marker_voice';
 				popup = new mapboxgl.Popup({ offset: 25 })
@@ -718,6 +719,10 @@ margin-left: 32px; margin-right: 32px">
 		}).then(function(response) {
 			var files = response.result.files;
 			if (files && files.length > 0) {
+				document.getElementById("gallery_header").style.display = "flex";
+				document.getElementById("gallery").style.display = "flex";
+
+
 				var div = document.getElementById("photo_gallery");
 				div.style.display = "block";
 				for(var i = 0; i < files.length; i++){
@@ -812,6 +817,9 @@ margin-left: 32px; margin-right: 32px">
 		}).then(function(response) {
 			var files = response.result.files;
 			if (files && files.length > 0) {
+				document.getElementById("gallery_header").style.display = "flex";
+				document.getElementById("gallery").style.display = "flex";
+
 				var div = document.getElementById("audio_gallery");
 
 				div.style.height = "180px";
@@ -968,18 +976,6 @@ margin-left: 32px; margin-right: 32px">
 					getAudios(audio_id);
 
 
-				var size = 0, key;
-				for (key in files_map) {
-					if (files_map.hasOwnProperty(key)) size++;
-				}
-
-				console.log(files_map);
-				if(size === 0){
-					console.log("sem ficheiros")
-					document.getElementById("gallery_header").style.display = "none";
-					document.getElementById("gallery").style.display = "none";
-
-				}
 				if(json_id != '') {
 					getVisitJSON(json_id);
 					// TODO: se o session storage tiver vazio, ir buscar ficheiro e carregar visitas do pob
