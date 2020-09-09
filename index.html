@@ -502,7 +502,10 @@
             notestr = '&nbsp;';
 
           var overall = list[i].overall;
-          if(list[i].overall === "null")
+          if(overall.length > 23)
+            overall = overall.split("|")[0] + "|" + overall.split("|")[1] + "|" + overall.split("|")[2] + "|" + overall.split("|")[3] + " | ...";
+
+          if(overall === "null")
             overall = '&nbsp;';
 
           var aux = overall.split(" / ");
@@ -517,15 +520,15 @@
           if(list[i].visited === "false") {
             overall = "Visita não efetuada";
             if(list[i].notes === "null") {
-              content.innerHTML = '<p style="margin-bottom: 5px">' + overall + '</p>';
+              content.innerHTML = '<p style="font-size: 14px; margin-bottom: 5px">' + overall + '</p>';
               content.style.lineHeight = "3";
             }else
-              content.innerHTML = '<p style="margin-bottom: 5px">' + overall + '</p>' + '<p style="margin-bottom: 0">' + notestr + '</p>';
+              content.innerHTML = '<p style="font-size: 14px; margin-bottom: 5px">' + overall + '</p>' + '<p style="margin-bottom: 0">' + notestr + '</p>';
           }else if(list[i].notes === "null"){
-            content.innerHTML = '<p style=" height: 50px; align-content: center; margin-bottom: 0">' + overall + '</p>';
+            content.innerHTML = '<p style=" font-size: 14px; height: 50px; align-content: center; margin-bottom: 0">' + overall + '</p>';
             content.style.lineHeight = "3";
           }else
-            content.innerHTML = '<p style="margin-bottom: 5px">' + notestr + '</p>' + '<p style="margin-bottom: 0">' + overall + '</p>';
+            content.innerHTML = '<p style="margin-bottom: 5px">' + notestr + '</p>' + '<p style="font-size: 14px; margin-bottom: 0">' + overall + '</p>';
 
           content.style.alignSelf = "center";
           content.style.textAlign = "center";
