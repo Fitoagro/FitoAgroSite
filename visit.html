@@ -23,6 +23,41 @@
 
 <body>
 
+<div id="myModal" class="modal">
+
+    <div id="modal_content" class="modal-content">
+        <span id="modal_close" onclick="document.getElementById('myModal').style.display = 'none'" style="position: absolute; top: 0%; right: 1%; color: gray; font-size:24px ">x</span>
+        <svg  id="modal_edit" style="position: absolute;display: none; left: 35%;" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+        </svg>
+
+        <a id="modal_date" style="position: absolute; top: 5%; right: 5%; color: #00574B; font-size:24px; font-weight: bold; "></a>
+
+
+        <div style="position: absolute; top: 15%; left: 35%; right: 5%;font-size:20px; text-align: justify;text-justify: inter-word;">
+
+            <a id="modal_description" style="color: black; "></a>
+
+            <div style="margin-bottom: 25px">
+                <a id="modal_number_comments" style="font-size: 16px; font-weight: bold; float: right">0</a>
+                <a style="float: right">&ensp;</a>
+                <svg width="1em"  style="position: relative; float: right" height="1em" viewBox="0 0 16 16" class="bi bi-chat-left-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v11.586l2-2A2 2 0 0 1 4.414 11H14a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                    <path fill-rule="evenodd" d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                </svg>
+
+            </div>
+            <hr />
+
+        </div>
+
+        <img id="modal_photo" style="display: none"/>
+        <audio id="modal_audio" style="display: none"></audio>
+    </div>
+
+</div>
+
 <div class="header">
 	<img src="resources/images/fitoagro_logo.png" style="height: 40px; padding-bottom: 4px; align-self: center; margin-right: 64px">
 	<div id="visits_tab" onclick="window.location.href = 'index.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 18px; color: white">Visitas</div>
@@ -189,8 +224,10 @@ margin-left: 32px; margin-right: 32px">
 	var imageFolder = '';
 	var audioFolder = '';
 	var userName = '';
+    var userEmail = '';
 
 	var files_map = {};
+    var files_b64 = {};
 
 	var map = new mapboxgl.Map({
 		container: 'map',
@@ -416,6 +453,7 @@ margin-left: 32px; margin-right: 32px">
 		if (isSignedIn) {
 			var profile = auth2.currentUser.get().getBasicProfile();
 			userName = profile.getName();
+			userEmail = profile.getEmail();
 			user.innerHTML = userName;
 			user.style.display = 'inline-block';
 			listFolder();
@@ -714,7 +752,7 @@ margin-left: 32px; margin-right: 32px">
 		gapi.client.drive.files.list({
 			'folderId' : id,
 			'pageSize': 100,
-			'fields': "nextPageToken, files(id, name, hasThumbnail, thumbnailLink)",
+			'fields': "nextPageToken, files(id, name, description, owners, hasThumbnail, thumbnailLink)",
 			'q': `'${id}' in parents`
 		}).then(function(response) {
 			var files = response.result.files;
@@ -725,88 +763,195 @@ margin-left: 32px; margin-right: 32px">
 
 				var div = document.getElementById("photo_gallery");
 				div.style.display = "block";
-				for(var i = 0; i < files.length; i++){
+				for(var i = 0; i < files.length; i++) {
+                    (function () {
 
-					files_map[files[i].name] = files[i].id;
+                        var fileOwner = files[i].owners[0].emailAddress.split(' ').join('');
+   ;
+                        var mine = fileOwner.localeCompare(userEmail) === 0;
 
-                    var imgContainer = document.createElement('a');
+                        var id = files[i].id;
+                        var name = files[i].name;
+                        files_map[name] = id;
+                        var description = files[i].description;
 
-                    var a = document.createElement('a');
-                    a.style.fontWeight = 'bold';
-                    a.style.paddingLeft = '70px';
+                        var imgContainer = document.createElement('a');
 
-                    var splited_name = files[i].name.split("_");
-                    var time;
-                    if(splited_name.length === 6) {
-						time = files[i].name.split("_")[5];
+                        var a = document.createElement('a');
+                        a.style.fontWeight = 'bold';
+                        a.style.paddingLeft = '70px';
 
-					}else{
-						time = files[i].name.split("_")[3];
-					}
-					var hour = time.substring(0, 2);
-					var min = time.substring(2, 4);
-					a.innerHTML = hour + ":" + min;
+                        var splited_name = files[i].name.split("_");
+                        var time;
+                        if (splited_name.length === 6) {
+                            time = files[i].name.split("_")[5];
+
+                        } else {
+                            time = files[i].name.split("_")[3];
+                        }
+                        var hour = time.substring(0, 2);
+                        var min = time.substring(2, 4);
+                        a.innerHTML = hour + ":" + min;
 
 
-                    div.appendChild(imgContainer);
-                    div.appendChild(document.createElement('br'));
-                    div.appendChild(a);
+                        div.appendChild(imgContainer);
+                        div.appendChild(document.createElement('br'));
+                        div.appendChild(a);
 
-					gapi.client.drive.files.get({
-						'fileId': files[i].id,
-						'alt': 'media',
-					}).then(function(response) {
-						var b64Response = btoa(response.body);
+                        gapi.client.drive.files.get({
+                            'fileId': files[i].id,
+                            'alt': 'media',
+                        }).then(function (response) {
 
-						var outputImg = document.createElement('img');
-						outputImg.src = 'data:image/png;base64,'+b64Response;
-                        outputImg.setAttribute( "class", 'image_thumbnail');
-                        outputImg.addEventListener("click", function (e) {
-							var w = window.open("");
-							var aux = document.createElement('img');
-							aux.src = 'data:image/png;base64,'+b64Response;
-							w.document.write("<style>img{height: 100%;}</style>",aux.outerHTML);
-						});
-						outputImg.style.objectFit = 'cover';
+                            var b64Response = btoa(response.body);
+                            files_b64[id] = b64Response;
 
-                        imgContainer.appendChild(outputImg);
+                            var outputImg = document.createElement('img');
+                            outputImg.src = 'data:image/png;base64,' + b64Response;
+                            outputImg.setAttribute("class", 'image_thumbnail');
+                            outputImg.addEventListener("click", function (e) {
+                                var modal = document.getElementById("myModal");
+                                var modal_description = document.getElementById("modal_description");
+                                var modal_date = document.getElementById("modal_date");
 
-					});
+                                var modal_number_comments = document.getElementById("modal_number_comments");
+                                var modal_edit = document.getElementById("modal_edit");
 
-					// var name = files[i].name.substring(6,files[i].name.length).replace('_','');
-					//
-					// var year = name.substring(0,4);
-					// var month = name.substring(4,6);
-					// var day = name.substring(6,8);
-					// var hour = name.substring(8,10);
-					// var min = name.substring(10,12);
-					//
-					//
-					// var title = /*day + "/" + month + "/" + year + " " + */hour + ":" + min;
-					//
-					// var image_container = document.createElement('a');
-					// image_container.href = 'https://drive.google.com/uc?export=view&id=' + files[i].id;
-					// image_container.target = files[i].name;
-					// image_container.rel = "noopener nore";
-					// var img = document.createElement('img');
-					// img.src = 'https://drive.google.com/thumbnail?sz=w100&id=' + files[i].id;
-					// img.setAttribute( "class", 'image_thumbnail');
-					//
-					// var figcaption = document.createElement('figcaption');
-					// figcaption.setAttribute( "class", 'image_caption');
-					// figcaption.innerHTML = title;
-					//
-					// var figure = document.createElement('figure');
-					// figure.appendChild(img);
-					// figure.appendChild(figcaption);
-					//
-					// image_container.appendChild(img);
-					// div.appendChild(image_container);
+                                var modal_photo = document.getElementById("modal_photo");
+                                var modal_audio = document.getElementById("modal_audio");
+
+
+
+                                modal_date.innerHTML = getDate(name);
+                                if (typeof description !== "undefined") {
+                                    //modal_description.innerText = "The bar chart represents both the number of visitors per month for each website, and the total number of visitors per website for the entire quarter. Website visitors for each month are represented using columns lined up horizontally, with heights indicating the number of visitors. A fourth column is provided for each website with the accumulated site visitors for the quarter.";
+                                    modal_description.innerText = description;
+                                } else
+                                    modal_description.innerText = "Sem descrição.";
+
+                                modal_audio.style.display = "none";
+                                modal_photo.style.display = "block";
+
+                                //TODO esconder pencil se nao for owner
+                                if(mine){
+                                    modal_edit.style.display='block';
+                                }
+
+
+                                //TODO actualizar o número de comentarios
+
+
+                                modal_photo.src = 'data:image/png;base64,' + b64Response;
+                                modal_photo.width = 300;
+                                modal.style.display = "block";
+
+
+    //                            var w = window.open("");
+                                // w.document.write("<style>img{height: 100%;}</style>",aux.outerHTML);
+                            });
+                            outputImg.style.objectFit = 'cover';
+
+                            imgContainer.appendChild(outputImg);
+
+                        });
+
+
+                        // var name = files[i].name.substring(6,files[i].name.length).replace('_','');
+                        //
+                        // var year = name.substring(0,4);
+                        // var month = name.substring(4,6);
+                        // var day = name.substring(6,8);
+                        // var hour = name.substring(8,10);
+                        // var min = name.substring(10,12);
+                        //
+                        //
+                        // var title = /*day + "/" + month + "/" + year + " " + */hour + ":" + min;
+                        //
+                        // var image_container = document.createElement('a');
+                        // image_container.href = 'https://drive.google.com/uc?export=view&id=' + files[i].id;
+                        // image_container.target = files[i].name;
+                        // image_container.rel = "noopener nore";
+                        // var img = document.createElement('img');
+                        // img.src = 'https://drive.google.com/thumbnail?sz=w100&id=' + files[i].id;
+                        // img.setAttribute( "class", 'image_thumbnail');
+                        //
+                        // var figcaption = document.createElement('figcaption');
+                        // figcaption.setAttribute( "class", 'image_caption');
+                        // figcaption.innerHTML = title;
+                        //
+                        // var figure = document.createElement('figure');
+                        // figure.appendChild(img);
+                        // figure.appendChild(figcaption);
+                        //
+                        // image_container.appendChild(img);
+                        // div.appendChild(image_container);
+                })();
 				}
 			}
 
 		});
 	}
+    function getMonth(month) {
+        switch (month) { //get month
+            case '01':
+                month = " Jan ";
+                break;
+            case '02':
+                month = " Fev ";
+                break;
+            case '03':
+                month = " Mar ";
+                break;
+            case '04':
+                month = " Abr ";
+                break;
+            case '05':
+                month = " Mai ";
+                break;
+            case '06':
+                month = " Jun ";
+                break;
+            case '07':
+                month = " Jul ";
+                break;
+            case '08':
+                month = " Ago ";
+                break;
+            case '09':
+                month = " Set ";
+                break;
+            case '10':
+                month = " Out ";
+                break;
+            case '11':
+                month = " Nov ";
+                break;
+            case '12':
+                month = " Dez ";
+                break;
+        }
+        return month
+    }
+
+
+
+	function getDate(name) {
+        var splittedName = name.split('_');
+        var raw_time = splittedName[splittedName.length-1];
+        var raw_day = splittedName[splittedName.length-2];
+
+        var day = raw_day.substr(6,2);
+        if(day.charAt(0) === '0'){
+            day = day.substr(1,1);
+        }
+
+        var month = getMonth(raw_day.substr(4,2));
+
+        var hour = raw_time.substr(0,2);
+        var minutes = raw_time.substr(2,2);
+
+        return day + " de " + month + " às " + hour + ":"+minutes;
+    }
 
 	function getAudios(id){
 		gapi.client.drive.files.list({
