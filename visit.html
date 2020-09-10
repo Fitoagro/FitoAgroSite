@@ -553,37 +553,38 @@ margin-left: 32px; margin-right: 32px">
 	function addRoute(points, wayPoints){
 		this.mPoints = points;
 
-		while(photos_lock === 1 || audio_lock === 1){
-			setTimeout(() => { console.log("Waiting"); }, 1000);
+		if(this.photos_lock === 1 || this.audio_lock === 1){
+			setTimeout(addRoute, 1000,points,wayPoints);
+			return;
 		}
 		console.log("Lock released");
 
 
-		for(var i = 0 ; i < wayPoints.length; i++){
+		for(var i = 0 ; i < wayPoints.length; i++) {
 			var id = files_map[wayPoints[i][0].name];
+			if (id in files_info) {
+				var el = document.createElement('div');
+				var isPhoto;
+				if (wayPoints[i][0].type > 0) {
+					el.className = 'marker_voice';
+					isPhoto = false;
+				} else {
+					el.className = 'marker_image';
+					isPhoto = true;
+				}
+				el.addEventListener("click", function () {
+					onPhotoClick(id, files_info[id].name, files_info[id].description, files_info[id].mine, files_info[id].b64Response, isPhoto);
+				}, false);
 
-			var el = document.createElement('div');
-			var isPhoto;
-			if(wayPoints[i][0].type > 0){
-				el.className = 'marker_voice';
-				isPhoto = false;
+
+				var point = [wayPoints[i][0].longitude, wayPoints[i][0].latitude];
+
+				points_by_id[id] = wayPoints[i][0];
+
+				new mapboxgl.Marker(el)
+						.setLngLat(point)
+						.addTo(map);
 			}
-			else{
-				el.className = 'marker_image';
-				isPhoto = true;
-			}
-			el.addEventListener("click", function() {
-				onPhotoClick(id,files_info[id].name,files_info[id].description,files_info[id].mine,files_info[id].b64Response,isPhoto);
-			}, false);
-
-
-			var point = [wayPoints[i][0].longitude, wayPoints[i][0].latitude];
-
-			points_by_id[id] = wayPoints[i][0];
-
-			new mapboxgl.Marker(el)
-					.setLngLat(point)
-					.addTo(map);
 
 		}
 
@@ -797,6 +798,7 @@ margin-left: 32px; margin-right: 32px">
 				for(var i = 0; i < files.length; i++) {
                     (function () {
 
+                    	var last = i === files.length -1;
                         var fileOwner = files[i].owners[0].emailAddress.split(' ').join('');
 
                         var mine = fileOwner.localeCompare(userEmail) === 0;
@@ -852,12 +854,14 @@ margin-left: 32px; margin-right: 32px">
 
                             imgContainer.appendChild(outputImg);
 
+                            if(last)
+								photos_lock = 0;
+
                         });
                 })();
 				}
-			}
-
-			photos_lock = 0;
+			}else
+				photos_lock = 0;
 
 
 		});
@@ -1109,6 +1113,9 @@ margin-left: 32px; margin-right: 32px">
 
 				for(var i = 0; i < files.length; i++) {
 					(function () {
+
+						var last = i === files.length -1;
+
 						var fileOwner = files[i].owners[0].emailAddress.split(' ').join('');
 
 						var mine = fileOwner.localeCompare(userEmail) === 0;
@@ -1164,14 +1171,17 @@ margin-left: 32px; margin-right: 32px">
 
 							imgContainer.appendChild(outputImg);
 
+							if(last)
+								audio_lock = 0;
+
 
 						});
 
 
 					})();
 				}
-			}
-			audio_lock = 0;
+			}else
+				audio_lock = 0;
 
 		});
 	}
