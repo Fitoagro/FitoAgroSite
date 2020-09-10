@@ -27,7 +27,7 @@
 <div id="myModal" class="modal">
 
     <div id="modal_content" class="modal-content">
-        <span id="modal_close" onclick="document.getElementById('myModal').style.display = 'none'" style="position: absolute; top: 0%; right: 1%; color: gray; font-size:24px ">x</span>
+        <span id="modal_close" onclick="onModalClose()" style="position: absolute; top: 0%; right: 1%; color: gray; font-size:24px ">x</span>
         <svg  id="modal_edit"  onclick="tryEdit()" style="position: absolute;display: none; left: 35%;" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
@@ -45,7 +45,7 @@
         <a id="modal_date" style="position: absolute; top: 5%; right: 5%; color: #00574B; font-size:24px; font-weight: bold; "></a>
 
 
-        <div style="position: absolute; top: 15%; left: 35%; right: 5%;font-size:20px; text-align: justify;text-justify: inter-word;">
+        <div style="position: absolute; margin-top: 50px; left: 35%; right: 5%;font-size:20px; text-align: justify;text-justify: inter-word;">
 
             <a id="modal_description" style="color: black; "></a>
 			<input id="modal_description_edit"  style="color: black; display:none; width: 100%"/>
@@ -63,8 +63,9 @@
 
         </div>
 
-        <img id="modal_photo" style="display: none"/>
-        <audio id="modal_audio" style="display: none"></audio>
+        <img id="modal_photo" style="position: relative; display: none"/>
+        <audio id="modal_audio" controls="controls" typeof="audio/mp3" style="position: relative; margin-top: 10%; margin-bottom: 10%; display: none"></audio>
+
     </div>
 
 </div>
@@ -157,19 +158,15 @@ margin-left: 32px; margin-right: 32px">
 						<a id="number_voice_records" style="font-size: 16px; font-weight: bold"></a>
 					</span>
 				</div>
-				<div id='gallery' style="padding-left: 5%; padding-right: 5%; display: none; flex-direction: row; align-items: center">
 
-					<i class="fas fa-chevron-circle-left" style="width: 10%; font-size: 20px"></i>
+				<div id='gallery' style=" width: 900px; height: 180px;padding-left: 5%; padding-right: 5%; display: none; flex-direction: row; align-items: center">
 
-                    <div style="width: 80%; justify-content: center">
-                        <div  class="gallery" id="photo_gallery">
-                        </div>
-                        <br>
-                        <div  class="gallery" id="audio_gallery">
-                        </div>
+					<i class="fas fa-chevron-circle-left" style="width: 5%; font-size: 20px"></i>
+
+                    <div class="gallery" id="photo_gallery">
                     </div>
 
-					<i class="fas fa-chevron-circle-right" style="width: 10%; font-size: 20px"></i>
+					<i class="fas fa-chevron-circle-right" style="width: 5%; font-size: 20px"></i>
 				</div>
 
 
@@ -228,6 +225,9 @@ margin-left: 32px; margin-right: 32px">
 		window.location.href = 'index.html';
 	}
 
+	var photos_lock = 1;
+	var audio_lock = 1;
+
 	var users = [];
 	var visit = [];
 	var plotVisits = [];
@@ -242,7 +242,7 @@ margin-left: 32px; margin-right: 32px">
     var userEmail = '';
 
 	var files_map = {};
-    var files_b64 = {};
+    var files_info = {};
     var actual_file_id ='';
 
 	var map = new mapboxgl.Map({
@@ -546,28 +546,34 @@ margin-left: 32px; margin-right: 32px">
 	function addRoute(points, wayPoints){
 		this.mPoints = points;
 
+		while(photos_lock === 1 || audio_lock === 1){
+			setTimeout(() => { console.log("Waiting"); }, 1000);
+		}
+		console.log("Lock released");
+
+
 		for(var i = 0 ; i < wayPoints.length; i++){
+			var id = files_map[wayPoints[i][0].name];
+
 			var el = document.createElement('div');
-			var popup;
-
-
+			var isPhoto;
 			if(wayPoints[i][0].type > 0){
 				el.className = 'marker_voice';
-				popup = new mapboxgl.Popup({ offset: 25 })
-						.setHTML('<a href="https://drive.google.com/uc?export=view&id=' + files_map[wayPoints[i][0].name] +'" target=' + wayPoints[i][0].name + '>' + wayPoints[i][0].name + '</a>');
+				isPhoto = false;
 			}
 			else{
 				el.className = 'marker_image';
-				popup = new mapboxgl.Popup({ offset: 25 })
-						.setHTML('<a href="https://drive.google.com/uc?export=view&id=' + files_map[wayPoints[i][0].name] + '" target=' + wayPoints[i][0].name + '>' + wayPoints[i][0].name + '</a>');
+				isPhoto = true;
 			}
+			el.addEventListener("click", function() {
+				onPhotoClick(id,files_info[id].name,files_info[id].description,files_info[id].mine,files_info[id].b64Response,isPhoto);
+			}, false);
 
 
 			var point = [wayPoints[i][0].longitude, wayPoints[i][0].latitude];
 
 			new mapboxgl.Marker(el)
 					.setLngLat(point)
-					.setPopup(popup)
 					.addTo(map);
 
 		}
@@ -778,12 +784,12 @@ margin-left: 32px; margin-right: 32px">
 
 
 				var div = document.getElementById("photo_gallery");
-				div.style.display = "block";
+				div.style.display = "flex";
 				for(var i = 0; i < files.length; i++) {
                     (function () {
 
                         var fileOwner = files[i].owners[0].emailAddress.split(' ').join('');
-   ;
+
                         var mine = fileOwner.localeCompare(userEmail) === 0;
 
                         var id = files[i].id;
@@ -797,22 +803,23 @@ margin-left: 32px; margin-right: 32px">
                         a.style.fontWeight = 'bold';
                         a.style.paddingLeft = '70px';
 
-                        var splited_name = files[i].name.split("_");
-                        var time;
-                        if (splited_name.length === 6) {
-                            time = files[i].name.split("_")[5];
-
-                        } else {
-                            time = files[i].name.split("_")[3];
-                        }
+						var splited_name = files[i].name.split("_");
+						var time = splited_name[splited_name.length -1];
                         var hour = time.substring(0, 2);
                         var min = time.substring(2, 4);
                         a.innerHTML = hour + ":" + min;
 
 
-                        div.appendChild(imgContainer);
-                        div.appendChild(document.createElement('br'));
-                        div.appendChild(a);
+						var auxDiv = document.createElement('div');
+						auxDiv.style.cssFloat = 'left';
+						auxDiv.style.display = 'inline-block';
+
+
+						auxDiv.appendChild(imgContainer);
+						auxDiv.appendChild(document.createElement('br'));
+						auxDiv.appendChild(a);
+						div.appendChild(auxDiv)
+
 
                         gapi.client.drive.files.get({
                             'fileId': files[i].id,
@@ -820,94 +827,83 @@ margin-left: 32px; margin-right: 32px">
                         }).then(function (response) {
 
                             var b64Response = btoa(response.body);
-                            files_b64[id] = b64Response;
 
                             var outputImg = document.createElement('img');
                             outputImg.src = 'data:image/png;base64,' + b64Response;
                             outputImg.setAttribute("class", 'image_thumbnail');
-                            outputImg.addEventListener("click", function (e) {
-								actual_file_id = id;
 
-                                var modal = document.getElementById("myModal");
-                                var modal_description = document.getElementById("modal_description");
-                                var modal_date = document.getElementById("modal_date");
-
-                                var modal_number_comments = document.getElementById("modal_number_comments");
-                                var modal_edit = document.getElementById("modal_edit");
-
-                                var modal_photo = document.getElementById("modal_photo");
-                                var modal_audio = document.getElementById("modal_audio");
+							files_info[id] = {name:name, description:description,mine:mine,b64Response:b64Response};
 
 
+							outputImg.addEventListener("click", function (e) {
+								onPhotoClick(id,name,description,mine,b64Response,true);
 
-                                modal_date.innerHTML = getDate(name);
-                                if (typeof description !== "undefined") {
-                                    //modal_description.innerText = "The bar chart represents both the number of visitors per month for each website, and the total number of visitors per website for the entire quarter. Website visitors for each month are represented using columns lined up horizontally, with heights indicating the number of visitors. A fourth column is provided for each website with the accumulated site visitors for the quarter.";
-                                    modal_description.innerText = description;
-                                } else
-                                    modal_description.innerText = "Sem descrição.";
-
-                                modal_audio.style.display = "none";
-                                modal_photo.style.display = "block";
-
-                                //TODO esconder pencil se nao for owner
-                                if(mine){
-                                    modal_edit.style.display='block';
-                                }
-
-
-                                //TODO actualizar o número de comentarios
-
-
-                                modal_photo.src = 'data:image/png;base64,' + b64Response;
-                                modal_photo.width = 300;
-                                modal.style.display = "block";
-
-
-    //                            var w = window.open("");
-                                // w.document.write("<style>img{height: 100%;}</style>",aux.outerHTML);
                             });
                             outputImg.style.objectFit = 'cover';
 
                             imgContainer.appendChild(outputImg);
 
                         });
-
-
-                        // var name = files[i].name.substring(6,files[i].name.length).replace('_','');
-                        //
-                        // var year = name.substring(0,4);
-                        // var month = name.substring(4,6);
-                        // var day = name.substring(6,8);
-                        // var hour = name.substring(8,10);
-                        // var min = name.substring(10,12);
-                        //
-                        //
-                        // var title = /*day + "/" + month + "/" + year + " " + */hour + ":" + min;
-                        //
-                        // var image_container = document.createElement('a');
-                        // image_container.href = 'https://drive.google.com/uc?export=view&id=' + files[i].id;
-                        // image_container.target = files[i].name;
-                        // image_container.rel = "noopener nore";
-                        // var img = document.createElement('img');
-                        // img.src = 'https://drive.google.com/thumbnail?sz=w100&id=' + files[i].id;
-                        // img.setAttribute( "class", 'image_thumbnail');
-                        //
-                        // var figcaption = document.createElement('figcaption');
-                        // figcaption.setAttribute( "class", 'image_caption');
-                        // figcaption.innerHTML = title;
-                        //
-                        // var figure = document.createElement('figure');
-                        // figure.appendChild(img);
-                        // figure.appendChild(figcaption);
-                        //
-                        // image_container.appendChild(img);
-                        // div.appendChild(image_container);
                 })();
 				}
 			}
 
+			photos_lock = 0;
+
+
 		});
+	}
+
+	function onPhotoClick(id,name,description,mine,b64Response,photo){
+		actual_file_id = id;
+
+		var modal = document.getElementById("myModal");
+		var modal_description = document.getElementById("modal_description");
+		var modal_date = document.getElementById("modal_date");
+
+		var modal_number_comments = document.getElementById("modal_number_comments");
+		var modal_edit = document.getElementById("modal_edit");
+
+		var modal_photo = document.getElementById("modal_photo");
+		var modal_audio = document.getElementById("modal_audio");
+
+
+
+		modal_date.innerHTML = getDate(name);
+		if (typeof description !== "undefined") {
+			//modal_description.innerText = "The bar chart represents both the number of visitors per month for each website, and the total number of visitors per website for the entire quarter. Website visitors for each month are represented using columns lined up horizontally, with heights indicating the number of visitors. A fourth column is provided for each website with the accumulated site visitors for the quarter.";
+			modal_description.innerText = description;
+		} else
+			modal_description.innerText = "Sem descrição.";
+
+		if(photo) {
+			modal_audio.style.display = "none";
+			modal_photo.style.display = "block";
+			modal_photo.src = 'data:image/png;base64,' + b64Response;
+			modal_photo.width = 300;
+		}else{
+			modal_audio.style.display = "block";
+			modal_photo.style.display = "none";
+			modal_audio.src = 'data:audio/mp3;base64,' + b64Response;
+
+		}
+
+		if(mine){
+			modal_edit.style.display='block';
+		}
+
+
+		//TODO actualizar o número de comentarios
+
+
+		modal.style.display = "block";
+
+
+	}
+
+	function onModalClose() {
+		document.getElementById('myModal').style.display = 'none'
+		cancelEdit();
 	}
 
 	function tryEdit(){
@@ -1030,6 +1026,7 @@ margin-left: 32px; margin-right: 32px">
 
 
 	function getDate(name) {
+		console.log(name);
         var splittedName = name.split('_');
         var raw_time = splittedName[splittedName.length-1];
         var raw_day = splittedName[splittedName.length-2];
@@ -1051,7 +1048,7 @@ margin-left: 32px; margin-right: 32px">
 		gapi.client.drive.files.list({
 			'folderId' : id,
 			'pageSize': 100,
-			'fields': "nextPageToken, files(id, name)",
+			'fields': "nextPageToken, files(id, name, description, owners)",
 			'q': `'${id}' in parents`
 		}).then(function(response) {
 			var files = response.result.files;
@@ -1059,73 +1056,75 @@ margin-left: 32px; margin-right: 32px">
 				document.getElementById("gallery_header").style.display = "flex";
 				document.getElementById("gallery").style.display = "flex";
 
-				var div = document.getElementById("audio_gallery");
+				var div = document.getElementById("photo_gallery");
 
-				div.style.height = "180px";
-				div.style.display = "block";
+				div.style.display = "flex";
 
-				for(var i = 0; i < files.length; i++){
-					files_map[files[i].name] = files[i].id;
+				for(var i = 0; i < files.length; i++) {
+					(function () {
+						var fileOwner = files[i].owners[0].emailAddress.split(' ').join('');
 
-					/*	gapi.client.drive.files.get({
-							'fileId': files[i].id,
+						var mine = fileOwner.localeCompare(userEmail) === 0;
+
+						var id = files[i].id;
+						var name = files[i].name;
+						files_map[name] = id;
+						var description = files[i].description;
+
+						var imgContainer = document.createElement('a');
+
+						var a = document.createElement('a');
+						a.style.fontWeight = 'bold';
+						a.style.paddingLeft = '70px';
+
+						var splited_name = files[i].name.split("_");
+						var time = splited_name[splited_name.length -1];
+
+						var hour = time.substring(0, 2);
+						var min = time.substring(2, 4);
+						a.innerHTML = hour + ":" + min;
+
+
+						var auxDiv = document.createElement('div');
+						auxDiv.style.cssFloat = 'left';
+						auxDiv.style.display = 'inline-block';
+
+						auxDiv.appendChild(imgContainer);
+						auxDiv.appendChild(document.createElement('br'));
+						auxDiv.appendChild(a);
+						div.appendChild(auxDiv)
+
+
+
+						gapi.client.drive.files.get({
+							'fileId': id,
 							'alt': 'media',
-						}).then(function(response) {
+						}).then(function (response) {
 							var b64Response = btoa(response.body);
 
 							var outputImg = document.createElement('img');
-							outputImg.src = 'data:image/png;base64,'+b64Response;
+							outputImg.src = 'resources/images/audio_icon.png';
+							outputImg.setAttribute("class", 'image_thumbnail');
 
-							document.body.appendChild(outputImg);
-						});*/
+							files_info[id] = {name:name, description:description,mine:mine,b64Response:b64Response};
 
-					var a = document.createElement('a');
-					a.style.fontWeight = 'bold';
-					a.style.paddingLeft = '150px';
-
-					var name = files[i].name.split("_");
-
-					// var day = name[name.length -2];
-					// var year = day.substring(0,4);
-					// var month  = day.substring(4,6);
-					// var day_of_month  = day.substring(6,8);
-
-					var time = name[name.length -1];
-					var hour = time.substring(0,2);
-					var minutes = time.substring(2,4);
-
-					a.innerHTML = /*day_of_month + "/" + month + "/" + year + " " +*/ hour + ":" + minutes;
+							outputImg.addEventListener("click", function (e) {
+								onPhotoClick(id,name,description,mine,b64Response,false);
+							});
 
 
-					gapi.client.drive.files.get({
-						'fileId': files[i].id,
-						'alt': 'media',
-					}).then(function(response) {
-						var b64Response = btoa(response.body);
+							outputImg.style.objectFit = 'cover';
 
-						var audio = document.createElement('audio');
-						audio.id       = 'audio-player';
-						audio.controls = 'controls';
-						audio.src      = 'data:audio/mp3;base64,'+b64Response;
-						audio.type     = 'audio/mp3';
-
-						div.appendChild(document.createElement('br'));
-						div.appendChild(document.createElement('br'));
-						div.appendChild(audio);
-						div.appendChild(document.createElement('br'));
-						div.appendChild(document.createElement('br'));
-						div.appendChild(document.createElement('br'));
-						div.appendChild(a);
+							imgContainer.appendChild(outputImg);
 
 
-					});
+						});
 
 
-
-
-
+					})();
 				}
 			}
+			audio_lock = 0;
 
 		});
 	}
@@ -1211,8 +1210,12 @@ margin-left: 32px; margin-right: 32px">
 					getNotes(noteFolder)
 				if(photo_id != '')
 					getPhotos(photo_id);
+				else
+					photos_lock = 0;
 				if(audio_id != '')
 					getAudios(audio_id);
+				else
+					audio_lock = 0;
 
 
 				if(json_id != '') {
