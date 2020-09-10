@@ -42,6 +42,11 @@
 			<path fill-rule="evenodd" d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.236.236 0 0 1 .02-.022z"/>
 		</svg>
 
+
+		<svg id="modal_locate"  onclick="zoomOnMap()" style="position: absolute;display: none; left: 40%;"  width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-map" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+			<path fill-rule="evenodd" d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.502.502 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103zM10 1.91l-4-.8v12.98l4 .8V1.91zm1 12.98l4-.8V1.11l-4 .8v12.98zm-6-.8V1.11l-4 .8v12.98l4-.8z"/>
+		</svg>
+
         <a id="modal_date" style="position: absolute; top: 5%; right: 5%; color: #00574B; font-size:24px; font-weight: bold; "></a>
 
 
@@ -243,7 +248,9 @@ margin-left: 32px; margin-right: 32px">
 
 	var files_map = {};
     var files_info = {};
-    var actual_file_id ='';
+	var points_by_id = {};
+
+	var actual_file_id ='';
 
 	var map = new mapboxgl.Map({
 		container: 'map',
@@ -572,6 +579,8 @@ margin-left: 32px; margin-right: 32px">
 
 			var point = [wayPoints[i][0].longitude, wayPoints[i][0].latitude];
 
+			points_by_id[id] = wayPoints[i][0];
+
 			new mapboxgl.Marker(el)
 					.setLngLat(point)
 					.addTo(map);
@@ -863,10 +872,15 @@ margin-left: 32px; margin-right: 32px">
 
 		var modal_number_comments = document.getElementById("modal_number_comments");
 		var modal_edit = document.getElementById("modal_edit");
+		var modal_locate = document.getElementById("modal_locate");
 
 		var modal_photo = document.getElementById("modal_photo");
 		var modal_audio = document.getElementById("modal_audio");
 
+
+		if(typeof points_by_id[actual_file_id] !== "undefined") {
+			modal_locate.style.display = "block";
+		}
 
 
 		modal_date.innerHTML = getDate(name);
@@ -900,6 +914,18 @@ margin-left: 32px; margin-right: 32px">
 
 
 	}
+	
+	function zoomOnMap() {
+		onModalClose();
+		map.flyTo({
+			center: [
+				points_by_id[actual_file_id].longitude,
+				points_by_id[actual_file_id].latitude
+
+			],
+			essential: true // this animation is considered essential with respect to prefers-reduced-motion
+		});
+	}
 
 	function onModalClose() {
 		document.getElementById('myModal').style.display = 'none'
@@ -910,6 +936,7 @@ margin-left: 32px; margin-right: 32px">
 		var editIcon = document.getElementById("modal_edit");
 		var closeIcon = document.getElementById("modal_edit_close");
 		var confirmIcon = document.getElementById("modal_edit_confirm");
+		var modal_locate = document.getElementById("modal_locate");
 
 		var description = document.getElementById("modal_description");
 		var description_input = document.getElementById("modal_description_edit");
@@ -919,6 +946,7 @@ margin-left: 32px; margin-right: 32px">
 		if(description.innerText.localeCompare("Sem descrição.") !== 0)
 			description_input.value = description.innerText;
 		editIcon.style.display = 'none';
+		modal_locate.style.display = 'none';
 		closeIcon.style.display = 'block';
 		confirmIcon.style.display = 'block';
 
@@ -934,6 +962,12 @@ margin-left: 32px; margin-right: 32px">
 		var description = document.getElementById("modal_description");
 		var description_input = document.getElementById("modal_description_edit");
 
+		var modal_locate = document.getElementById("modal_locate");
+
+		if(typeof points_by_id[actual_file_id] !== "undefined") {
+			modal_locate.style.display = "block";
+		}
+
 		description.style.display = 'block';
 		description_input.style.display = 'none';
 		description_input.value = "";
@@ -948,6 +982,7 @@ margin-left: 32px; margin-right: 32px">
 		var editIcon = document.getElementById("modal_edit");
 		var closeIcon = document.getElementById("modal_edit_close");
 		var confirmIcon = document.getElementById("modal_edit_confirm");
+		var modal_locate = document.getElementById("modal_locate");
 
 		var description = document.getElementById("modal_description");
 		var description_input = document.getElementById("modal_description_edit");
@@ -967,6 +1002,11 @@ margin-left: 32px; margin-right: 32px">
 				closeIcon.style.display = 'none';
 				confirmIcon.style.display = 'none';
 
+
+				if(typeof points_by_id[actual_file_id] !== "undefined") {
+					modal_locate.style.display = "block";
+				}
+
 				files_info[actual_file_id].description = description.innerText;
 				console.log(files_info[actual_file_id]);
 			});
@@ -978,6 +1018,10 @@ margin-left: 32px; margin-right: 32px">
 			editIcon.style.display = 'block';
 			closeIcon.style.display = 'none';
 			confirmIcon.style.display = 'none';
+
+			if(typeof points_by_id[actual_file_id] !== "undefined") {
+				modal_locate.style.display = "block";
+			}
 		}
 
 
