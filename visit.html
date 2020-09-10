@@ -836,7 +836,7 @@ margin-left: 32px; margin-right: 32px">
 
 
 							outputImg.addEventListener("click", function (e) {
-								onPhotoClick(id,name,description,mine,b64Response,true);
+								onPhotoClick(id,name,files_info[id].description,mine,b64Response,true);
 
                             });
                             outputImg.style.objectFit = 'cover';
@@ -966,6 +966,9 @@ margin-left: 32px; margin-right: 32px">
 				editIcon.style.display = 'block';
 				closeIcon.style.display = 'none';
 				confirmIcon.style.display = 'none';
+
+				files_info[actual_file_id].description = description.innerText;
+				console.log(files_info[actual_file_id]);
 			});
 
 		}else {
@@ -1109,7 +1112,7 @@ margin-left: 32px; margin-right: 32px">
 							files_info[id] = {name:name, description:description,mine:mine,b64Response:b64Response};
 
 							outputImg.addEventListener("click", function (e) {
-								onPhotoClick(id,name,description,mine,b64Response,false);
+								onPhotoClick(id,name,files_info[id].description,mine,b64Response,false);
 							});
 
 
