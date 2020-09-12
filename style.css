@@ -270,6 +270,7 @@ h3, h6{
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
+
 /* Modal Content/Box */
 .modal-content {
     background-color: #fefefe;
@@ -278,3 +279,13 @@ h3, h6{
     border: 1px solid #888;
     width: 1000px; /* Could be more or less, depending on screen size */
 }
+
+.modal-content-notes {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 600px; /* Could be more or less, depending on screen size */
+    height: auto;
+}
+
