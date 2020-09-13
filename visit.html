@@ -27,49 +27,80 @@
 <div id="myModal" class="modal">
 
     <div id="modal_content" class="modal-content">
-        <span id="modal_close" onclick="onModalClose()" style="position: absolute; top: 0%; right: 1%; color: gray; font-size:24px ">x</span>
-        <svg  id="modal_edit"  onclick="tryEdit()" style="position: absolute;display: none; left: 35%;" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-        </svg>
-		<svg  id="modal_edit_close"  onclick="cancelEdit()" style="position: absolute;display: none; left: 35%;" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-			<path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-			<path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-		</svg>
 
-		<svg  id="modal_edit_confirm"  onclick="confirmEdit()" style="position: absolute;display: none; left: 40%;" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-check-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-			<path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-			<path fill-rule="evenodd" d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.236.236 0 0 1 .02-.022z"/>
-		</svg>
+		<div style="width: 100%">
+			<div style="width: 300px; float: left; ">
+				<img id="modal_photo" style="position: relative; display: none; margin: auto"/>
+				<audio id="modal_audio" controls="controls" typeof="audio/mp3" style="position: relative; display: none;margin-top: 50%"></audio>
+			</div>
+
+			<div style="margin-left: 320px">
+				<p id="modal_close" onclick="onModalClose()" style="color: gray; font-size:24px; margin-left: 620px; ">x</p>
+
+				<div>
+
+					<svg  id="modal_edit"  onclick="tryEdit()" style="position: relative;float:left;display: none;" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+						<path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+						<path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+					</svg>
+
+					<svg  id="modal_edit_close"  onclick="cancelEdit()" style="position:  relative; float:left; display: none; " width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+						<path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+						<path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+					</svg>
+					<a style="float: left">&ensp;</a>
+
+					<svg  id="modal_edit_confirm"  onclick="confirmEdit()" style="position: relative; float:left; display: none;" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-check-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+						<path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+						<path fill-rule="evenodd" d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.236.236 0 0 1 .02-.022z"/>
+					</svg>
+
+					<a style="float: left">&ensp;</a>
+
+					<svg id="modal_locate"  onclick="zoomOnMap()" style="position: relative;display: none; float: left"  width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-map" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+						<path fill-rule="evenodd" d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.502.502 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103zM10 1.91l-4-.8v12.98l4 .8V1.91zm1 12.98l4-.8V1.11l-4 .8v12.98zm-6-.8V1.11l-4 .8v12.98l4-.8z"/>
+					</svg>
+
+				</div>
+
+				<a id="modal_date" style="position: relative; float: right; color: #00574B; font-size:24px; font-weight: bold; "></a>
 
 
-		<svg id="modal_locate"  onclick="zoomOnMap()" style="position: absolute;display: none; left: 40%;"  width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-map" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-			<path fill-rule="evenodd" d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.502.502 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103zM10 1.91l-4-.8v12.98l4 .8V1.91zm1 12.98l4-.8V1.11l-4 .8v12.98zm-6-.8V1.11l-4 .8v12.98l4-.8z"/>
-		</svg>
+				<div style="position: relative; margin-top: 50px;;font-size:20px; text-align: justify;text-justify: inter-word;">
 
-        <a id="modal_date" style="position: absolute; top: 5%; right: 5%; color: #00574B; font-size:24px; font-weight: bold; "></a>
+					<p id="modal_description" style="color: black;word-wrap: break-word;  "></p>
 
+					<input id="modal_description_edit"  style="color: black; display:none;"/>
 
-        <div style="position: absolute; margin-top: 50px; left: 35%; right: 5%;font-size:20px; text-align: justify;text-justify: inter-word;">
+					<div>
+						<a id="modal_number_comments" style="font-size: 16px; font-weight: bold; float: right">0</a>
+						<a style="float: right">&ensp;</a>
+						<svg width="1em"  style="position: relative; float: right" height="1em" viewBox="0 0 16 16" class="bi bi-chat-left-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+							<path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v11.586l2-2A2 2 0 0 1 4.414 11H14a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+							<path fill-rule="evenodd" d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+						</svg>
 
-            <a id="modal_description" style="color: black; "></a>
-			<input id="modal_description_edit"  style="color: black; display:none; width: 100%"/>
-			<br>
-            <div style="margin-bottom: 25px">
-                <a id="modal_number_comments" style="font-size: 16px; font-weight: bold; float: right">0</a>
-                <a style="float: right">&ensp;</a>
-                <svg width="1em"  style="position: relative; float: right" height="1em" viewBox="0 0 16 16" class="bi bi-chat-left-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v11.586l2-2A2 2 0 0 1 4.414 11H14a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
-                    <path fill-rule="evenodd" d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
-                </svg>
+					</div>
+					<hr style="margin-top: 40px" />
 
-            </div>
-            <hr />
+					<div class="comments" id="file_comments">
+						<a id="file_no_comments" style="color: gray; text-align: center;">&ensp;Sem comentários.</a>
 
-        </div>
+					</div>
+					<hr />
 
-        <img id="modal_photo" style="position: relative; display: none"/>
-        <audio id="modal_audio" controls="controls" typeof="audio/mp3" style="position: relative; margin-top: 10%; margin-bottom: 10%; display: none"></audio>
+					<div style="float: left; position:relative;">
+						<input id="file_comment_input"  style="color: black; font-size:24px;"/>
+
+						<button onclick="addNewCommentToFile('Miguel Correia','12:10')" style="font-size:24px">Enviar <i class="fa fa-send-o"></i></button>
+
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+
 
     </div>
 
@@ -109,7 +140,7 @@
 			<div style="float: left; height: 100px; position:relative;">
 				<input id="note_comment_input"  style="color: black; font-size:24px;"/>
 
-				<button onclick="addNewComment('Miguel Correia','ola','12:10')" style="font-size:24px">Enviar <i class="fa fa-send-o"></i></button>
+				<button onclick="addNewCommentToNote('Miguel Correia','12:10')" style="font-size:24px">Enviar <i class="fa fa-send-o"></i></button>
 
 			</div>
 			<p>&nbsp;</p>
@@ -923,57 +954,123 @@ margin-left: 32px; margin-right: 32px">
 		});
 	}
 
-	function addNewComment(user, description, timestamp){
+	function addNewCommentToFile(user, timestamp){
 
 		console.log("Ola");
-		var no_comments = document.getElementById('note_no_comments');
-		no_comments.style.display = 'none';
-		var mainDiv = document.getElementById('note_comments');
+		var comment_input = document.getElementById('file_comment_input');
+		var description = comment_input.value;
+		if(description) {
+			var no_comments = document.getElementById('file_no_comments');
+			no_comments.style.display = 'none';
+			var mainDiv = document.getElementById('file_comments');
 
-		mainDiv.style.height= '200px';
+			mainDiv.style.height = '200px';
 
-		var commentDiv = document.createElement('div');
-		var columns = document.createElement('div');
-		var firstLine = document.createElement('div');
-		var commentText = document.createElement('p');
-		var commentOwner = document.createElement('a');
-		var commentTimestamp = document.createElement('a');
+			var commentDiv = document.createElement('div');
+			var columns = document.createElement('div');
+			var firstLine = document.createElement('div');
+			var commentText = document.createElement('p');
+			var commentOwner = document.createElement('a');
+			var commentTimestamp = document.createElement('a');
 
-		var userImage = document.createElement('a');
-		var breakLine = document.createElement("br");
-		var separator = document.createElement("hr");
+			var userImage = document.createElement('a');
+			var breakLine = document.createElement("br");
+			var separator = document.createElement("hr");
 
 
-		firstLine.style.cssFloat='left';
-		userImage.style.cssFloat='left';
+			firstLine.style.cssFloat = 'left';
+			userImage.style.cssFloat = 'left';
 
-		commentText.innerText = description;
-		commentText.style.marginLeft = '30px';
-		commentOwner.innerText = user;
-		commentOwner.style.fontSize = '12px';
-		commentOwner.style.fontWeight = 'bold';
+			commentText.innerText = description;
+			commentText.style.marginLeft = '30px';
+			commentOwner.innerText = user;
+			commentOwner.style.fontSize = '12px';
+			commentOwner.style.fontWeight = 'bold';
 
-		commentTimestamp.innerText = timestamp;
-		commentTimestamp.style.color = 'gray';
-		commentTimestamp.style.fontSize = '12px';
+			commentTimestamp.innerText = timestamp;
+			commentTimestamp.style.color = 'gray';
+			commentTimestamp.style.fontSize = '12px';
 
-		userImage.innerHTML = getPhotoByName(user);
-		userImage.style.margin = '10px';
-		firstLine.appendChild (document.createTextNode (" "));
-		firstLine.appendChild(commentOwner);
-		firstLine.appendChild (document.createTextNode (" "));
-		firstLine.appendChild(commentTimestamp);
+			userImage.innerHTML = getPhotoByName(user);
+			userImage.style.margin = '10px';
+			firstLine.appendChild(document.createTextNode(" "));
+			firstLine.appendChild(commentOwner);
+			firstLine.appendChild(document.createTextNode(" "));
+			firstLine.appendChild(commentTimestamp);
 
-		commentDiv.appendChild(firstLine);
-		commentDiv.appendChild(breakLine);
-		commentDiv.appendChild(commentText);
+			commentDiv.appendChild(firstLine);
+			commentDiv.appendChild(breakLine);
+			commentDiv.appendChild(commentText);
 
-		columns.appendChild(userImage);
-		columns.appendChild(commentDiv)
+			columns.appendChild(userImage);
+			columns.appendChild(commentDiv)
 
-		mainDiv.appendChild(columns)
-		mainDiv.appendChild(separator);
+			mainDiv.appendChild(columns)
+			mainDiv.appendChild(separator);
 
+			comment_input.value = '';
+
+		}
+
+	}
+
+	function addNewCommentToNote(user, timestamp){
+
+		console.log("Ola");
+		var comment_input = document.getElementById('note_comment_input');
+		var description = comment_input.value;
+		if(description) {
+			var no_comments = document.getElementById('note_no_comments');
+			no_comments.style.display = 'none';
+			var mainDiv = document.getElementById('note_comments');
+
+			mainDiv.style.height = '200px';
+
+			var commentDiv = document.createElement('div');
+			var columns = document.createElement('div');
+			var firstLine = document.createElement('div');
+			var commentText = document.createElement('p');
+			var commentOwner = document.createElement('a');
+			var commentTimestamp = document.createElement('a');
+
+			var userImage = document.createElement('a');
+			var breakLine = document.createElement("br");
+			var separator = document.createElement("hr");
+
+
+			firstLine.style.cssFloat = 'left';
+			userImage.style.cssFloat = 'left';
+
+			commentText.innerText = description;
+			commentText.style.marginLeft = '30px';
+			commentOwner.innerText = user;
+			commentOwner.style.fontSize = '12px';
+			commentOwner.style.fontWeight = 'bold';
+
+			commentTimestamp.innerText = timestamp;
+			commentTimestamp.style.color = 'gray';
+			commentTimestamp.style.fontSize = '12px';
+
+			userImage.innerHTML = getPhotoByName(user);
+			userImage.style.margin = '10px';
+			firstLine.appendChild(document.createTextNode(" "));
+			firstLine.appendChild(commentOwner);
+			firstLine.appendChild(document.createTextNode(" "));
+			firstLine.appendChild(commentTimestamp);
+
+			commentDiv.appendChild(firstLine);
+			commentDiv.appendChild(breakLine);
+			commentDiv.appendChild(commentText);
+
+			columns.appendChild(userImage);
+			columns.appendChild(commentDiv)
+
+			mainDiv.appendChild(columns)
+			mainDiv.appendChild(separator);
+
+			comment_input.value = '';
+
+		}
 	}
 
 	function getPhotoByName(user){
