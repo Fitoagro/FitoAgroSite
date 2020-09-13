@@ -289,3 +289,9 @@ h3, h6{
     height: auto;
 }
 
+.comments {
+    padding: 20px;
+    height: 68px;
+    overflow: auto;
+}
+
