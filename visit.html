@@ -29,9 +29,9 @@
     <div id="modal_content" class="modal-content">
 
 		<div style="width: 100%">
-			<div style="width: 300px; float: left; ">
-				<img id="modal_photo" style="position: relative; display: none; margin: auto"/>
-				<audio id="modal_audio" controls="controls" typeof="audio/mp3" style="position: relative; display: none;margin-top: 50%"></audio>
+			<div style="width: 300px; float: left; height: 500px;   display : flex;align-items : center;justify-content: center;background: lightgray" >
+				<img id="modal_photo" style="position: relative; display: none; "/>
+				<audio id="modal_audio" controls="controls" typeof="audio/mp3" style="position: relative; display: none;"></audio>
 			</div>
 
 			<div style="margin-left: 320px">
@@ -68,9 +68,9 @@
 
 				<div style="position: relative; margin-top: 50px;;font-size:20px; text-align: justify;text-justify: inter-word;">
 
-					<p id="modal_description" style="color: black;word-wrap: break-word;  "></p>
+					<p id="modal_description" style="height:75px; overflow: auto; color: black;word-wrap: break-word;  "></p>
 
-					<input id="modal_description_edit"  style="color: black; display:none;"/>
+					<input id="modal_description_edit"  style="height:75px; width: 100%; color: black; display:none;"/>
 
 					<div>
 						<a id="modal_number_comments" style="font-size: 16px; font-weight: bold; float: right">0</a>
@@ -84,7 +84,7 @@
 					<hr style="margin-top: 40px" />
 
 					<div class="comments" id="file_comments">
-						<a id="file_no_comments" style="color: gray; text-align: center;">&ensp;Sem comentários.</a>
+						<a id="file_no_comments" style="display: block; color: gray; text-align: center;">&ensp;Sem comentários.</a>
 
 					</div>
 					<hr />
@@ -92,7 +92,7 @@
 					<div style="float: left; position:relative;">
 						<input id="file_comment_input"  style="color: black; font-size:24px;"/>
 
-						<button onclick="addNewCommentToFile('Miguel Correia','12:10')" style="font-size:24px">Enviar <i class="fa fa-send-o"></i></button>
+						<button onclick="addNewCommentToFile()" style="font-size:24px">Enviar <i class="fa fa-send-o"></i></button>
 
 					</div>
 
@@ -110,7 +110,7 @@
 <div id="note_modal" class="modal">
 
 	<div id="note_modal_content" class="modal-content-notes">
-		<a id="modal_title" style="position: relative; left: 40%; color: #00574B; font-size:24px; font-weight: bold; text-align: center ">Notas da visita</a>
+		<a id="modal_title" style="position: relative; left: 38%; color: #00574B; font-size:24px; font-weight: bold; text-align: center ">Notas da visita</a>
 
 		<span id="note_modal_close" onclick="document.getElementById('note_modal').style.display = 'none'" style="position: relative; float: right; color: gray; font-size:24px ">x</span>
 
@@ -140,7 +140,7 @@
 			<div style="float: left; height: 100px; position:relative;">
 				<input id="note_comment_input"  style="color: black; font-size:24px;"/>
 
-				<button onclick="addNewCommentToNote('Miguel Correia','12:10')" style="font-size:24px">Enviar <i class="fa fa-send-o"></i></button>
+				<button onclick="addNewCommentToNote()" style="font-size:24px">Enviar <i class="fa fa-send-o"></i></button>
 
 			</div>
 			<p>&nbsp;</p>
@@ -954,7 +954,23 @@ margin-left: 32px; margin-right: 32px">
 		});
 	}
 
-	function addNewCommentToFile(user, timestamp){
+	function addNewCommentToFile(){
+
+		var timestamp = new Date().toISOString();
+
+		// var timestamp =
+		// 		m.getUTCFullYear() + "/" +
+		// 		("0" + (m.getUTCMonth()+1)).slice(-2) + "/" +
+		// 		("0" + m.getUTCDate()).slice(-2) + " " +
+		// 		("0" + m.getUTCHours()).slice(-2) + ":" +
+		// 		("0" + m.getUTCMinutes()).slice(-2) + ":" +
+		// 		("0" + m.getUTCSeconds()).slice(-2);
+
+		console.log(timestamp);
+
+		var date = new Date(timestamp);
+		console.log(date.toString());
+
 
 		console.log("Ola");
 		var comment_input = document.getElementById('file_comment_input');
@@ -963,8 +979,6 @@ margin-left: 32px; margin-right: 32px">
 			var no_comments = document.getElementById('file_no_comments');
 			no_comments.style.display = 'none';
 			var mainDiv = document.getElementById('file_comments');
-
-			mainDiv.style.height = '200px';
 
 			var commentDiv = document.createElement('div');
 			var columns = document.createElement('div');
@@ -983,7 +997,7 @@ margin-left: 32px; margin-right: 32px">
 
 			commentText.innerText = description;
 			commentText.style.marginLeft = '30px';
-			commentOwner.innerText = user;
+			commentOwner.innerText = userName;
 			commentOwner.style.fontSize = '12px';
 			commentOwner.style.fontWeight = 'bold';
 
@@ -991,7 +1005,7 @@ margin-left: 32px; margin-right: 32px">
 			commentTimestamp.style.color = 'gray';
 			commentTimestamp.style.fontSize = '12px';
 
-			userImage.innerHTML = getPhotoByName(user);
+			userImage.innerHTML = getPhotoByName(userName);
 			userImage.style.margin = '10px';
 			firstLine.appendChild(document.createTextNode(" "));
 			firstLine.appendChild(commentOwner);
@@ -1014,7 +1028,22 @@ margin-left: 32px; margin-right: 32px">
 
 	}
 
-	function addNewCommentToNote(user, timestamp){
+	function addNewCommentToNote(){
+
+		var timestamp = new Date().toISOString();
+
+		// var timestamp =
+		// 		m.getUTCFullYear() + "/" +
+		// 		("0" + (m.getUTCMonth()+1)).slice(-2) + "/" +
+		// 		("0" + m.getUTCDate()).slice(-2) + " " +
+		// 		("0" + m.getUTCHours()).slice(-2) + ":" +
+		// 		("0" + m.getUTCMinutes()).slice(-2) + ":" +
+		// 		("0" + m.getUTCSeconds()).slice(-2);
+
+		console.log(timestamp);
+
+		var date = new Date(timestamp);
+		console.log(date.toString());
 
 		console.log("Ola");
 		var comment_input = document.getElementById('note_comment_input');
@@ -1023,8 +1052,6 @@ margin-left: 32px; margin-right: 32px">
 			var no_comments = document.getElementById('note_no_comments');
 			no_comments.style.display = 'none';
 			var mainDiv = document.getElementById('note_comments');
-
-			mainDiv.style.height = '200px';
 
 			var commentDiv = document.createElement('div');
 			var columns = document.createElement('div');
@@ -1043,7 +1070,7 @@ margin-left: 32px; margin-right: 32px">
 
 			commentText.innerText = description;
 			commentText.style.marginLeft = '30px';
-			commentOwner.innerText = user;
+			commentOwner.innerText = userName;
 			commentOwner.style.fontSize = '12px';
 			commentOwner.style.fontWeight = 'bold';
 
@@ -1051,7 +1078,7 @@ margin-left: 32px; margin-right: 32px">
 			commentTimestamp.style.color = 'gray';
 			commentTimestamp.style.fontSize = '12px';
 
-			userImage.innerHTML = getPhotoByName(user);
+			userImage.innerHTML = getPhotoByName(userName);
 			userImage.style.margin = '10px';
 			firstLine.appendChild(document.createTextNode(" "));
 			firstLine.appendChild(commentOwner);
@@ -1163,7 +1190,12 @@ margin-left: 32px; margin-right: 32px">
 	}
 
 	function onModalClose() {
-		document.getElementById('myModal').style.display = 'none'
+		document.getElementById('myModal').style.display = 'none';
+		var comments_div = document.getElementById('file_comments');
+		var file_no_comments = document.getElementById('file_no_comments');
+		file_no_comments.style.display = 'block';
+		comments_div.innerHTML = '';
+		comments_div.appendChild(file_no_comments)
 		cancelEdit();
 	}
 
