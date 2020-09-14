@@ -954,20 +954,101 @@ margin-left: 32px; margin-right: 32px">
 		});
 	}
 
+	function getComments(file_id){
+		var params = {
+			spreadsheetId: '1hqnI8buCJJFgQzgZCfJcEKoDuSpVOhtSfznLCaoRkR8',
+			range: 'Folha1!A2:E',
+			valueRenderOption: 'UNFORMATTED_VALUE',
+			dateTimeRenderOption: 'FORMATTED_STRING',
+		};
+
+		var request = gapi.client.sheets.spreadsheets.values.get(params);
+		request.then(function(response) {
+			var aux = JSON.parse(response['body']);
+			console.log(aux);
+			var values = aux.values;
+			var number_comments = 0;
+			if (typeof values !== 'undefined') {
+				for (var i = 0; i < values.length; i++) {
+					if (values[i][0].localeCompare(file_id) === 0) {
+						number_comments++;
+						addCommentToFileDiv(values[i][2], values[i][3], values[i][4])
+					}
+				}
+				var modal_number_comments = document.getElementById("modal_number_comments");
+				modal_number_comments.innerText = number_comments;
+			}
+
+		}, function(reason) {
+			console.error('error: ' + reason.result.error.message);
+		});
+
+	}
+
+	function addCommentToFileDiv(userName,description,timestamp){
+
+		var m = new Date(timestamp);
+		timestamp =
+				m.getUTCFullYear() + "/" +
+				("0" + (m.getUTCMonth()+1)).slice(-2) + "/" +
+				("0" + m.getUTCDate()).slice(-2) + " " +
+				("0" + m.getUTCHours()).slice(-2) + ":" +
+				("0" + m.getUTCMinutes()).slice(-2) + ":" +
+				("0" + m.getUTCSeconds()).slice(-2);
+
+		var no_comments = document.getElementById('file_no_comments');
+		no_comments.style.display = 'none';
+		var mainDiv = document.getElementById('file_comments');
+
+		var commentDiv = document.createElement('div');
+		var columns = document.createElement('div');
+		var firstLine = document.createElement('div');
+		var commentText = document.createElement('p');
+		var commentOwner = document.createElement('a');
+		var commentTimestamp = document.createElement('a');
+
+		var userImage = document.createElement('a');
+		var breakLine = document.createElement("br");
+		var separator = document.createElement("hr");
+
+
+		firstLine.style.cssFloat = 'left';
+		userImage.style.cssFloat = 'left';
+
+		commentText.innerText = description;
+		commentText.style.marginLeft = '30px';
+		commentOwner.innerText = userName;
+		commentOwner.style.fontSize = '12px';
+		commentOwner.style.fontWeight = 'bold';
+
+		commentTimestamp.innerText = timestamp;
+		commentTimestamp.style.color = 'gray';
+		commentTimestamp.style.fontSize = '12px';
+
+		userImage.innerHTML = getPhotoByName(userName);
+		userImage.style.margin = '10px';
+		firstLine.appendChild(document.createTextNode(" "));
+		firstLine.appendChild(commentOwner);
+		firstLine.appendChild(document.createTextNode(" "));
+		firstLine.appendChild(commentTimestamp);
+
+		commentDiv.appendChild(firstLine);
+		commentDiv.appendChild(breakLine);
+		commentDiv.appendChild(commentText);
+
+		columns.appendChild(userImage);
+		columns.appendChild(commentDiv)
+
+		mainDiv.appendChild(columns)
+		mainDiv.appendChild(separator);
+
+	}
+
 	function addNewCommentToFile(){
-
-
-
 
 		var timestamp = new Date().toISOString();
 
-		// var timestamp =
-		// 		m.getUTCFullYear() + "/" +
-		// 		("0" + (m.getUTCMonth()+1)).slice(-2) + "/" +
-		// 		("0" + m.getUTCDate()).slice(-2) + " " +
-		// 		("0" + m.getUTCHours()).slice(-2) + ":" +
-		// 		("0" + m.getUTCMinutes()).slice(-2) + ":" +
-		// 		("0" + m.getUTCSeconds()).slice(-2);
+
 
 		console.log(timestamp);
 
@@ -994,54 +1075,11 @@ margin-left: 32px; margin-right: 32px">
 			var request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
 			request.then(function(response) {
 
-				var no_comments = document.getElementById('file_no_comments');
-				no_comments.style.display = 'none';
-				var mainDiv = document.getElementById('file_comments');
-
-				var commentDiv = document.createElement('div');
-				var columns = document.createElement('div');
-				var firstLine = document.createElement('div');
-				var commentText = document.createElement('p');
-				var commentOwner = document.createElement('a');
-				var commentTimestamp = document.createElement('a');
-
-				var userImage = document.createElement('a');
-				var breakLine = document.createElement("br");
-				var separator = document.createElement("hr");
-
-
-				firstLine.style.cssFloat = 'left';
-				userImage.style.cssFloat = 'left';
-
-				commentText.innerText = description;
-				commentText.style.marginLeft = '30px';
-				commentOwner.innerText = userName;
-				commentOwner.style.fontSize = '12px';
-				commentOwner.style.fontWeight = 'bold';
-
-				commentTimestamp.innerText = timestamp;
-				commentTimestamp.style.color = 'gray';
-				commentTimestamp.style.fontSize = '12px';
-
-				userImage.innerHTML = getPhotoByName(userName);
-				userImage.style.margin = '10px';
-				firstLine.appendChild(document.createTextNode(" "));
-				firstLine.appendChild(commentOwner);
-				firstLine.appendChild(document.createTextNode(" "));
-				firstLine.appendChild(commentTimestamp);
-
-				commentDiv.appendChild(firstLine);
-				commentDiv.appendChild(breakLine);
-				commentDiv.appendChild(commentText);
-
-				columns.appendChild(userImage);
-				columns.appendChild(commentDiv)
-
-				mainDiv.appendChild(columns)
-				mainDiv.appendChild(separator);
-
+				addCommentToFileDiv(userName,description,timestamp);
 				comment_input.value = '';
-
+				var modal_number_comments = document.getElementById("modal_number_comments");
+				var newCount = parseInt(modal_number_comments.innerText) + 1;
+				modal_number_comments.innerText = newCount;
 
 			}, function(reason) {
 				console.error('error: ' + reason.result.error.message);
@@ -1146,7 +1184,6 @@ margin-left: 32px; margin-right: 32px">
 		var modal_description = document.getElementById("modal_description");
 		var modal_date = document.getElementById("modal_date");
 
-		var modal_number_comments = document.getElementById("modal_number_comments");
 		var modal_edit = document.getElementById("modal_edit");
 		var modal_locate = document.getElementById("modal_locate");
 
@@ -1185,6 +1222,7 @@ margin-left: 32px; margin-right: 32px">
 
 		//TODO actualizar o número de comentarios
 
+		getComments(id);
 
 		modal.style.display = "block";
 
@@ -1214,6 +1252,9 @@ margin-left: 32px; margin-right: 32px">
 	}
 
 	function onModalClose() {
+		var modal_number_comments = document.getElementById("modal_number_comments");
+		modal_number_comments.innerText = '0';
+
 		document.getElementById('myModal').style.display = 'none';
 		var comments_div = document.getElementById('file_comments');
 		var file_no_comments = document.getElementById('file_no_comments');
