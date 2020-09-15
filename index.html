@@ -13,11 +13,11 @@
   <body>
     <div class="header">
       <img src="resources/images/fitoagro_logo.png" style="height: 40px; padding-bottom: 4px; align-self: center; margin-right: 64px">
-      <div id="visits_tab" onclick="window.location.reload()" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 18px; text-decoration: underline; color: white">Visitas</div>
-      <div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; padding:6px; font-size: 18px; color: white">Estatísticas</div>
+      <div id="visits_tab" onclick="window.location.reload()" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; text-decoration: underline; color: white">Visitas</div>
+      <div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; padding:6px; font-size: 16px; color: white">Estatísticas</div>
       <div style="margin-left: auto; align-self: center">
           <!--Add buttons to initiate auth sequence and sign out-->
-          <div id="user_name" style="font-size: 22px"> </div>
+          <div id="user_name" style="font-size: 20px; padding-top: 3px"> </div>
           <button type="button" class="btn light-button" style="background-color: lightgray; color: black; display: inline-block; float: right" id="signout_button">Logout</button>
       </div>
     </div>
@@ -36,7 +36,7 @@
       <div style="display: flex; flex-direction: row; align-items: flex-start; padding-bottom: 1rem; margin-bottom:1rem; border-bottom: 1px solid #00574B">
         <pre id="visits" style="padding-left: 24px; margin: 0; white-space: pre-wrap;"></pre>
         <div style="margin-left: auto;">
-            <i style="color: #008577; font-size: 18px; padding-right: 6px;" class="fas fa-filter"></i>
+            <i style="color: #008577; font-size: 16px; padding-right: 6px;" class="fas fa-filter"></i>
             <select id="filterplots" class="selectpicker" data-live-search-placeholder="Pesquisar..." onchange="filterPlots()" multiple data-live-search="true" title="Nenhuma parcela"
                     data-actions-box="true" data-size="10" data-deselect-all-text="Limpar" data-select-all-text="Todas" data-header="Selecionar Parcelas">
               <option selected title="AZ" value="Azambujeira dos Carros">Azambujeira dos Carros (AZ)</option>
@@ -58,7 +58,7 @@
             </select>
         </div>
         <div class="dropdown" style="margin-right: 48px; margin-left: 24px; height: 40px">
-          <i style="color: #008577; font-size: 18px; padding-right: 6px;" class="fas fa-list"></i>
+          <i style="color: #008577; font-size: 16px; padding-right: 6px;" class="fas fa-list"></i>
           <button type="button" class="btn light-button" style="width:200px; text-align: left !important;
            background-color: #f8f9fa; font-weight: normal; color: black" id="sorting">Não Agrupado
             <i style="position: absolute; right: 8px; top: 12px" class="fas fa-caret-down"></i></button>
@@ -544,7 +544,7 @@
             var topIcon = list[i].rain === "true" ? '<img src="resources/images/rain_icon.png" style="width:30px;height:30px">'
                     : list[i].treatment === "true" ? '<img src="resources/images/treatment_icon.png" style="width:30px;height:30px">' : '';
             title.style.borderBottom = "1px solid grey";
-            title.style.fontSize = "18px";
+            title.style.fontSize = "16px";
             title.style.color = "#008577";
             title.style.fontWeight = "bold";
             title.style.lineHeight = 'unset';
@@ -554,10 +554,10 @@
             title.style.paddingLeft = "3px";
             title.style.width = "165px";
 
-            var space = list[i].plot != undefined && list[i].plot.length == 2 ? '&ensp;&emsp;' : '&ensp;&ensp;';
+            var space = list[i].plot != undefined && list[i].plot.length == 2 ? '&emsp;&emsp;' : '&ensp;&emsp;';
             text.innerHTML = list[i].plot + space + refactorDate(list[i].date);
             icon.innerHTML = topIcon;
-            icon.style.marginLeft = '16px';
+            icon.style.marginLeft = '18px';
             title.appendChild(text);
             title.appendChild(icon);
 
@@ -569,7 +569,7 @@
             if (list[i].nea === "null")
               ef_nea.innerHTML = "<b>EF: </b>" + ef;
             else
-              ef_nea.innerHTML = "<b>EF: </b>" + ef + "&emsp;&emsp;&emsp;&emsp;" + "<b>NEA: </b>" + list[i].nea;
+              ef_nea.innerHTML = "<b>EF: </b>" + ef + "&emsp;&emsp;&emsp;" + "<b>NEA: </b>" + list[i].nea;
             ef_nea.style.marginBottom = '8px';
             var content = document.createElement('a');
 
@@ -609,7 +609,7 @@
             content.style.alignSelf = "center";
             content.style.textAlign = "center";
             content.style.justifySelf = "center";
-            content.style.marginBottom = "18px";
+            content.style.marginBottom = "16px";
             content.style.fontSize = "16px";
             var multimedia = document.createElement('a');
             var photos = '<i class="fas fa-camera" style="font-size: 20px; color: #008577"/>' +

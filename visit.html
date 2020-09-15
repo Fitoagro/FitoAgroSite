@@ -28,36 +28,36 @@
 
     <div id="modal_content" class="modal-content">
 
-		<div style="width: 100%">
-			<div style="width: 300px; float: left; height: 500px;   display : flex;align-items : center;justify-content: center;background: lightgray" >
+		<p id="modal_close" onclick="onModalClose()" style="cursor:pointer; color: dimgrey; font-size:40px; border-bottom: 1px solid #ecedee;
+		margin-top: -16px; text-align: center; margin-bottom: 12px; padding-left: 95%; ">x</p>
+
+		<div style="width: 100%; display: flex; flex-direction: row">
+			<div style="width: 35%; float: left; height: 450px; display : flex;align-items : center;justify-content: center;background: #ecedee" >
 				<img id="modal_photo" style="position: relative; display: none; "/>
 				<audio id="modal_audio" controls="controls" typeof="audio/mp3" style="position: relative; display: none;"></audio>
 			</div>
 
-			<div style="margin-left: 320px">
-				<p id="modal_close" onclick="onModalClose()" style="color: gray; font-size:24px; margin-left: 620px; ">x</p>
-
+			<div style="margin-left: 3%; width: 60%">
 				<div>
-
-					<svg  id="modal_edit"  onclick="tryEdit()" style="position: relative;float:left;display: none;" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+					<svg  id="modal_edit"  onclick="tryEdit()" style="cursor:pointer; position: relative;float:left;display: none;" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 						<path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
 						<path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
 					</svg>
 
-					<svg  id="modal_edit_close"  onclick="cancelEdit()" style="position:  relative; float:left; display: none; " width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+					<svg  id="modal_edit_close"  onclick="cancelEdit()" style="cursor:pointer; position:  relative; float:left; display: none; " width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 						<path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
 						<path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
 					</svg>
 					<a style="float: left">&ensp;</a>
 
-					<svg  id="modal_edit_confirm"  onclick="confirmEdit()" style="position: relative; float:left; display: none;" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-check-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+					<svg  id="modal_edit_confirm"  onclick="confirmEdit()" style="cursor:pointer; position: relative; float:left; display: none;" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-check-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 						<path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
 						<path fill-rule="evenodd" d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.236.236 0 0 1 .02-.022z"/>
 					</svg>
 
 					<a style="float: left">&ensp;</a>
 
-					<svg id="modal_locate"  onclick="zoomOnMap()" style="position: relative;display: none; float: left"  width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-map" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+					<svg id="modal_locate"  onclick="zoomOnMap()" style="cursor:pointer; position: relative;display: none; float: left"  width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-map" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 						<path fill-rule="evenodd" d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.502.502 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103zM10 1.91l-4-.8v12.98l4 .8V1.91zm1 12.98l4-.8V1.11l-4 .8v12.98zm-6-.8V1.11l-4 .8v12.98l4-.8z"/>
 					</svg>
 
@@ -68,9 +68,9 @@
 
 				<div style="position: relative; margin-top: 50px;;font-size:20px; text-align: justify;text-justify: inter-word;">
 
-					<p id="modal_description" style="height:75px; overflow: auto; color: black;word-wrap: break-word;  "></p>
+					<p id="modal_description" style="max-height:75px; overflow: auto; color: black;word-wrap: break-word;  "></p>
 
-					<input id="modal_description_edit"  style="height:75px; width: 100%; color: black; display:none;"/>
+					<input id="modal_description_edit"  style="max-height:75px; overflow: auto; margin-bottom:6px;width: 100%; color: black; display:none;"/>
 
 					<div>
 						<a id="modal_number_comments" style="font-size: 16px; font-weight: bold; float: right">0</a>
@@ -87,7 +87,7 @@
 						<a id="file_no_comments" style="display: block; color: gray; text-align: center;">&ensp;Sem comentários.</a>
 
 					</div>
-					<hr />
+					<hr/>
 
 					<div style="float: left; position:relative;">
 						<input id="file_comment_input"  style="color: black; font-size:24px;"/>
@@ -152,16 +152,16 @@
 
 <div class="header">
 	<img src="resources/images/fitoagro_logo.png" style="height: 40px; padding-bottom: 4px; align-self: center; margin-right: 64px">
-	<div id="visits_tab" onclick="window.location.href = 'index.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 18px; color: white">Visitas</div>
-	<div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; padding:6px; font-size: 18px; color: white">Estatísticas</div>
+	<div id="visits_tab" onclick="window.location.href = 'index.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Visitas</div>
+	<div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; padding:6px; font-size: 16px; color: white">Estatísticas</div>
 	<div style="margin-left: auto; align-self: center">
 		<!--Add buttons to initiate auth sequence and sign out-->
-		<div id="user_name"  style="font-size: 22px"> </div>
+		<div id="user_name"  style="font-size: 20px; padding-top: 3px"> </div>
 		<button onclick="handleSignoutClick()" type="button" class="btn light-button" style="background-color: lightgray; color: black; display: inline-block; float: right;  " id="signout_button">Logout</button>
 	</div>
 </div>
 
-<div style="display: flex; flex-direction: row; align-items: center; margin-top: 16px; padding-bottom: 8px; border-bottom: 1px solid lightgrey;
+<div style="display: flex; flex-direction: row; align-items: center; margin-top: 16px; padding-bottom: 8px; border-bottom: 2px solid #ecedee;
 margin-left: 32px; margin-right: 32px">
 	<span  id="last_visit_area" style="margin-right:auto; cursor: default">
 		<i class="fas fa-chevron-left" style="font-size: 20px;"></i>&emsp;
@@ -179,33 +179,33 @@ margin-left: 32px; margin-right: 32px">
 
 	<div style="width: 100%; height: 100%; display: flex; flex-direction: row; flex-wrap:wrap; justify-content: space-between; justify-items: flex-start; padding: 16px 24px 0 20px;">
 
-			<div style="flex-direction: column; min-width: 50%; flex-wrap: wrap; padding-right: 18px">
+			<div style="flex-direction: column; width: 50%; flex-wrap: wrap; padding-right: 18px">
 
 				<div style="display: flex; flex-direction: row; align-items: baseline">
                     <span id="begin_text" style="width: 13%; font-weight: bold; font-size: 18px; color: black">Início:</span>
-					<span style="width: 20%; margin-left: 1%">
+					<span style="width: 30%; margin-left: 1%">
 						<a id="begin"></a>
 					</span>
 
                     <span id="duration_text" style="width: 13%; font-weight: bold; font-size: 18px; color: black">Duração:</span>
-                    <span style="width: 50%; margin-left: 1%">
+                    <span style="width: 40%; margin-left: 1%">
 						<a id="duration" ></a>
 					</span>
 				</div>
 
 				<div style="display: flex; flex-direction: row; margin-top: 10px; align-items: baseline">
                     <span style="width:13%; font-weight: bold; font-size: 18px; color: black">Técnico:</span>
-                    <span style="width: 20%; margin-left: 1%">
+                    <span style="width: 30%; margin-left: 1%">
 						<a id="technician" ></a>
 					</span>
 
                     <span style="width:13%; font-weight: bold; font-size: 18px; color: black">E. F.:</span>
-                    <span style="width:20%; margin-left: 1%">
+                    <span style="width:15%; margin-left: 1%">
 						<a id="ef"></a>
 					</span>
 
                     <span id="nea_text" style="width:13%; font-weight: bold; font-size: 18px; color: black; display: none">NEA:</span>
-                    <span style="width: 20%; margin-left: 1%">
+                    <span style="width: 10%; margin-left: 1%">
 						<a id="nea"></a>
 					</span>
 
@@ -239,7 +239,7 @@ margin-left: 32px; margin-right: 32px">
 				-->
 
 
-				<div id='gallery_header' style="display: none; flex-direction: row; align-items: center; border-top: 1px solid lightgrey;
+				<div id='gallery_header' style="display: none; flex-direction: row; align-items: center; border-top: 2px solid #f8f9fa;
 				padding-top: 12px; margin-top: 12px;">
 					<a style="font-size: 18px; color: black; font-weight: bold">Multimédia: </a>
 					<span style="margin-left: auto; color: #008577">
@@ -251,11 +251,12 @@ margin-left: 32px; margin-right: 32px">
 					</span>
 				</div>
 
-				<div id='gallery' style=" width: 900px; height: 180px;padding-left: 5%; padding-right: 5%; display: none; flex-direction: row; align-items: center">
+				<div id='gallery' style="height: fit-content;padding-left: 5%; padding-right: 5%; margin-top: 8px; margin-bottom: 8px;
+				display: none; flex-direction: row; align-items: center">
 
 					<i class="fas fa-chevron-circle-left" style="width: 5%; font-size: 20px"></i>
 
-                    <div class="gallery" id="photo_gallery">
+                    <div class="gallery" id="photo_gallery" style="width: 80%">
                     </div>
 
 					<i class="fas fa-chevron-circle-right" style="width: 5%; font-size: 20px"></i>
@@ -281,7 +282,7 @@ margin-left: 32px; margin-right: 32px">
 			</div>
 
 
-		<div id='viz' class='tableauPlaceholder' style='width: 850px; height: 750px; margin-top: 20px; margin-left: 1%; margin-bottom: 10px; border: 1px dashed lightgrey'>
+		<div id='viz' class='tableauPlaceholder' style='width: 850px; height: 750px; margin-top: 20px; margin-left: 1%; margin-bottom: 10px; border: 2px solid #f6f7f8'>
 			<object class='tableauViz' width='98%' height='750' style='display:none;'>
 				<param name='host_url' value='https%3A%2F%2Feu-west-1a.online.tableau.com%2F' />
 				<param name='site_root' value='&#47;t&#47;teachingandresearchinginteractivedatavisualizationdifct' />
@@ -501,7 +502,7 @@ margin-left: 32px; margin-right: 32px">
 			'layout': {},
 			'paint': {
 				'fill-color': '#55C93D',
-				'fill-opacity': 0.4
+				'fill-opacity': 0.25
 			}
 		});
 
@@ -531,7 +532,7 @@ margin-left: 32px; margin-right: 32px">
 			if (rawFile.readyState === 4 && rawFile.status == "200") {
 				callback(rawFile.responseText);
 			}
-		}
+		};
 		rawFile.send(null);
 	}
 
@@ -589,7 +590,7 @@ margin-left: 32px; margin-right: 32px">
 		this.mFocus = toFocus;
 		this.mPlot = plot;
 
-		map.flyTo({ center: toFocus, zoom: 15, speed: 10. });
+		map.flyTo({ center: toFocus, zoom: 16, speed: 10. });
 
 		var layers = map.getStyle().layers;
 
@@ -618,7 +619,7 @@ margin-left: 32px; margin-right: 32px">
 				'layout': {},
 				'paint': {
 					'fill-color': '#55C93D',
-					'fill-opacity': 0.4
+					'fill-opacity': 0.25
 				}
 			},'route');
 		else
@@ -630,7 +631,7 @@ margin-left: 32px; margin-right: 32px">
 				'layout': {},
 				'paint': {
 					'fill-color': '#55C93D',
-					'fill-opacity': 0.4
+					'fill-opacity': 0.25
 				}
 			});
 
@@ -896,10 +897,18 @@ margin-left: 32px; margin-right: 32px">
                         var description = files[i].description;
 
                         var imgContainer = document.createElement('a');
+						imgContainer.style.width = '64px';
+						imgContainer.style.height = '64px';
+						imgContainer.style.margin = '50px';
+						imgContainer.style.justifyContent = 'center';
+						imgContainer.setAttribute('class', 'spinner-border text-secondary');
 
-                        var a = document.createElement('a');
+						var a = document.createElement('p');
                         a.style.fontWeight = 'bold';
-                        a.style.paddingLeft = '70px';
+                        a.style.textAlign = 'center';
+                        a.style.width = '125px';
+                        a.style.marginRight = '15px';
+                        a.style.marginLeft = '15px';
 
 						var splited_name = files[i].name.split("_");
 						var time = splited_name[splited_name.length -1];
@@ -916,7 +925,7 @@ margin-left: 32px; margin-right: 32px">
 						auxDiv.appendChild(imgContainer);
 						auxDiv.appendChild(document.createElement('br'));
 						auxDiv.appendChild(a);
-						div.appendChild(auxDiv)
+						div.appendChild(auxDiv);
 
 
                         gapi.client.drive.files.get({
@@ -938,8 +947,11 @@ margin-left: 32px; margin-right: 32px">
 
                             });
                             outputImg.style.objectFit = 'cover';
+                            outputImg.style.cursor = 'pointer';
 
-                            imgContainer.appendChild(outputImg);
+							imgContainer.setAttribute('class', '');
+							imgContainer.style.margin = "0";
+							imgContainer.appendChild(outputImg);
 
                             if(last)
 								photos_lock = 0;
@@ -1052,9 +1064,9 @@ margin-left: 32px; margin-right: 32px">
 		commentDiv.appendChild(commentText);
 
 		columns.appendChild(userImage);
-		columns.appendChild(commentDiv)
+		columns.appendChild(commentDiv);
 
-		mainDiv.appendChild(columns)
+		mainDiv.appendChild(columns);
 		mainDiv.appendChild(separator);
 
 	}
@@ -1511,10 +1523,18 @@ margin-left: 32px; margin-right: 32px">
 						var description = files[i].description;
 
 						var imgContainer = document.createElement('a');
+						imgContainer.style.width = '64px';
+						imgContainer.style.height = '64px';
+						imgContainer.style.margin = '50px';
+						imgContainer.style.justifyContent = 'center';
+						imgContainer.setAttribute('class', 'spinner-border text-secondary');
 
-						var a = document.createElement('a');
+						var a = document.createElement('p');
 						a.style.fontWeight = 'bold';
-						a.style.paddingLeft = '70px';
+						a.style.textAlign = 'center';
+						a.style.width = '125px';
+						a.style.marginRight = '15px';
+						a.style.marginLeft = '15px';
 
 						var splited_name = files[i].name.split("_");
 						var time = splited_name[splited_name.length -1];
@@ -1531,8 +1551,7 @@ margin-left: 32px; margin-right: 32px">
 						auxDiv.appendChild(imgContainer);
 						auxDiv.appendChild(document.createElement('br'));
 						auxDiv.appendChild(a);
-						div.appendChild(auxDiv)
-
+						div.appendChild(auxDiv);
 
 
 						gapi.client.drive.files.get({
@@ -1553,7 +1572,10 @@ margin-left: 32px; margin-right: 32px">
 
 
 							outputImg.style.objectFit = 'cover';
+							outputImg.style.cursor = 'pointer';
 
+							imgContainer.setAttribute('class', '');
+							imgContainer.style.margin = '0';
 							imgContainer.appendChild(outputImg);
 
 							if(last)
