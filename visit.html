@@ -12,7 +12,9 @@
 
 	<script src='https://api.mapbox.com/mapbox.js/v3.3.0/mapbox.js'></script>
 	<link href='https://api.mapbox.com/mapbox.js/v3.3.0/mapbox.css' rel='stylesheet' />
-
+	<script src=
+					"https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+	</script>
 	<script src="https://api.mapbox.com/mapbox-gl-js/v1.9.0/mapbox-gl.js"></script>
 	<link href="https://api.mapbox.com/mapbox-gl-js/v1.9.0/mapbox-gl.css" rel="stylesheet" />
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -324,6 +326,8 @@ margin-left: 32px; margin-right: 32px">
 	var users = [];
 	var visit = [];
 	var plotVisits = [];
+
+	var commenting = false;
 
 	var mFocus;
 	var mPoints;
@@ -637,6 +641,21 @@ margin-left: 32px; margin-right: 32px">
 
 	}
 
+	function orderFiles(){
+		if(this.photos_lock === 1 || this.audio_lock === 1){
+			setTimeout(orderFiles, 500);
+			return;
+		}
+
+		var $wrapper = $('.gallery');
+		$wrapper.find('.gallery_item').sort(function(a, b) {
+			console.log(a.dataset.name);
+			console.log(b.dataset.name);
+
+			return compareNames(a.dataset.name,b.dataset.name)
+		}).appendTo($wrapper);
+	}
+
 
 	function addRoute(points, wayPoints){
 		this.mPoints = points;
@@ -645,6 +664,9 @@ margin-left: 32px; margin-right: 32px">
 			setTimeout(addRoute, 1000,points,wayPoints);
 			return;
 		}
+
+		orderFiles();
+
 		console.log("Lock released");
 
 
@@ -868,6 +890,26 @@ margin-left: 32px; margin-right: 32px">
 		});
 	}
 
+	function compareNames( file1, file2 ) {
+		file1 = file1.substr(0,file1.length-4);
+		file2 = file2.substr(0,file2.length-4);
+
+		var aux = file1.split('_');
+		var file1_date = parseInt(aux[aux.length -1]);
+		aux = file2.split('_');
+		var file2_date = parseInt(aux[aux.length -1]);
+
+		console.log(file1_date + " " + file2_date);
+
+		if ( file1_date < file2_date ){
+			return -1;
+		}
+		if ( file1_date > file2_date ){
+			return 1;
+		}
+		return 0;
+	}
+
 	function getPhotos(id){
 		gapi.client.drive.files.list({
 			'folderId' : id,
@@ -877,6 +919,7 @@ margin-left: 32px; margin-right: 32px">
 		}).then(function(response) {
 			var files = response.result.files;
 			if (files && files.length > 0) {
+
 				document.getElementById("gallery_header").style.display = "flex";
 				document.getElementById("gallery").style.display = "flex";
 
@@ -925,6 +968,8 @@ margin-left: 32px; margin-right: 32px">
 						auxDiv.appendChild(imgContainer);
 						auxDiv.appendChild(document.createElement('br'));
 						auxDiv.appendChild(a);
+						auxDiv.setAttribute('class','gallery_item');
+						auxDiv.setAttribute('data-name',name);
 						div.appendChild(auxDiv);
 
 
@@ -1073,45 +1118,45 @@ margin-left: 32px; margin-right: 32px">
 
 	function addNewCommentToFile(){
 
-		var timestamp = new Date().toISOString();
+		if(!commenting){
 
+			var timestamp = new Date().toISOString();
 
+			var comment_input = document.getElementById('file_comment_input');
+			var description = comment_input.value;
+			if(description) {
+				commenting = true;
 
-		console.log(timestamp);
+				var params = {
+					spreadsheetId: '1hqnI8buCJJFgQzgZCfJcEKoDuSpVOhtSfznLCaoRkR8',
+					range: 'Folha1!A:E',
+					valueInputOption: 'RAW',
+					insertDataOption: 'INSERT_ROWS',
+				};
 
-		var date = new Date(timestamp);
-		console.log(date.toString());
+				var valueRangeBody = {
+					"values": [[actual_file_id,userEmail,userName,description,timestamp]]
+				};
 
+				var request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
+				request.then(function(response) {
 
-		console.log("Ola");
-		var comment_input = document.getElementById('file_comment_input');
-		var description = comment_input.value;
-		if(description) {
+					addCommentToFileDiv(userName,description,timestamp);
+					comment_input.value = '';
+					var modal_number_comments = document.getElementById("modal_number_comments");
+					var newCount = parseInt(modal_number_comments.innerText) + 1;
+					modal_number_comments.innerText = newCount;
 
-			var params = {
-				spreadsheetId: '1hqnI8buCJJFgQzgZCfJcEKoDuSpVOhtSfznLCaoRkR8',
-				range: 'Folha1!A:E',
-				valueInputOption: 'RAW',
-				insertDataOption: 'INSERT_ROWS',
-			};
+					commenting = false;
 
-			var valueRangeBody = {
-				"values": [[actual_file_id,userEmail,userName,description,timestamp]]
-			};
+				}, function(reason) {
+					console.error('error: ' + reason.result.error.message);
+					alert('Aconteceu um erro. Tento mais tarde.')
+					commenting = false;
 
-			var request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
-			request.then(function(response) {
+				});
 
-				addCommentToFileDiv(userName,description,timestamp);
-				comment_input.value = '';
-				var modal_number_comments = document.getElementById("modal_number_comments");
-				var newCount = parseInt(modal_number_comments.innerText) + 1;
-				modal_number_comments.innerText = newCount;
-
-			}, function(reason) {
-				console.error('error: ' + reason.result.error.message);
-			});
-
+			}
 
 		}
 
@@ -1178,41 +1223,49 @@ margin-left: 32px; margin-right: 32px">
 
 	function addNewCommentToNote(){
 
-		var timestamp = new Date().toISOString();
+		if(!commenting) {
 
-		var comment_input = document.getElementById('note_comment_input');
-		var description = comment_input.value;
-		if(description) {
+			var timestamp = new Date().toISOString();
 
-			var params = {
-				spreadsheetId: '1hqnI8buCJJFgQzgZCfJcEKoDuSpVOhtSfznLCaoRkR8',
-				range: 'Folha1!A:E',
-				valueInputOption: 'RAW',
-				insertDataOption: 'INSERT_ROWS',
-			};
+			var comment_input = document.getElementById('note_comment_input');
+			var description = comment_input.value;
+			if (description) {
+				commenting = true;
 
-			var valueRangeBody = {
-				"values": [[visit.fileId,userEmail,userName,description,timestamp]]
-			};
+				var params = {
+					spreadsheetId: '1hqnI8buCJJFgQzgZCfJcEKoDuSpVOhtSfznLCaoRkR8',
+					range: 'Folha1!A:E',
+					valueInputOption: 'RAW',
+					insertDataOption: 'INSERT_ROWS',
+				};
 
-			var request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
-			request.then(function(response) {
+				var valueRangeBody = {
+					"values": [[visit.fileId, userEmail, userName, description, timestamp]]
+				};
 
-				addCommentToNoteDiv(userName,description,timestamp);
-				comment_input.value = '';
-				var modal_number_comments = document.getElementById("note_modal_number_comments");
-				var number_comments = document.getElementById("note_number_comments");
+				var request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
+				request.then(function (response) {
 
-				var newCount = parseInt(modal_number_comments.innerText) + 1;
-				modal_number_comments.innerText = newCount;
-				number_comments.innerText = newCount;
+					addCommentToNoteDiv(userName, description, timestamp);
+					comment_input.value = '';
+					var modal_number_comments = document.getElementById("note_modal_number_comments");
+					var number_comments = document.getElementById("note_number_comments");
+
+					var newCount = parseInt(modal_number_comments.innerText) + 1;
+					modal_number_comments.innerText = newCount;
+					number_comments.innerText = newCount;
+
+					commenting = false;
 
 
-			}, function(reason) {
-				console.error('error: ' + reason.result.error.message);
-			});
+				}, function (reason) {
+					console.error('error: ' + reason.result.error.message);
+					alert('Aconteceu um erro. Tento mais tarde.')
+					commenting = false;
+				});
 
 
+			}
 		}
 
 	}
@@ -1523,6 +1576,7 @@ margin-left: 32px; margin-right: 32px">
 						var description = files[i].description;
 
 						var imgContainer = document.createElement('a');
+
 						imgContainer.style.width = '64px';
 						imgContainer.style.height = '64px';
 						imgContainer.style.margin = '50px';
@@ -1551,6 +1605,8 @@ margin-left: 32px; margin-right: 32px">
 						auxDiv.appendChild(imgContainer);
 						auxDiv.appendChild(document.createElement('br'));
 						auxDiv.appendChild(a);
+						auxDiv.setAttribute('class','gallery_item');
+						auxDiv.setAttribute('data-name',name);
 						div.appendChild(auxDiv);
 
 
@@ -1752,6 +1808,8 @@ margin-left: 32px; margin-right: 32px">
 				}
 				if(gpx_id != '')
 					getGPX(gpx_id);
+				else
+					orderFiles();
 
 			} else {
 				appendPre('No files found.');
