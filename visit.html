@@ -511,6 +511,16 @@ margin-left: 32px; margin-right: 32px">
 		});
 
 		map.addLayer({
+			'id': 'plot_line',
+			'type': 'line',
+			'source': 'plot',
+			'paint': {
+				'line-color': 'rgba(20, 100, 25, 1)',
+				'line-width': 5
+			}
+		});
+
+		map.addLayer({
 			'id': 'route',
 			'type': 'line',
 			'source': 'route',
@@ -615,7 +625,17 @@ margin-left: 32px; margin-right: 32px">
 				}
 			}
 		});
-		if(found)
+		if(found) {
+			map.addLayer({
+				'id': 'plot_line',
+				'type': 'line',
+				'source': 'plot',
+				'paint': {
+					'line-color': 'rgba(20, 100, 25, 1)',
+					'line-width': 5
+				}
+			});
+
 			map.addLayer({
 				'id': 'plot',
 				'type': 'fill',
@@ -625,8 +645,18 @@ margin-left: 32px; margin-right: 32px">
 					'fill-color': '#55C93D',
 					'fill-opacity': 0.25
 				}
-			},'route');
-		else
+			}, 'route');
+		}else {
+
+			map.addLayer({
+				'id': 'plot_line',
+				'type': 'line',
+				'source': 'plot',
+				'paint': {
+					'line-color': 'rgba(20, 100, 25, 1)',
+					'line-width': 5
+				}
+			});
 
 			map.addLayer({
 				'id': 'plot',
@@ -638,6 +668,7 @@ margin-left: 32px; margin-right: 32px">
 					'fill-opacity': 0.25
 				}
 			});
+		}
 
 	}
 
@@ -670,7 +701,9 @@ margin-left: 32px; margin-right: 32px">
 		console.log("Lock released");
 
 
+		var points_in_map = [];
 		for(var i = 0 ; i < wayPoints.length; i++) {
+			(function () {
 			var id = files_map[wayPoints[i][0].name];
 			if (id in files_info) {
 				var el = document.createElement('div');
@@ -689,12 +722,27 @@ margin-left: 32px; margin-right: 32px">
 
 				var point = [wayPoints[i][0].longitude, wayPoints[i][0].latitude];
 
+				console.log(points_in_map.length);
+
+				for(var w = 0; w < points_in_map.length; w++){
+					console.log(points_in_map[w][0] + " " + points_in_map[w][1]);
+					console.log(point[0] + " " + point[1])
+					if(points_in_map[w][0] === point[0] && points_in_map[w][1] === point[1]){
+						console.log("found");
+						point[0]+= 0.00001000;
+						break;
+					}
+				}
+
+				points_in_map[i] = point;
+				console.log(points_in_map);
 				points_by_id[id] = wayPoints[i][0];
 
 				new mapboxgl.Marker(el)
 						.setLngLat(point)
 						.addTo(map);
 			}
+			})();
 
 		}
 
@@ -1325,6 +1373,8 @@ margin-left: 32px; margin-right: 32px">
 
 		if(mine){
 			modal_edit.style.display='block';
+		}else {
+			modal_edit.style.display = 'none';
 		}
 
 
@@ -1787,7 +1837,10 @@ margin-left: 32px; margin-right: 32px">
 					console.log(users);
 					var technicians = visit.technicians;
 					technicians = technicians.replace(';', ' & ');
-					document.getElementById('technician').innerHTML = technicians;
+					if(technicians.localeCompare('null') === 0)
+						document.getElementById('technician').innerHTML = 'Não disponível.';
+					else
+						document.getElementById('technician').innerHTML = technicians;
 					document.getElementById('ef').innerHTML = visit.ef;
 					if(visit.nea !== "null"){
 						document.getElementById('nea_text').style.display = 'inline';
