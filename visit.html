@@ -112,15 +112,17 @@
 <div id="note_modal" class="modal">
 
 	<div id="note_modal_content" class="modal-content-notes">
-		<a id="modal_title" style="position: relative; left: 38%; color: #00574B; font-size:24px; font-weight: bold; text-align: center ">Notas da visita</a>
 
-		<span id="note_modal_close" onclick="onNoteModalClose()" style="position: relative; float: right; color: gray; font-size:24px ">x</span>
+		<span style="border-bottom: 1px solid #ecedee; display: flex; flex-direction: row">
+			<a id="modal_title" style="position: relative; justify-content:center; width: 95%; color: #00574B; font-size:24px; font-weight: bold; text-align: center ">Notas da visita</a>
+			<a id="note_modal_close" onclick="onNoteModalClose()" style="cursor:pointer; color: dimgrey; font-size:40px;
+			margin-top: -16px; text-align: center; margin-left: auto; ">x</a>
+		</span>
 
 
+		<div style="position: relative; margin-top: 30px;font-size:20px; text-align: justify;text-justify: inter-word;">
 
-		<div style="position: relative; margin-top: 50px;font-size:20px; text-align: justify;text-justify: inter-word;">
-
-			<a id="note_modal_description" style="color: black; "></a>
+			<a id="note_modal_description" style="color: black; max-height: 75px; overflow-y: scroll"></a>
 			<br>
 			<div style="margin-bottom: 25px">
 				<a id="note_modal_number_comments" style="font-size: 16px; font-weight: bold; float: right">0</a>
@@ -216,18 +218,17 @@ margin-left: 32px; margin-right: 32px">
 
 				<div  id="note_gallery" style="display: flex; flex-direction: row; margin-top: 10px; align-items: baseline">
 					<span style="width: 13%; font-weight: bold; font-size: 18px; color: black"> Notas: </span>
-                    <span style="width: 20%; margin-left: 1%">
+                    <span style="width: fit-content; margin-left: 1%">
 					    <a id="no_notes"> Sem notas. </a>
                     </span>
 
-					<div id="note_comments_icon" style="display: none;float: right " onclick="checkNoteComments()" >
+					<div id="note_comments_icon" style="display: none; margin-left: 24px; cursor:pointer; float: right " onclick="checkNoteComments()" >
 
 						<svg width="1.5em"  style="position: relative;" height="1.5em" viewBox="0 0 16 16" class="bi bi-chat-left-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 							<path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v11.586l2-2A2 2 0 0 1 4.414 11H14a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
 							<path fill-rule="evenodd" d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
 						</svg>
-						<a>&thinsp;</a>
-						<a id="note_number_comments" style="font-size: 16px; font-weight: bold;">0</a>
+						<a id="note_number_comments" style="font-size: 16px; margin-left: 2px; padding-top: 3px; font-weight: bold;">0</a>
 
 
 					</div>
