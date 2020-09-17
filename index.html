@@ -140,6 +140,9 @@
       var lastDevice;
       var fullName;
 
+      var region_info = {};
+      var enemy_acronym = {};
+
       /**
        *  On load, called to load the auth2 library and API client library.
        */
@@ -192,7 +195,48 @@
           userName.style.display = 'inline-block';
 
           content.style.display = 'flex';
-          listUsers();
+
+
+          gapi.client.drive.files.get({
+            'fileId': '1u3bhE_SCCGCSUc3aFACFoD2QuDkMnM81',
+            'alt': 'media',
+          }).then(function (response) {
+            region_info = {};
+            enemy_acronym = {};
+
+            for(var i = 0; i < response.result.length; i++){
+              var actual_region = response.result[i];
+              region_info[actual_region['codigo']] = actual_region['inimigo'];
+            }
+
+
+            gapi.client.drive.files.get({
+              'fileId': '1iKLtUE3msrXY0t6VxV54LjbjKs5C_eR2',
+              'alt': 'media',
+            }).then(function (response) {
+              var lines = response.body.split('\n');
+              for(var i = 0 ; i < lines.length; i++){
+                var aux = lines[i].split(',');
+                enemy_acronym[aux[1].replace(/(\r\n|\n|\r)/gm, "")] = aux[0];
+              }
+
+              console.log(region_info, enemy_acronym);
+              listUsers();
+
+            },function(error){
+              console.error(error)
+              listUsers();
+            });
+
+
+
+          },function(error){
+            console.error(error)
+            listUsers();
+          });
+
+
+
         } else {
           document.getElementById("visits_tab").style.visibility = "hidden";
           document.getElementById("stats_tab").style.visibility = "hidden";
@@ -302,7 +346,8 @@
                 visitsDiv.style.alignItems = "flex-start";
                 visitsDiv.style.width = "100%";
                 div.appendChild(visitsDiv);
-                render(visitsDiv, userVisits);
+                console.log('no list')
+               // render(visitsDiv, userVisits);
                 setFilter();
                 updateList(currentGrouping);
               });
@@ -389,6 +434,7 @@
                 techDiv.style.alignItems = "flex-start";
                 techDiv.style.width = "100%";
                 div.appendChild(techDiv);
+                console.log('no group1');
                 render(techDiv, filtered);
               }
             }
@@ -421,6 +467,8 @@
               plotDiv.style.alignItems = "flex-start";
               plotDiv.style.width = "100%";
               div.append(plotDiv);
+              console.log('no group2');
+
               render(plotDiv, filtered);
             }
             if(!id.includes("groupby"))
@@ -439,6 +487,8 @@
             div.append(divElement);
             filtered = visits.filter(value => filter.includes(value.plotName));
             filtered = sort(id, filtered);
+            console.log('no group3');
+
             render(divElement, filtered);
 
             if(!id.includes("groupby"))
@@ -579,6 +629,7 @@
             var notestr = list[i].notes;
 
             var overall = list[i].overall;
+
             // if (typeof overall !== undefined && overall.length > 23)
             //   overall = overall.split("|")[0] + "|" + overall.split("|")[1] + "|" + overall.split("|")[2] + "|" + overall.split("|")[3] + " | ...";
             //
@@ -586,6 +637,7 @@
               overall = '&nbsp;';
 
             var aux = typeof overall !== undefined ? overall.split(" / ") : undefined;
+
 
             if (list[i].notes === "null")
               notestr = '&nbsp;';
@@ -597,9 +649,38 @@
               notestr = notestr.substr(0,18) + '...';
             }
 
-            if (typeof aux !== undefined && aux.length > 2) {
+            if (typeof aux !== undefined && aux.length > 1) {
+
+              var region_info_clone = JSON.parse(JSON.stringify(region_info));
+              console.log(region_info_clone);
+
+
+              var main_enemies =  region_info_clone[list[i].plot];
+
+              for(var w = 0; w < main_enemies.length; w ++){
+                main_enemies[w] = enemy_acronym[main_enemies[w]];
+              }
+
+              var main_enemies_string = '';
+              var not_main = '';
+              for(w = 0; w < aux.length ; w ++){
+                var actual_enemy = aux[w].replace(/[0-9]/g, '');
+                console.log(actual_enemy);
+                if (main_enemies.some(e => e === actual_enemy)) {
+                  if(main_enemies_string.localeCompare('') !== 0)
+                    main_enemies_string += ' / ';
+                  main_enemies_string += aux[w];
+
+                }else{
+                  if(not_main.localeCompare('') !== 0)
+                    not_main += ' / ';
+                  not_main += aux[w];
+                }
+              }
+              overall = main_enemies_string + ' / ' + not_main;
+              aux = overall.split(' / ');
               console.log(overall);
-              tooltip.innerText += '\n' + overall;
+              tooltip.innerText += '\n' + aux.join(" / ");
               box.appendChild(tooltip);
               overall = aux[0] + " / " + aux[1] + " / ...";
             }
