@@ -884,57 +884,78 @@ margin-left: 32px; margin-right: 32px">
 			var json =  JSON.parse(response.body); //response.body contains the string value of the file
 			var plot_id = json['plot_id'];
 			var plots_jsons;
-			readTextFile("resources/json/parcelas.json", function(text){
-				plots_jsons = JSON.parse(text);
 
-				for(var j = 0; j < plots_jsons.features.length; j++){
+			gapi.client.drive.files.get({
+				'fileId': '1O_mPNeJGPNftP01cfBQz5h-s36JhaCSB',
+				'alt': 'media',
+			}).then(function(response) {
+				//console.log(response.body);
+				plots_jsons = JSON.parse(response.body);
+
+				for(var j = 0; j < plots_jsons.features.length; j++) {
 					var idparcela = plots_jsons.features[j].properties['idparcela'];
-					if(idparcela == plot_id){
+					if (idparcela == plot_id) {
+						console.log('loaded');
 
-
-						/*document.getElementById('plot_name').innerHTML = plots_jsons.features[j].properties['nomeparcela'];
-
-						document.getElementById('number_photos').innerHTML = json['number_photos'];
-
-						document.getElementById('number_voice_records').innerHTML = json['number_voice_records'];
-
-						var begin = json['time_begin'].replace('_','');
-						var end = json['time_end'].replace('_','');
-
-						var year = begin.substring(0,4);
-						var month = begin.substring(4,6);
-						var day = begin.substring(6,8);
-						var hour = begin.substring(8,10);
-						var min = begin.substring(10,12);
-
-						document.getElementById('begin').innerHTML = day +'/' + month + '/' + year + ' ' + hour + ':' + min
-
-
-
-						var begin_date = new Date(begin.replace(
-								/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
-								'$4:$5:$6 $2/$3/$1'
-						));
-
-						var end_date = new Date(end.replace(
-								/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
-								'$4:$5:$6 $2/$3/$1'
-						));
-
-						var difference = end_date - begin_date;
-
-						document.getElementById('duration').innerHTML = msToTime(difference);
-
-						document.getElementById("info").style.visibility = "visible";/*/
-
-						var coordinates =  plots_jsons.features[j].geometry.coordinates;
+						var coordinates = plots_jsons.features[j].geometry.coordinates;
 						var toFocus = coordinates[0][0];
 						loadMap(toFocus, coordinates);
 						break;
 					}
 				}
-				//data.features[0].geometry
 			});
+			// readTextFile("resources/json/parcelas.json", function(text){
+			// 	plots_jsons = JSON.parse(text);
+			//
+			// 	for(var j = 0; j < plots_jsons.features.length; j++){
+			// 		var idparcela = plots_jsons.features[j].properties['idparcela'];
+			// 		if(idparcela == plot_id){
+			// 			console.log('loaded');
+			//
+			//
+			// 			/*document.getElementById('plot_name').innerHTML = plots_jsons.features[j].properties['nomeparcela'];
+			//
+			// 			document.getElementById('number_photos').innerHTML = json['number_photos'];
+			//
+			// 			document.getElementById('number_voice_records').innerHTML = json['number_voice_records'];
+			//
+			// 			var begin = json['time_begin'].replace('_','');
+			// 			var end = json['time_end'].replace('_','');
+			//
+			// 			var year = begin.substring(0,4);
+			// 			var month = begin.substring(4,6);
+			// 			var day = begin.substring(6,8);
+			// 			var hour = begin.substring(8,10);
+			// 			var min = begin.substring(10,12);
+			//
+			// 			document.getElementById('begin').innerHTML = day +'/' + month + '/' + year + ' ' + hour + ':' + min
+			//
+			//
+			//
+			// 			var begin_date = new Date(begin.replace(
+			// 					/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
+			// 					'$4:$5:$6 $2/$3/$1'
+			// 			));
+			//
+			// 			var end_date = new Date(end.replace(
+			// 					/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
+			// 					'$4:$5:$6 $2/$3/$1'
+			// 			));
+			//
+			// 			var difference = end_date - begin_date;
+			//
+			// 			document.getElementById('duration').innerHTML = msToTime(difference);
+			//
+			// 			document.getElementById("info").style.visibility = "visible";/*/
+			//
+			// 			var coordinates =  plots_jsons.features[j].geometry.coordinates;
+			// 			var toFocus = coordinates[0][0];
+			// 			loadMap(toFocus, coordinates);
+			// 			break;
+			// 		}
+			// 	}
+			// 	//data.features[0].geometry
+			// });
 
 		});
 	}
