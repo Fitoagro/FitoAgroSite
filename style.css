@@ -299,3 +299,14 @@ h3, h6{
     overflow: auto;
 }
 
+.comment_button {
+    font-size:18px;
+    width: 20%;
+    height: 40px;
+}
+
+.comment_button:focus {
+    outline: none;
+    box-shadow: none;
+}
+

@@ -171,7 +171,7 @@
           authorizeButton.onclick = handleAuthClick;
           signoutButton.onclick = handleSignoutClick;
         }, function(error) {
-          appendPre(JSON.stringify(error, null, 2));
+          appendPre(JSON.stringify(error, null, 2),false);
         });
       }
 
@@ -275,10 +275,12 @@
        *
        * @param {string} message Text to be placed in pre element.
        */
-      function appendPre(message) {
+      function appendPre(message,header) {
         var pre = document.getElementById('visits');
         var textContent = document.createElement('h3');
-        textContent.innerText = message + '\n';
+        if(header)
+          textContent.setAttribute('id','header');
+        textContent.innerText = message;
         textContent.style.fontFamily = fontFamily;
         pre.appendChild(textContent);
       }
@@ -300,7 +302,7 @@
 
       function listVisits(fileID, user) {
         if(visits.length === 0)
-          appendPre('Visitas de Campo:');
+          appendPre('Visitas de Campo',true);
         gapi.client.drive.files.list({
           'folderId' : fileID,
           'pageSize': 100,
@@ -575,8 +577,10 @@
       }
 
       function render(div, list) {
+        var success_counter = 0;
         for(var i=0; i<list.length; i++) {
           if(list[i].plot !== undefined) {
+            success_counter ++;
             var box = document.createElement('div');
             box.setAttribute('class', 'grid');
             box.setAttribute('id', list[i].fileId);
@@ -732,6 +736,9 @@
             //li.innerHTML=li.innerHTML + element.name;
           }
         }
+
+        document.getElementById('header').innerText  = 'Visitas de Campo (' + success_counter + ')'
+        //TODO
       }
 
       function refactorDate(date) {
