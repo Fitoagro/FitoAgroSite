@@ -419,6 +419,7 @@
 
         switch (currentGrouping) {
           case "groupby-technician":
+            var total = 0;
             for(var i=0; i< users.length; i++){
               filtered = visits.filter(value => value.user === users[i].id);
               filtered = sort(id, filtered);
@@ -438,13 +439,17 @@
                 div.appendChild(techDiv);
                 console.log('no group1');
                 render(techDiv, filtered);
+                total += filtered.length;
               }
             }
+            document.getElementById('header').innerText  = 'Visitas de Campo (' + total + ')'
+
             if(!id.includes("groupby"))
               updateSort();
             break;
           case "groupby-plot":
             var list = visits.filter(value => filter.includes(value.plotName));
+            var total = 0;
             for(var i=0; i< plots.length; i++){
               plots = plots.sort(function (a, b) {
                 return ((a < b) ? -1 : ((a > b) ? 1 : 0));
@@ -472,7 +477,10 @@
               console.log('no group2');
 
               render(plotDiv, filtered);
+              total += filtered.length;
             }
+            document.getElementById('header').innerText  = 'Visitas de Campo (' + total + ')'
+
             if(!id.includes("groupby"))
               updateSort();
             break;

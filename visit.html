@@ -724,20 +724,15 @@ margin-left: 32px; margin-right: 32px">
 
 				var point = [wayPoints[i][0].longitude, wayPoints[i][0].latitude];
 
-				console.log(points_in_map.length);
 
 				for(var w = 0; w < points_in_map.length; w++){
-					console.log(points_in_map[w][0] + " " + points_in_map[w][1]);
-					console.log(point[0] + " " + point[1])
 					if(points_in_map[w][0] === point[0] && points_in_map[w][1] === point[1]){
-						console.log("found");
 						point[0]+= 0.00001000;
 						break;
 					}
 				}
 
 				points_in_map[i] = point;
-				console.log(points_in_map);
 				points_by_id[id] = wayPoints[i][0];
 
 				new mapboxgl.Marker(el)
@@ -890,14 +885,11 @@ margin-left: 32px; margin-right: 32px">
 				'fileId': '1O_mPNeJGPNftP01cfBQz5h-s36JhaCSB',
 				'alt': 'media',
 			}).then(function(response) {
-				//console.log(response.body);
 				plots_jsons = JSON.parse(response.body);
 
 				for(var j = 0; j < plots_jsons.features.length; j++) {
 					var idparcela = plots_jsons.features[j].properties['idparcela'];
 					if (idparcela == plot_id) {
-						console.log('loaded');
-
 						var coordinates = plots_jsons.features[j].geometry.coordinates;
 						var toFocus = coordinates[0][0];
 						loadMap(toFocus, coordinates);
@@ -970,7 +962,6 @@ margin-left: 32px; margin-right: 32px">
 		aux = file2.split('_');
 		var file2_date = parseInt(aux[aux.length -1]);
 
-		console.log(file1_date + " " + file2_date);
 
 		if ( file1_date < file2_date ){
 			return -1;
@@ -1094,7 +1085,6 @@ margin-left: 32px; margin-right: 32px">
 				'q': `'${COMMENTS_FOLDER_ID}' in parents and mimeType = 'application/vnd.google-apps.folder' and not trashed`
 
 			}).then(function(response) {
-				console.log(response);
 				var files = response.result.files;
 				for(var i = 0; i < files.length; i++){
 					var userFolder = files[i].name;
@@ -1107,7 +1097,6 @@ margin-left: 32px; margin-right: 32px">
 						'q': `'${files[i].id}' in parents and name = '` + file_id + `' and not trashed`
 
 					}).then(function(response) {
-						console.log(response);
 						var files = response.result.files;
 						if (files.length > 0) {
 							gapi.client.drive.files.get({
@@ -1200,14 +1189,12 @@ margin-left: 32px; margin-right: 32px">
 		if (confirm("Pretende eliminar o comentário?")) {
 
 			//TODO eliminar o comentario
-			console.log(file_id);
 			gapi.client.drive.files.list({
 				'folderId' : myCommentsFolderId,
 				'fields': "nextPageToken, files(id, name)",
 				'q': `'${myCommentsFolderId}' in parents and name = '` + file_id + `' and not trashed`
 
 			}).then(function(response) {
-				console.log(response);
 				var files = response.result.files;
 				if (files.length > 0) {
 					gapi.client.drive.files.get({
@@ -1217,16 +1204,12 @@ margin-left: 32px; margin-right: 32px">
 						var comments_array = response.result.comments;
 						for(var i = 0; i < comments_array.length; i++){
 							var comment = comments_array[i];
-							console.log(comment.timestamp);
-							console.log(timestamp);
-
 							if(comment.timestamp.localeCompare(timestamp) === 0){
 								comments_array.splice(i, 1);
 								break;
 							}
 						}
 						var finalComments = {comments: comments_array};
-						console.log(finalComments);
 
 						updateJSONFIle(files[0].id,JSON.stringify(finalComments),null,null,null);
 
@@ -1449,9 +1432,7 @@ margin-left: 32px; margin-right: 32px">
 					'q': `'${COMMENTS_FOLDER_ID}' in parents and name = '` + userEmail + `' and not trashed`
 				}).then(function(response) {
 					var files = response.result.files;
-					console.log(files);
 					if(files.length === 0){
-						console.log('vai criar');
 						gapi.client.drive.files.create({
 							"name" : userEmail,
 							"mimeType" : "application/vnd.google-apps.folder",
@@ -1469,7 +1450,6 @@ margin-left: 32px; margin-right: 32px">
 					}else{
 						var folderId = files[0].id;
 						myCommentsFolderId = folderId;
-						console.log('ja foi criado');
 						gapi.client.drive.files.list({
 							'folderId' : files[0].id,
 							'pageSize': 100,
@@ -1483,10 +1463,8 @@ margin-left: 32px; margin-right: 32px">
 									'alt': 'media',
 								}).then(function (response) {
 									var obj = JSON.parse(response.body);
-									console.log(obj);
 									var comment = {timestamp: timestamp, username: userName, description: description};
 									obj.comments.push(comment);
-									console.log(obj);
 
 									updateJSONFIle(files[0].id,JSON.stringify(obj),endCommentProcess,description,timestamp);
 
@@ -1652,9 +1630,7 @@ margin-left: 32px; margin-right: 32px">
 					'q': `'${COMMENTS_FOLDER_ID}' in parents and name = '` + userEmail + `' and not trashed`
 				}).then(function(response) {
 					var files = response.result.files;
-					console.log(files);
 					if(files.length === 0){
-						console.log('vai criar');
 						gapi.client.drive.files.create({
 							"name" : userEmail,
 							"mimeType" : "application/vnd.google-apps.folder",
@@ -1670,7 +1646,6 @@ margin-left: 32px; margin-right: 32px">
 
 					}else{
 						var folderId = files[0].id;
-						console.log('ja foi criado');
 						gapi.client.drive.files.list({
 							'folderId' : files[0].id,
 							'pageSize': 100,
@@ -1684,10 +1659,8 @@ margin-left: 32px; margin-right: 32px">
 									'alt': 'media',
 								}).then(function (response) {
 									var obj = JSON.parse(response.body);
-									console.log(obj);
 									var comment = {timestamp: timestamp, username: userName, description: description};
 									obj.comments.push(comment);
-									console.log(obj);
 
 									updateJSONFIle(files[0].id,JSON.stringify(obj),endNoteCommentProcess,description,timestamp);
 
@@ -1825,6 +1798,7 @@ margin-left: 32px; margin-right: 32px">
 
 	function onModalClose() {
 		var modal_number_comments = document.getElementById("modal_number_comments");
+		document.getElementById("file_comment_input").value = '';
 		modal_number_comments.innerText = '0';
 
 		document.getElementById('myModal').style.display = 'none';
@@ -1882,7 +1856,6 @@ margin-left: 32px; margin-right: 32px">
 	}
 
 	function confirmEdit() {
-		console.log("vai tentar");
 		var editIcon = document.getElementById("modal_edit");
 		var closeIcon = document.getElementById("modal_edit_close");
 		var confirmIcon = document.getElementById("modal_edit_confirm");
@@ -1891,7 +1864,6 @@ margin-left: 32px; margin-right: 32px">
 		var description = document.getElementById("modal_description");
 		var description_input = document.getElementById("modal_description_edit");
 		if(description_input.value && description_input.value.localeCompare(description.innerText) !==0){
-			console.log("tentou");
 			var body = {'description': description_input.value};
 			var request = gapi.client.drive.files.update({
 				'fileId': actual_file_id,
@@ -1912,7 +1884,6 @@ margin-left: 32px; margin-right: 32px">
 				}
 
 				files_info[actual_file_id].description = description.innerText;
-				console.log(files_info[actual_file_id]);
 			});
 
 		}else {
@@ -1977,7 +1948,6 @@ margin-left: 32px; margin-right: 32px">
 
 
 	function getDate(name) {
-		console.log(name);
         var splittedName = name.split('_');
         var raw_time = splittedName[splittedName.length-1];
         var raw_day = splittedName[splittedName.length-2];
@@ -2234,7 +2204,6 @@ margin-left: 32px; margin-right: 32px">
 
 					}
 
-					console.log(users);
 					var technicians = visit.technicians;
 					technicians = technicians.replace(';', ' & ');
 					if(technicians.localeCompare('null') === 0)
