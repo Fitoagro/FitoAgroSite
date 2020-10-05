@@ -91,11 +91,10 @@
 					</div>
 					<hr/>
 
-					<div style="float: left; position:relative;">
-						<input id="file_comment_input"  style="color: black; font-size:24px;"/>
+					<div style="float: left; position:relative; width: 100%">
+						<input id="file_comment_input"  style="color: black; font-size:24px; width: 75%;"/>
 
-						<button onclick="addNewCommentToFile()" style="font-size:24px">Enviar <i class="fa fa-send-o"></i></button>
-
+						<button onclick="addNewCommentToFile()" class= 'comment_button' type="button">Comentar</button>
 					</div>
 
 				</div>
@@ -141,10 +140,11 @@
 			</div>
 			<hr />
 
-			<div style="float: left; height: 100px; position:relative;">
-				<input id="note_comment_input"  style="color: black; font-size:24px;"/>
+			<div style="float: left; width:100%; position:relative;">
+				<input id="note_comment_input"  style="color: black; font-size:24px; width: 75%"/>
 
-				<button onclick="addNewCommentToNote()" style="font-size:24px">Enviar <i class="fa fa-send-o"></i></button>
+				<button onclick="addNewCommentToNote()" class= 'comment_button' type="button">Comentar</button>
+
 
 			</div>
 			<p>&nbsp;</p>
@@ -304,6 +304,7 @@ margin-left: 32px; margin-right: 32px">
 
 <script type='text/javascript'>
 
+	const COMMENTS_FOLDER_ID = '1Fl4pNIhHQG2OWc9oLrGUBT8pddqzoMvW';
 
 	mapboxgl.accessToken = 'pk.eyJ1IjoibWlndWVsYXNjb3JyZWlhIiwiYSI6ImNrN25iYzh4NTAxMHIzc210bzJpM3EyZDcifQ.pVWzek_lEMfJixSnBu1ZMA';
 
@@ -327,7 +328,7 @@ margin-left: 32px; margin-right: 32px">
 	var users = [];
 	var visit = [];
 	var plotVisits = [];
-
+	var myCommentsFolderId = '';
 	var commenting = false;
 
 	var mFocus;
@@ -723,20 +724,15 @@ margin-left: 32px; margin-right: 32px">
 
 				var point = [wayPoints[i][0].longitude, wayPoints[i][0].latitude];
 
-				console.log(points_in_map.length);
 
 				for(var w = 0; w < points_in_map.length; w++){
-					console.log(points_in_map[w][0] + " " + points_in_map[w][1]);
-					console.log(point[0] + " " + point[1])
 					if(points_in_map[w][0] === point[0] && points_in_map[w][1] === point[1]){
-						console.log("found");
 						point[0]+= 0.00001000;
 						break;
 					}
 				}
 
 				points_in_map[i] = point;
-				console.log(points_in_map);
 				points_by_id[id] = wayPoints[i][0];
 
 				new mapboxgl.Marker(el)
@@ -884,57 +880,75 @@ margin-left: 32px; margin-right: 32px">
 			var json =  JSON.parse(response.body); //response.body contains the string value of the file
 			var plot_id = json['plot_id'];
 			var plots_jsons;
-			readTextFile("resources/json/parcelas.json", function(text){
-				plots_jsons = JSON.parse(text);
 
-				for(var j = 0; j < plots_jsons.features.length; j++){
+			gapi.client.drive.files.get({
+				'fileId': '1O_mPNeJGPNftP01cfBQz5h-s36JhaCSB',
+				'alt': 'media',
+			}).then(function(response) {
+				plots_jsons = JSON.parse(response.body);
+
+				for(var j = 0; j < plots_jsons.features.length; j++) {
 					var idparcela = plots_jsons.features[j].properties['idparcela'];
-					if(idparcela == plot_id){
-
-
-						/*document.getElementById('plot_name').innerHTML = plots_jsons.features[j].properties['nomeparcela'];
-
-						document.getElementById('number_photos').innerHTML = json['number_photos'];
-
-						document.getElementById('number_voice_records').innerHTML = json['number_voice_records'];
-
-						var begin = json['time_begin'].replace('_','');
-						var end = json['time_end'].replace('_','');
-
-						var year = begin.substring(0,4);
-						var month = begin.substring(4,6);
-						var day = begin.substring(6,8);
-						var hour = begin.substring(8,10);
-						var min = begin.substring(10,12);
-
-						document.getElementById('begin').innerHTML = day +'/' + month + '/' + year + ' ' + hour + ':' + min
-
-
-
-						var begin_date = new Date(begin.replace(
-								/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
-								'$4:$5:$6 $2/$3/$1'
-						));
-
-						var end_date = new Date(end.replace(
-								/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
-								'$4:$5:$6 $2/$3/$1'
-						));
-
-						var difference = end_date - begin_date;
-
-						document.getElementById('duration').innerHTML = msToTime(difference);
-
-						document.getElementById("info").style.visibility = "visible";/*/
-
-						var coordinates =  plots_jsons.features[j].geometry.coordinates;
+					if (idparcela == plot_id) {
+						var coordinates = plots_jsons.features[j].geometry.coordinates;
 						var toFocus = coordinates[0][0];
 						loadMap(toFocus, coordinates);
 						break;
 					}
 				}
-				//data.features[0].geometry
 			});
+			// readTextFile("resources/json/parcelas.json", function(text){
+			// 	plots_jsons = JSON.parse(text);
+			//
+			// 	for(var j = 0; j < plots_jsons.features.length; j++){
+			// 		var idparcela = plots_jsons.features[j].properties['idparcela'];
+			// 		if(idparcela == plot_id){
+			// 			console.log('loaded');
+			//
+			//
+			// 			/*document.getElementById('plot_name').innerHTML = plots_jsons.features[j].properties['nomeparcela'];
+			//
+			// 			document.getElementById('number_photos').innerHTML = json['number_photos'];
+			//
+			// 			document.getElementById('number_voice_records').innerHTML = json['number_voice_records'];
+			//
+			// 			var begin = json['time_begin'].replace('_','');
+			// 			var end = json['time_end'].replace('_','');
+			//
+			// 			var year = begin.substring(0,4);
+			// 			var month = begin.substring(4,6);
+			// 			var day = begin.substring(6,8);
+			// 			var hour = begin.substring(8,10);
+			// 			var min = begin.substring(10,12);
+			//
+			// 			document.getElementById('begin').innerHTML = day +'/' + month + '/' + year + ' ' + hour + ':' + min
+			//
+			//
+			//
+			// 			var begin_date = new Date(begin.replace(
+			// 					/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
+			// 					'$4:$5:$6 $2/$3/$1'
+			// 			));
+			//
+			// 			var end_date = new Date(end.replace(
+			// 					/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
+			// 					'$4:$5:$6 $2/$3/$1'
+			// 			));
+			//
+			// 			var difference = end_date - begin_date;
+			//
+			// 			document.getElementById('duration').innerHTML = msToTime(difference);
+			//
+			// 			document.getElementById("info").style.visibility = "visible";/*/
+			//
+			// 			var coordinates =  plots_jsons.features[j].geometry.coordinates;
+			// 			var toFocus = coordinates[0][0];
+			// 			loadMap(toFocus, coordinates);
+			// 			break;
+			// 		}
+			// 	}
+			// 	//data.features[0].geometry
+			// });
 
 		});
 	}
@@ -948,7 +962,6 @@ margin-left: 32px; margin-right: 32px">
 		aux = file2.split('_');
 		var file2_date = parseInt(aux[aux.length -1]);
 
-		console.log(file1_date + " " + file2_date);
 
 		if ( file1_date < file2_date ){
 			return -1;
@@ -1060,56 +1073,171 @@ margin-left: 32px; margin-right: 32px">
 		});
 	}
 
+	function compareTimestamps(comment1, comment2) {
+
+		return comment1.timestamp.localeCompare(comment2.timestamp);
+	}
+
 	function getComments(file_id, isFile, initial){
-		var params = {
-			spreadsheetId: '1hqnI8buCJJFgQzgZCfJcEKoDuSpVOhtSfznLCaoRkR8',
-			range: 'Folha1!A2:E',
-			valueRenderOption: 'UNFORMATTED_VALUE',
-			dateTimeRenderOption: 'FORMATTED_STRING',
-		};
+			gapi.client.drive.files.list({
+				'folderId' : COMMENTS_FOLDER_ID,
+				'pageSize': 100,
+				'q': `'${COMMENTS_FOLDER_ID}' in parents and mimeType = 'application/vnd.google-apps.folder' and not trashed`
 
-		var request = gapi.client.sheets.spreadsheets.values.get(params);
-		request.then(function(response) {
-			var aux = JSON.parse(response['body']);
-			console.log(aux);
-			var values = aux.values;
-			var number_comments = 0;
-			if (typeof values !== 'undefined') {
-				for (var i = 0; i < values.length; i++) {
-					if (values[i][0].localeCompare(file_id) === 0) {
-						number_comments++;
-						if(!initial) {
-							if (isFile)
-								addCommentToFileDiv(values[i][2], values[i][3], values[i][4]);
-							else
-								addCommentToNoteDiv(values[i][2], values[i][3], values[i][4])
+			}).then(function(response) {
+				var files = response.result.files;
+				for(var i = 0; i < files.length; i++){
+					var userFolder = files[i].name;
+					var mine = userFolder.localeCompare(userEmail) === 0;
+					if(mine)
+						myCommentsFolderId = files[i].id;
+					gapi.client.drive.files.list({
+						'folderId' : files[i].id,
+						'fields': "nextPageToken, files(id, name)",
+						'q': `'${files[i].id}' in parents and name = '` + file_id + `' and not trashed`
+
+					}).then(function(response) {
+						var files = response.result.files;
+						if (files.length > 0) {
+							gapi.client.drive.files.get({
+								'fileId': files[0].id,
+								'alt': 'media',
+							}).then(function (response) {
+								var comments_array = response.result.comments;
+								var number_comments = 0;
+
+								for (var i = 0; i < comments_array.length; i++) {
+									number_comments++;
+									if (!initial) {
+										if (isFile)
+											addCommentToFileDiv(comments_array[i].username, comments_array[i].description, comments_array[i].timestamp,mine);
+										else
+											addCommentToNoteDiv(comments_array[i].username, comments_array[i].description, comments_array[i].timestamp,mine);
+									}
+								}
+								var modal_number_comments;
+
+								if (isFile)
+									modal_number_comments = document.getElementById("modal_number_comments");
+								else {
+									modal_number_comments = document.getElementById("note_modal_number_comments");
+									var main_number_comments = document.getElementById("note_number_comments");
+									main_number_comments.innerText = number_comments;
+
+								}
+
+								modal_number_comments.innerText = number_comments;
+
+							}, function (error) {
+								console.error(error)
+							});
+
 						}
-					}
-				}
-				var modal_number_comments;
-
-				if(isFile)
-					modal_number_comments = document.getElementById("modal_number_comments");
-				else {
-					modal_number_comments = document.getElementById("note_modal_number_comments");
-					var main_number_comments = document.getElementById("note_number_comments");
-					main_number_comments.innerText = number_comments;
-
+					});
 				}
 
-				modal_number_comments.innerText = number_comments;
-			}
+			});
 
-		}, function(reason) {
-			console.error('error: ' + reason.result.error.message);
-		});
+
+
+		// var params = {
+		// 	spreadsheetId: '1hqnI8buCJJFgQzgZCfJcEKoDuSpVOhtSfznLCaoRkR8',
+		// 	range: 'Folha1!A2:E',
+		// 	valueRenderOption: 'UNFORMATTED_VALUE',
+		// 	dateTimeRenderOption: 'FORMATTED_STRING',
+		// };
+		//
+		// var request = gapi.client.sheets.spreadsheets.values.get(params);
+		// request.then(function(response) {
+		// 	var aux = JSON.parse(response['body']);
+		// 	console.log(aux);
+		// 	var values = aux.values;
+		// 	var number_comments = 0;
+		// 	if (typeof values !== 'undefined') {
+		// 		for (var i = 0; i < values.length; i++) {
+		// 			if (values[i][0].localeCompare(file_id) === 0) {
+		// 				number_comments++;
+		// 				if(!initial) {
+		// 					if (isFile)
+		// 						addCommentToFileDiv(values[i][2], values[i][3], values[i][4]);
+		// 					else
+		// 						addCommentToNoteDiv(values[i][2], values[i][3], values[i][4])
+		// 				}
+		// 			}
+		// 		}
+		// 		var modal_number_comments;
+		//
+		// 		if(isFile)
+		// 			modal_number_comments = document.getElementById("modal_number_comments");
+		// 		else {
+		// 			modal_number_comments = document.getElementById("note_modal_number_comments");
+		// 			var main_number_comments = document.getElementById("note_number_comments");
+		// 			main_number_comments.innerText = number_comments;
+		//
+		// 		}
+		//
+		// 		modal_number_comments.innerText = number_comments;
+		// 	}
+		//
+		// }, function(reason) {
+		// 	console.error('error: ' + reason.result.error.message);
+		// });
 
 	}
 
-	function addCommentToFileDiv(userName,description,timestamp){
+	function deleteComment(file_id,timestamp,div, no_comments,modal_counter,page_counter){
+		if (confirm("Pretende eliminar o comentário?")) {
 
-		var m = new Date(timestamp);
-		timestamp =
+			//TODO eliminar o comentario
+			gapi.client.drive.files.list({
+				'folderId' : myCommentsFolderId,
+				'fields': "nextPageToken, files(id, name)",
+				'q': `'${myCommentsFolderId}' in parents and name = '` + file_id + `' and not trashed`
+
+			}).then(function(response) {
+				var files = response.result.files;
+				if (files.length > 0) {
+					gapi.client.drive.files.get({
+						'fileId': files[0].id,
+						'alt': 'media',
+					}).then(function (response) {
+						var comments_array = response.result.comments;
+						for(var i = 0; i < comments_array.length; i++){
+							var comment = comments_array[i];
+							if(comment.timestamp.localeCompare(timestamp) === 0){
+								comments_array.splice(i, 1);
+								break;
+							}
+						}
+						var finalComments = {comments: comments_array};
+
+						updateJSONFIle(files[0].id,JSON.stringify(finalComments),null,null,null);
+
+						div.remove();
+
+						var newCount = parseInt(modal_counter.innerText) - 1;
+						modal_counter.innerText = newCount;
+						if(newCount === 0)
+							no_comments.style.display ='block'
+						if(page_counter !== null)
+							page_counter.innerText = newCount;
+
+						alert('Comentário eliminado com sucesso.')
+
+					});
+				}
+			});
+
+
+
+		}
+
+	}
+
+	function addCommentToFileDiv(userName,description,original_timestamp,mine){
+
+		var m = new Date(original_timestamp);
+		var timestamp =
 				m.getUTCFullYear() + "/" +
 				("0" + (m.getUTCMonth()+1)).slice(-2) + "/" +
 				("0" + m.getUTCDate()).slice(-2) + " " +
@@ -1133,6 +1261,7 @@ margin-left: 32px; margin-right: 32px">
 		var separator = document.createElement("hr");
 
 
+		firstLine.style.width = '80%';
 		firstLine.style.cssFloat = 'left';
 		userImage.style.cssFloat = 'left';
 
@@ -1153,15 +1282,132 @@ margin-left: 32px; margin-right: 32px">
 		firstLine.appendChild(document.createTextNode(" "));
 		firstLine.appendChild(commentTimestamp);
 
+		if(mine) {
+			var deleteIcon = document.createElement('div');
+			deleteIcon.innerHTML =
+					`<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+				<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+				<path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+				</svg>`
+
+			deleteIcon.style.cssFloat = 'right';
+
+			deleteIcon.onclick = function () {
+				deleteComment(actual_file_id, original_timestamp, columns, no_comments, document.getElementById("modal_number_comments"), null)
+			};
+			firstLine.appendChild(deleteIcon);
+
+		}
+
+
 		commentDiv.appendChild(firstLine);
 		commentDiv.appendChild(breakLine);
 		commentDiv.appendChild(commentText);
 
 		columns.appendChild(userImage);
 		columns.appendChild(commentDiv);
+		columns.appendChild(separator);
+		columns.setAttribute('class','comment_item');
+		columns.setAttribute('data-timestramp',timestamp);
 
-		mainDiv.appendChild(columns);
-		mainDiv.appendChild(separator);
+		mainDiv.prepend(columns);
+
+		var $wrapper = $('#file_comments');
+		$wrapper.find('.comment_item').sort(function(a, b) {
+			return -a.dataset.timestramp.localeCompare(b.dataset.timestramp);
+		}).appendTo($wrapper);
+
+
+	}
+
+	function updateJSONFIle(fileId, fileData, callback,description,timestamp) {
+		const boundary = '-------314159265358979323846';
+		const delimiter = "\r\n--" + boundary + "\r\n";
+		const close_delim = "\r\n--" + boundary + "--";
+
+		const contentType = 'application/json';
+
+
+		var multipartRequestBody =
+				delimiter +
+				'Content-Type: application/json\r\n\r\n' +
+				delimiter +
+				'Content-Type: ' + contentType + '\r\n\r\n' +
+				fileData +
+				close_delim;
+
+		var request = gapi.client.request({
+			'path': '/upload/drive/v2/files/' + fileId,
+			'method': 'PUT',
+			'params': {'uploadType': 'multipart','alt': 'json'},
+			'headers': {
+				'Content-Type': 'multipart/related; boundary="' + boundary + '"'
+			},
+			'body': multipartRequestBody}).then(function(response) {
+				if(callback)
+					callback(description,timestamp);
+			commenting = false;
+		},function(error){
+			alert('Aconteceu um erro. Tento mais tarde.')
+			commenting = false;
+		});
+	}
+
+	function createJSON(name,data,parent,callback,description,timestamp) {
+		const boundary = '-------314159265358979323846';
+		const delimiter = "\r\n--" + boundary + "\r\n";
+		const close_delim = "\r\n--" + boundary + "--";
+
+		const contentType = 'application/json';
+
+		var metadata = {
+			'name': name,
+			'mimeType': contentType,
+			'parents': [parent]
+		};
+
+		var multipartRequestBody =
+				delimiter +
+				'Content-Type: application/json\r\n\r\n' +
+				JSON.stringify(metadata) +
+				delimiter +
+				'Content-Type: ' + contentType + '\r\n\r\n' +
+				data +
+				close_delim;
+
+		var request = gapi.client.request({
+			'path': '/upload/drive/v3/files',
+			'method': 'POST',
+			'params': {'uploadType': 'multipart'},
+			'headers': {
+				'Content-Type': 'multipart/related; boundary="' + boundary + '"'
+			},
+			'body': multipartRequestBody}).then(function(response) {
+				if(callback)
+					callback(description,timestamp);
+				commenting = false;
+		},function(error){
+			alert('Aconteceu um erro. Tento mais tarde.')
+			commenting = false;
+		});
+	}
+
+
+	function endCommentProcess(description, timestamp) {
+		addCommentToFileDiv(userName,description,timestamp,true);
+		document.getElementById('file_comment_input').value = '';
+		var modal_number_comments = document.getElementById("modal_number_comments");
+		modal_number_comments.innerText = parseInt(modal_number_comments.innerText) + 1;
+	}
+
+	function endNoteCommentProcess(description, timestamp) {
+		addCommentToNoteDiv(userName,description,timestamp,true);
+		document.getElementById('note_comment_input').value = '';
+		var modal_number_comments = document.getElementById("note_modal_number_comments");
+		modal_number_comments.innerText = parseInt(modal_number_comments.innerText) + 1;
+
+		var main_number_comments = document.getElementById("note_number_comments");
+		main_number_comments.innerText = parseInt(main_number_comments.innerText) + 1;
 
 	}
 
@@ -1174,36 +1420,104 @@ margin-left: 32px; margin-right: 32px">
 			var comment_input = document.getElementById('file_comment_input');
 			var description = comment_input.value;
 			if(description) {
+
+				comment_input.value = '';
+
 				commenting = true;
 
-				var params = {
-					spreadsheetId: '1hqnI8buCJJFgQzgZCfJcEKoDuSpVOhtSfznLCaoRkR8',
-					range: 'Folha1!A:E',
-					valueInputOption: 'RAW',
-					insertDataOption: 'INSERT_ROWS',
-				};
+				gapi.client.drive.files.list({
+					'folderId' : COMMENTS_FOLDER_ID,
+					'pageSize': 100,
+					'fields': "nextPageToken, files(id, name)",
+					'q': `'${COMMENTS_FOLDER_ID}' in parents and name = '` + userEmail + `' and not trashed`
+				}).then(function(response) {
+					var files = response.result.files;
+					if(files.length === 0){
+						gapi.client.drive.files.create({
+							"name" : userEmail,
+							"mimeType" : "application/vnd.google-apps.folder",
+							"parents" : [COMMENTS_FOLDER_ID],
+						}).then(function (response) {
+							myCommentsFolderId = response.result.id;
+							var comments = { comments:[{timestamp: timestamp, username: userName, description: description}] };
 
-				var valueRangeBody = {
-					"values": [[actual_file_id,userEmail,userName,description,timestamp]]
-				};
+							createJSON(actual_file_id,JSON.stringify(comments),response.result.id,endCommentProcess,description,timestamp);
+						},function(error){
+							alert('Aconteceu um erro. Tento mais tarde.')
+							commenting = false;
+						});
 
-				var request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
-				request.then(function(response) {
+					}else{
+						var folderId = files[0].id;
+						myCommentsFolderId = folderId;
+						gapi.client.drive.files.list({
+							'folderId' : files[0].id,
+							'pageSize': 100,
+							'fields': "nextPageToken, files(id, name)",
+							'q': `'${files[0].id}' in parents and name = '` + actual_file_id + `' and not trashed`
+						}).then(function(response) {
+							var files = response.result.files;
+							if(files.length > 0) {
+								gapi.client.drive.files.get({
+									'fileId': files[0].id,
+									'alt': 'media',
+								}).then(function (response) {
+									var obj = JSON.parse(response.body);
+									var comment = {timestamp: timestamp, username: userName, description: description};
+									obj.comments.push(comment);
 
-					addCommentToFileDiv(userName,description,timestamp);
-					comment_input.value = '';
-					var modal_number_comments = document.getElementById("modal_number_comments");
-					var newCount = parseInt(modal_number_comments.innerText) + 1;
-					modal_number_comments.innerText = newCount;
+									updateJSONFIle(files[0].id,JSON.stringify(obj),endCommentProcess,description,timestamp);
 
-					commenting = false;
+								},function(error){
+									alert('Aconteceu um erro. Tento mais tarde.')
+									commenting = false;
+								});
+							}else{
+								var comments = { comments:[{timestamp: timestamp, username: userName, description: description}] };
 
-				}, function(reason) {
-					console.error('error: ' + reason.result.error.message);
-					alert('Aconteceu um erro. Tento mais tarde.')
-					commenting = false;
+								createJSON(actual_file_id,JSON.stringify(comments),folderId,endCommentProcess,description,timestamp);
+							}
+						},function(error){
+							alert('Aconteceu um erro. Tento mais tarde.')
+							commenting = false;
+						});
+
+
+
+
+					}
 
 				});
+
+
+				// var params = {
+				// 	spreadsheetId: '1hqnI8buCJJFgQzgZCfJcEKoDuSpVOhtSfznLCaoRkR8',
+				// 	range: 'Folha1!A:E',
+				// 	valueInputOption: 'RAW',
+				// 	insertDataOption: 'INSERT_ROWS',
+				// };
+				//
+				// var valueRangeBody = {
+				// 	"values": [[actual_file_id,userEmail,userName,description,timestamp]]
+				// };
+				//
+				// var request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
+				// request.then(function(response) {
+				//
+				// 	addCommentToFileDiv(userName,description,timestamp);
+				// 	comment_input.value = '';
+				// 	var modal_number_comments = document.getElementById("modal_number_comments");
+				// 	var newCount = parseInt(modal_number_comments.innerText) + 1;
+				// 	modal_number_comments.innerText = newCount;
+				//
+				// 	commenting = false;
+				//
+				// }, function(reason) {
+				// 	console.error('error: ' + reason.result.error.message);
+				// 	alert('Aconteceu um erro. Tento mais tarde.')
+				// 	commenting = false;
+				//
+				// });
 
 			}
 
@@ -1211,10 +1525,10 @@ margin-left: 32px; margin-right: 32px">
 
 	}
 
-	function addCommentToNoteDiv(userName,description,timestamp) {
+	function addCommentToNoteDiv(userName,description,original_timestamp,mine) {
 
-		var m = new Date(timestamp);
-		timestamp =
+		var m = new Date(original_timestamp);
+		var timestamp =
 				m.getUTCFullYear() + "/" +
 				("0" + (m.getUTCMonth() + 1)).slice(-2) + "/" +
 				("0" + m.getUTCDate()).slice(-2) + " " +
@@ -1238,6 +1552,8 @@ margin-left: 32px; margin-right: 32px">
 		var separator = document.createElement("hr");
 
 
+
+		firstLine.style.width = '80%';
 		firstLine.style.cssFloat = 'left';
 		userImage.style.cssFloat = 'left';
 
@@ -1257,6 +1573,21 @@ margin-left: 32px; margin-right: 32px">
 		firstLine.appendChild(commentOwner);
 		firstLine.appendChild(document.createTextNode(" "));
 		firstLine.appendChild(commentTimestamp);
+		if(mine) {
+			var deleteIcon = document.createElement('div');
+			deleteIcon.innerHTML =
+					`<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+				<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+				<path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+				</svg>`;
+
+			deleteIcon.style.cssFloat = 'right';
+			deleteIcon.onclick = function () {
+				deleteComment(visit.fileId, original_timestamp, columns, no_comments, document.getElementById("note_modal_number_comments"), document.getElementById("note_number_comments"))
+			};
+			firstLine.appendChild(deleteIcon);
+
+		}
 
 		commentDiv.appendChild(firstLine);
 		commentDiv.appendChild(breakLine);
@@ -1264,53 +1595,94 @@ margin-left: 32px; margin-right: 32px">
 
 		columns.appendChild(userImage);
 		columns.appendChild(commentDiv)
+		columns.appendChild(separator);
 
-		mainDiv.appendChild(columns)
-		mainDiv.appendChild(separator);
+		columns.setAttribute('class','note_comment_item');
+		columns.setAttribute('data-timestramp',timestamp);
+
+		mainDiv.prepend(columns);
+
+		var $wrapper = $('#note_comments');
+		$wrapper.find('.note_comment_item').sort(function(a, b) {
+			return -a.dataset.timestramp.localeCompare(b.dataset.timestramp);
+		}).appendTo($wrapper);
 
 	}
 
 	function addNewCommentToNote(){
 
-		if(!commenting) {
+		if(!commenting){
 
 			var timestamp = new Date().toISOString();
 
 			var comment_input = document.getElementById('note_comment_input');
 			var description = comment_input.value;
-			if (description) {
+			if(description) {
+
+				comment_input.value = '';
+
 				commenting = true;
 
-				var params = {
-					spreadsheetId: '1hqnI8buCJJFgQzgZCfJcEKoDuSpVOhtSfznLCaoRkR8',
-					range: 'Folha1!A:E',
-					valueInputOption: 'RAW',
-					insertDataOption: 'INSERT_ROWS',
-				};
+				gapi.client.drive.files.list({
+					'folderId' : COMMENTS_FOLDER_ID,
+					'pageSize': 100,
+					'fields': "nextPageToken, files(id, name)",
+					'q': `'${COMMENTS_FOLDER_ID}' in parents and name = '` + userEmail + `' and not trashed`
+				}).then(function(response) {
+					var files = response.result.files;
+					if(files.length === 0){
+						gapi.client.drive.files.create({
+							"name" : userEmail,
+							"mimeType" : "application/vnd.google-apps.folder",
+							"parents" : [COMMENTS_FOLDER_ID],
+						}).then(function (response) {
+							var comments = { comments:[{timestamp: timestamp, username: userName, description: description}] };
 
-				var valueRangeBody = {
-					"values": [[visit.fileId, userEmail, userName, description, timestamp]]
-				};
+							createJSON(visit.fileId,JSON.stringify(comments),response.result.id,endNoteCommentProcess,description,timestamp);
+						},function(error){
+							alert('Aconteceu um erro. Tento mais tarde.')
+							commenting = false;
+						});
 
-				var request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
-				request.then(function (response) {
+					}else{
+						var folderId = files[0].id;
+						gapi.client.drive.files.list({
+							'folderId' : files[0].id,
+							'pageSize': 100,
+							'fields': "nextPageToken, files(id, name)",
+							'q': `'${files[0].id}' in parents and name = '` + visit.fileId + `' and not trashed`
+						}).then(function(response) {
+							var files = response.result.files;
+							if(files.length > 0) {
+								gapi.client.drive.files.get({
+									'fileId': files[0].id,
+									'alt': 'media',
+								}).then(function (response) {
+									var obj = JSON.parse(response.body);
+									var comment = {timestamp: timestamp, username: userName, description: description};
+									obj.comments.push(comment);
 
-					addCommentToNoteDiv(userName, description, timestamp);
-					comment_input.value = '';
-					var modal_number_comments = document.getElementById("note_modal_number_comments");
-					var number_comments = document.getElementById("note_number_comments");
+									updateJSONFIle(files[0].id,JSON.stringify(obj),endNoteCommentProcess,description,timestamp);
 
-					var newCount = parseInt(modal_number_comments.innerText) + 1;
-					modal_number_comments.innerText = newCount;
-					number_comments.innerText = newCount;
+								},function(error){
+									alert('Aconteceu um erro. Tento mais tarde.')
+									commenting = false;
+								});
+							}else{
+								var comments = { comments:[{timestamp: timestamp, username: userName, description: description}] };
 
-					commenting = false;
+								createJSON(visit.fileId,JSON.stringify(comments),folderId,endNoteCommentProcess,description,timestamp);
+							}
+						},function(error){
+							alert('Aconteceu um erro. Tento mais tarde.')
+							commenting = false;
+						});
 
 
-				}, function (reason) {
-					console.error('error: ' + reason.result.error.message);
-					alert('Aconteceu um erro. Tento mais tarde.')
-					commenting = false;
+
+
+					}
+
 				});
 
 
@@ -1426,6 +1798,7 @@ margin-left: 32px; margin-right: 32px">
 
 	function onModalClose() {
 		var modal_number_comments = document.getElementById("modal_number_comments");
+		document.getElementById("file_comment_input").value = '';
 		modal_number_comments.innerText = '0';
 
 		document.getElementById('myModal').style.display = 'none';
@@ -1483,7 +1856,6 @@ margin-left: 32px; margin-right: 32px">
 	}
 
 	function confirmEdit() {
-		console.log("vai tentar");
 		var editIcon = document.getElementById("modal_edit");
 		var closeIcon = document.getElementById("modal_edit_close");
 		var confirmIcon = document.getElementById("modal_edit_confirm");
@@ -1492,7 +1864,6 @@ margin-left: 32px; margin-right: 32px">
 		var description = document.getElementById("modal_description");
 		var description_input = document.getElementById("modal_description_edit");
 		if(description_input.value && description_input.value.localeCompare(description.innerText) !==0){
-			console.log("tentou");
 			var body = {'description': description_input.value};
 			var request = gapi.client.drive.files.update({
 				'fileId': actual_file_id,
@@ -1513,7 +1884,6 @@ margin-left: 32px; margin-right: 32px">
 				}
 
 				files_info[actual_file_id].description = description.innerText;
-				console.log(files_info[actual_file_id]);
 			});
 
 		}else {
@@ -1578,7 +1948,6 @@ margin-left: 32px; margin-right: 32px">
 
 
 	function getDate(name) {
-		console.log(name);
         var splittedName = name.split('_');
         var raw_time = splittedName[splittedName.length-1];
         var raw_day = splittedName[splittedName.length-2];
@@ -1835,7 +2204,6 @@ margin-left: 32px; margin-right: 32px">
 
 					}
 
-					console.log(users);
 					var technicians = visit.technicians;
 					technicians = technicians.replace(';', ' & ');
 					if(technicians.localeCompare('null') === 0)
