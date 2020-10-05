@@ -1851,9 +1851,8 @@ margin-left: 32px; margin-right: 32px">
                     var date = visit.date.split("/");
 					var filterDate = date[0] + "-" + date[1] + "-" + date[2];
 
-					//TODO: descomentar quando as visitas forem as reais para filtrar a visualização para a visita real
-                    //var viz = document.getElementById('viz').getElementsByTagName('iframe').item(0);
-					//viz.src += `&codigoparcela=${visit.plot}&datavisita=${filterDate}`;
+                    var viz = document.getElementById('viz').getElementsByTagName('iframe').item(0);
+					viz.src += `&codigoparcela=${visit.plot}&datavisita=${filterDate}`;
 
                     document.getElementById("info").style.visibility = "visible";
 
