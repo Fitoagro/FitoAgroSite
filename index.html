@@ -220,7 +220,7 @@
                 enemy_acronym[aux[1].replace(/(\r\n|\n|\r)/gm, "")] = aux[0];
               }
 
-              console.log(region_info, enemy_acronym);
+              //console.log(region_info, enemy_acronym);
               listUsers();
 
             },function(error){
@@ -337,7 +337,7 @@
                   userVisits.push(info);
                   visits.push(info);
                 }
-                console.log(visits);
+                //console.log(visits);
 
                 var div = document.getElementById('renderList');
                 var visitsDiv = document.createElement('div');
@@ -348,7 +348,7 @@
                 visitsDiv.style.alignItems = "flex-start";
                 visitsDiv.style.width = "100%";
                 div.appendChild(visitsDiv);
-                console.log('no list')
+                //console.log('no list')
                // render(visitsDiv, userVisits);
                 setFilter();
                 updateList(currentGrouping);
@@ -363,7 +363,7 @@
         if(element != null){
           if (element.name === "dep.tecnico.apas@gmail.com") { /** Testing Device */
             users.push({id: element.id, name: element.name, username : element.owners[0].displayName});
-            console.log(users);
+            //console.log(users);
             listVisits(element.id, element.id);
           }
         }
@@ -437,7 +437,7 @@
                 techDiv.style.alignItems = "flex-start";
                 techDiv.style.width = "100%";
                 div.appendChild(techDiv);
-                console.log('no group1');
+                //console.log('no group1');
                 render(techDiv, filtered);
                 total += filtered.length;
               }
@@ -474,7 +474,7 @@
               plotDiv.style.alignItems = "flex-start";
               plotDiv.style.width = "100%";
               div.append(plotDiv);
-              console.log('no group2');
+              //console.log('no group2');
 
               render(plotDiv, filtered);
               total += filtered.length;
@@ -497,7 +497,7 @@
             div.append(divElement);
             filtered = visits.filter(value => filter.includes(value.plotName));
             filtered = sort(id, filtered);
-            console.log('no group3');
+            //console.log('no group3');
 
             render(divElement, filtered);
 
@@ -664,7 +664,7 @@
             if (typeof aux !== undefined && aux.length > 1) {
 
               var region_info_clone = JSON.parse(JSON.stringify(region_info));
-              console.log(region_info_clone);
+              //console.log(region_info_clone);
 
 
               var main_enemies =  region_info_clone[list[i].plot];
@@ -677,7 +677,7 @@
               var not_main = '';
               for(w = 0; w < aux.length ; w ++){
                 var actual_enemy = aux[w].replace(/[0-9]/g, '');
-                console.log(actual_enemy);
+                //console.log(actual_enemy);
                 if (main_enemies.some(e => e === actual_enemy)) {
                   if(main_enemies_string.localeCompare('') !== 0)
                     main_enemies_string += ' / ';
@@ -691,7 +691,7 @@
               }
               overall = main_enemies_string + ' / ' + not_main;
               aux = overall.split(' / ');
-              console.log(overall);
+              //console.log(overall);
               tooltip.innerText += '\n' + aux.join(" / ");
               box.appendChild(tooltip);
               overall = aux[0] + " / " + aux[1] + " / ...";

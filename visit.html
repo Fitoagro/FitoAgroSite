@@ -682,8 +682,8 @@ margin-left: 32px; margin-right: 32px">
 
 		var $wrapper = $('.gallery');
 		$wrapper.find('.gallery_item').sort(function(a, b) {
-			console.log(a.dataset.name);
-			console.log(b.dataset.name);
+			//console.log(a.dataset.name);
+			//console.log(b.dataset.name);
 
 			return compareNames(a.dataset.name,b.dataset.name)
 		}).appendTo($wrapper);
@@ -700,7 +700,7 @@ margin-left: 32px; margin-right: 32px">
 
 		orderFiles();
 
-		console.log("Lock released");
+		//console.log("Lock released");
 
 
 		var points_in_map = [];
@@ -903,7 +903,7 @@ margin-left: 32px; margin-right: 32px">
 			// 	for(var j = 0; j < plots_jsons.features.length; j++){
 			// 		var idparcela = plots_jsons.features[j].properties['idparcela'];
 			// 		if(idparcela == plot_id){
-			// 			console.log('loaded');
+			// 			//console.log('loaded');
 			//
 			//
 			// 			/*document.getElementById('plot_name').innerHTML = plots_jsons.features[j].properties['nomeparcela'];
@@ -1139,7 +1139,7 @@ margin-left: 32px; margin-right: 32px">
 		// var request = gapi.client.sheets.spreadsheets.values.get(params);
 		// request.then(function(response) {
 		// 	var aux = JSON.parse(response['body']);
-		// 	console.log(aux);
+		// 	//console.log(aux);
 		// 	var values = aux.values;
 		// 	var number_comments = 0;
 		// 	if (typeof values !== 'undefined') {
@@ -2039,7 +2039,7 @@ margin-left: 32px; margin-right: 32px">
 							'fileId': id,
 							'alt': 'media',
 						}).then(function (response) {
-							console.log("Audio");
+							//console.log("Audio");
 							var b64Response = btoa(response.body);
 
 							var outputImg = document.createElement('img');
@@ -2206,7 +2206,7 @@ margin-left: 32px; margin-right: 32px">
 						document.getElementById('no_notes').innerHTML = visit.notes;
 						document.getElementById('note_comments_icon').style.display = 'block';
 					}else{
-						console.log("Sem notas");
+						//console.log("Sem notas");
 
 					}
 
