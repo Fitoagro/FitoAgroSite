@@ -1103,30 +1103,19 @@ margin-left: 32px; margin-right: 32px">
 								'fileId': files[0].id,
 								'alt': 'media',
 							}).then(function (response) {
-								var comments_array = response.result.comments;
-								var number_comments = 0;
+								var comments_array = response.result.comments
 
 								for (var i = 0; i < comments_array.length; i++) {
-									number_comments++;
 									if (!initial) {
 										if (isFile)
 											addCommentToFileDiv(comments_array[i].username, comments_array[i].description, comments_array[i].timestamp,mine);
 										else
-											addCommentToNoteDiv(comments_array[i].username, comments_array[i].description, comments_array[i].timestamp,mine);
+											addCommentToNoteDiv(comments_array[i].username, comments_array[i].description, comments_array[i].timestamp, mine);
+									}else if(!isFile){
+										var main_number_comments = document.getElementById("note_number_comments");
+										main_number_comments.innerText = parseInt(main_number_comments.innerText) + 1;
 									}
 								}
-								var modal_number_comments;
-
-								if (isFile)
-									modal_number_comments = document.getElementById("modal_number_comments");
-								else {
-									modal_number_comments = document.getElementById("note_modal_number_comments");
-									var main_number_comments = document.getElementById("note_number_comments");
-									main_number_comments.innerText = number_comments;
-
-								}
-
-								modal_number_comments.innerText = number_comments;
 
 							}, function (error) {
 								console.error(error)
@@ -1312,6 +1301,13 @@ margin-left: 32px; margin-right: 32px">
 
 		mainDiv.prepend(columns);
 
+
+		var modal_number_comments;
+
+		modal_number_comments = document.getElementById("modal_number_comments");
+
+		modal_number_comments.innerText = parseInt(modal_number_comments.innerText) + 1;
+
 		var $wrapper = $('#file_comments');
 		$wrapper.find('.comment_item').sort(function(a, b) {
 			return -a.dataset.timestramp.localeCompare(b.dataset.timestramp);
@@ -1396,18 +1392,18 @@ margin-left: 32px; margin-right: 32px">
 	function endCommentProcess(description, timestamp) {
 		addCommentToFileDiv(userName,description,timestamp,true);
 		document.getElementById('file_comment_input').value = '';
-		var modal_number_comments = document.getElementById("modal_number_comments");
-		modal_number_comments.innerText = parseInt(modal_number_comments.innerText) + 1;
+		// var modal_number_comments = document.getElementById("modal_number_comments");
+		// modal_number_comments.innerText = parseInt(modal_number_comments.innerText) + 1;
 	}
 
 	function endNoteCommentProcess(description, timestamp) {
 		addCommentToNoteDiv(userName,description,timestamp,true);
 		document.getElementById('note_comment_input').value = '';
-		var modal_number_comments = document.getElementById("note_modal_number_comments");
-		modal_number_comments.innerText = parseInt(modal_number_comments.innerText) + 1;
-
-		var main_number_comments = document.getElementById("note_number_comments");
-		main_number_comments.innerText = parseInt(main_number_comments.innerText) + 1;
+		// var modal_number_comments = document.getElementById("note_modal_number_comments");
+		// modal_number_comments.innerText = parseInt(modal_number_comments.innerText) + 1;
+		//
+		// var main_number_comments = document.getElementById("note_number_comments");
+		// main_number_comments.innerText = parseInt(main_number_comments.innerText) + 1;
 
 	}
 
@@ -1601,6 +1597,11 @@ margin-left: 32px; margin-right: 32px">
 		columns.setAttribute('data-timestramp',timestamp);
 
 		mainDiv.prepend(columns);
+
+
+		var modal_number_comments = document.getElementById("note_modal_number_comments");
+		var number = parseInt(modal_number_comments.innerText) + 1
+		modal_number_comments.innerText = number;
 
 		var $wrapper = $('#note_comments');
 		$wrapper.find('.note_comment_item').sort(function(a, b) {
@@ -2034,6 +2035,7 @@ margin-left: 32px; margin-right: 32px">
 							'fileId': id,
 							'alt': 'media',
 						}).then(function (response) {
+							console.log("Audio");
 							var b64Response = btoa(response.body);
 
 							var outputImg = document.createElement('img');
