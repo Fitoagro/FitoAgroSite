@@ -1802,6 +1802,10 @@ margin-left: 32px; margin-right: 32px">
 		document.getElementById("file_comment_input").value = '';
 		modal_number_comments.innerText = '0';
 
+		var modal_locate = document.getElementById("modal_locate");
+		modal_locate.style.display = 'hidden';
+
+
 		document.getElementById('myModal').style.display = 'none';
 		var comments_div = document.getElementById('file_comments');
 		var file_no_comments = document.getElementById('file_no_comments');
