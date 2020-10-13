@@ -301,7 +301,7 @@
       }
 
       function listVisits(fileID, user) {
-        if(visits.length === 0)
+        if(visits.length === 0 && document.getElementById("visits").innerText.localeCompare("") === 0)
           appendPre('Visitas de Campo',true);
         gapi.client.drive.files.list({
           'folderId' : fileID,
@@ -631,7 +631,7 @@
             if (list[i].nea === "null")
               ef_nea.innerHTML = "<b>EF: </b>" + ef;
             else
-              ef_nea.innerHTML = "<b>EF: </b>" + ef + "&emsp;&emsp;&emsp;" + "<b>NEA: </b>" + list[i].nea;
+              ef_nea.innerHTML = "<b>EF: </b>" + ef + "&emsp;" + "<b>NEA: </b>" + list[i].nea;
             ef_nea.style.marginBottom = '8px';
             var content = document.createElement('a');
 
@@ -661,16 +661,18 @@
               notestr = notestr.substr(0,18) + '...';
             }
 
-            if (typeof aux !== undefined && aux.length > 1) {
+            if (typeof aux !==  "undefined" && aux.length > 1) {
+              console.log(aux);
 
               var region_info_clone = JSON.parse(JSON.stringify(region_info));
               //console.log(region_info_clone);
 
 
               var main_enemies =  region_info_clone[list[i].plot];
-
-              for(var w = 0; w < main_enemies.length; w ++){
-                main_enemies[w] = enemy_acronym[main_enemies[w]];
+              if(typeof  main_enemies !==  "undefined") {
+                for (var w = 0; w < main_enemies.length; w++) {
+                  main_enemies[w] = enemy_acronym[main_enemies[w]];
+                }
               }
 
               var main_enemies_string = '';
@@ -678,7 +680,7 @@
               for(w = 0; w < aux.length ; w ++){
                 var actual_enemy = aux[w].replace(/[0-9]/g, '');
                 //console.log(actual_enemy);
-                if (main_enemies.some(e => e === actual_enemy)) {
+                if (typeof  main_enemies !==  "undefined" && main_enemies.some(e => e === actual_enemy)) {
                   if(main_enemies_string.localeCompare('') !== 0)
                     main_enemies_string += ' / ';
                   main_enemies_string += aux[w];
@@ -689,7 +691,13 @@
                   not_main += aux[w];
                 }
               }
-              overall = main_enemies_string + ' / ' + not_main;
+              if(main_enemies_string.localeCompare('') === 0)
+                overall = not_main;
+              else if(not_main.localeCompare('') === 0)
+                overall == main_enemies_string;
+              else
+                overall = main_enemies_string + ' / ' + not_main;
+
               aux = overall.split(' / ');
               //console.log(overall);
               tooltip.innerText += '\n' + aux.join(" / ");
