@@ -361,7 +361,7 @@
 
       function setUsers(element, index, arr) {
         if(element != null){
-          if (element.name === "dep.tecnico.apas@gmail.com") { /** Testing Device */
+          if (element.name === "dep.tecnico.apas@gmail.com" || element.name === "carol.cothn@gmail.com") { /** Testing Device */
             users.push({id: element.id, name: element.name, username : element.owners[0].displayName});
             //console.log(users);
             listVisits(element.id, element.id);
@@ -653,13 +653,13 @@
 
             if (list[i].notes === "null")
               notestr = '&nbsp;';
-            else if(notestr.length > 30){
-              tooltip.innerText = notestr;
-              notestr = notestr.substr(0,30) + '...';
-            }else if(notestr.length > 18 && typeof aux !== undefined){
+            else if(notestr.length > 18){
               tooltip.innerText = notestr;
               notestr = notestr.substr(0,18) + '...';
-            }
+            }/*else if(notestr.length > 18 && typeof aux !== undefined){
+              tooltip.innerText = notestr;
+              notestr = notestr.substr(0,18) + '...';
+            }*/
 
             if (typeof aux !==  "undefined" && aux.length > 1) {
               console.log(aux);
@@ -701,9 +701,12 @@
               aux = overall.split(' / ');
               //console.log(overall);
               tooltip.innerText += '\n' + aux.join(" / ");
-              box.appendChild(tooltip);
               overall = aux[0] + " / " + aux[1] + " / ...";
             }
+
+            if(tooltip.innerText.length > 0)
+              box.appendChild(tooltip);
+
 
             if (list[i].visited === "false") {
               overall = "Visita não efetuada";
