@@ -794,20 +794,25 @@ margin-left: 32px; margin-right: 32px">
 
 
 	function getGPX(id){
+		console.log("Get gpx");
 		gapi.client.drive.files.get({
 			'fileId': id,
 			'alt': 'media',
 		}).then(function(response) {
 			var gpx = response.body;
+
 			var trk = gpx.substring(
-					gpx.lastIndexOf("<trkseg>") + 8,
+					gpx.indexOf("<trkseg>") + 8,
 					gpx.lastIndexOf("</trkseg>")
 			);
 
-
+			trk = trk.replaceAll("<trkseg>",'');
+			trk = trk.replaceAll("</trkseg>",'');
 
 			var arrayOfLines = trk.match(/[^\r\n]+/g);
+
 			var points = [];
+
 
 			for(var w = 0; w < arrayOfLines.length; w++){
 				var line = arrayOfLines[w];
@@ -865,7 +870,7 @@ margin-left: 32px; margin-right: 32px">
 
 
 			}
-
+			
 			addRoute(points,wayPoints);
 
 
