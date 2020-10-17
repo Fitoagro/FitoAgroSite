@@ -271,16 +271,16 @@ margin-left: 32px; margin-right: 32px">
 			<div style="display: flex; flex-direction: column; justify-content: center; min-width:45%; max-width: 100%; height: 100%;">
 
 				<div id="menu" style="margin-top: 16px;">
-					<input id="light-v10" type="radio" name="rtoggle" value="light" />
-					<label for="light">Básico</label>
-					&nbsp;&nbsp;
-					<input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
-					<label for="outdoors">Exterior</label>
-					&nbsp;&nbsp;
-					<input id="satellite-v9" type="radio" name="rtoggle" value="satellite"
-						   checked="checked" />
-					<label for="satellite">Satélite</label>
-				</div>
+				<input id="light-v10" type="radio" name="rtoggle" value="light" />
+				<label for="light">Básico</label>
+				&nbsp;&nbsp;
+				<input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
+				<label for="outdoors">Exterior</label>
+				&nbsp;&nbsp;
+				<input id="satellite-v9" type="radio" name="rtoggle" value="satellite"
+					   checked="checked" />
+				<label for="satellite">Satélite</label>
+			</div>
 				<div id="map"></div>
 			</div>
 
@@ -332,7 +332,7 @@ margin-left: 32px; margin-right: 32px">
 	var commenting = false;
 
 	var mFocus;
-	var mPoints;
+	var mPoints = {};
 	var mPlot;
 	var noteFolder = '';
 	var imageFolder = '';
@@ -468,11 +468,23 @@ margin-left: 32px; margin-right: 32px">
 
 	function reloadMap(){
 
+		var users = [];
+		try{
+			users = document.getElementById('technician').innerHTML.split(' &amp; ');
+		}catch (e) {
+		}
+
 		if(map.getLayer('plot'))
 			map.removeLayer('plot');
 
-		if(map.getLayer('route'))
-			map.removeLayer('route');
+		if(map.getLayer('plot_line'))
+			map.removeLayer('plot_line');
+
+		users.forEach(user => {
+			console.log("removing " + user)
+			if (map.getLayer('route' + user))
+				map.removeLayer('route'+ user);
+		});
 
 
 		if(!map.getSource('plot'))
@@ -487,19 +499,25 @@ margin-left: 32px; margin-right: 32px">
 				}
 			});
 
-		if(!map.getSource('route'))
+		users.forEach(user => {
 
-			map.addSource('route', {
-				'type': 'geojson',
-				'data': {
-					'type': 'Feature',
-					'properties': {},
-					'geometry': {
-						'type': 'LineString',
-						'coordinates': mPoints
+			if (!map.getSource('route' + user)) {
+
+				console.log("addSource " + user);
+
+				map.addSource('route' + user, {
+					'type': 'geojson',
+					'data': {
+						'type': 'Feature',
+						'properties': {},
+						'geometry': {
+							'type': 'LineString',
+							'coordinates': mPoints[user]
+						}
 					}
-				}
-			});
+				});
+			}
+		} );
 
 		map.addLayer({
 			'id': 'plot',
@@ -522,19 +540,28 @@ margin-left: 32px; margin-right: 32px">
 			}
 		});
 
-		map.addLayer({
-			'id': 'route',
-			'type': 'line',
-			'source': 'route',
-			'layout': {
-				'line-join': 'round',
-				'line-cap': 'round'
-			},
-			'paint': {
-				'line-color': '#e55e5e',
-				'line-width': 6
-			}
-		});
+		for(var i = 0; i < users.length; i++){
+			var hexaColor = '#e55e5e';
+			if(i !== 0)
+				hexaColor = '#4d79ff';
+			console.log("addLayers " + users[i]);
+
+			map.addLayer({
+				'id': 'route' + users[i],
+				'type': 'line',
+				'source': 'route' + users[i],
+				'layout': {
+					'line-join': 'round',
+					'line-cap': 'round'
+				},
+				'paint': {
+					'line-color': hexaColor,
+					'line-width': 6
+				}
+			});
+		}
+
+
 	}
 
 
@@ -603,6 +630,14 @@ margin-left: 32px; margin-right: 32px">
 	}
 
 	function loadMap(toFocus,plot){
+
+		var users = [];
+		console.log(document.getElementById('technician').innerHTML);
+		try{
+			users = document.getElementById('technician').innerHTML.split(' &amp; ');
+		}catch (e) {
+		}
+
 		this.mFocus = toFocus;
 		this.mPlot = plot;
 
@@ -612,7 +647,7 @@ margin-left: 32px; margin-right: 32px">
 
 		var found = false;
 		var layerIds = layers.map(function (layer) {
-			if(layer.id == 'route')
+			if(layer.id === 'route' + users[0])
 				found = true;
 		});
 
@@ -636,7 +671,7 @@ margin-left: 32px; margin-right: 32px">
 					'line-color': 'rgba(20, 100, 25, 1)',
 					'line-width': 5
 				}
-			});
+			},'route' + users[0]);
 
 			map.addLayer({
 				'id': 'plot',
@@ -647,7 +682,7 @@ margin-left: 32px; margin-right: 32px">
 					'fill-color': '#55C93D',
 					'fill-opacity': 0.25
 				}
-			}, 'route');
+			}, 'route' + users[0]);
 		}else {
 
 			map.addLayer({
@@ -690,11 +725,11 @@ margin-left: 32px; margin-right: 32px">
 	}
 
 
-	function addRoute(points, wayPoints){
-		this.mPoints = points;
+	function addRoute(points, wayPoints,hexaColor,id){
+		console.log(id);
 
 		if(this.photos_lock === 1 || this.audio_lock === 1){
-			setTimeout(addRoute, 1000,points,wayPoints);
+			setTimeout(addRoute, 1000,points,wayPoints,hexaColor,id);
 			return;
 		}
 
@@ -744,7 +779,7 @@ margin-left: 32px; margin-right: 32px">
 		}
 
 
-		map.addSource('route', {
+		map.addSource('route' + id, {
 			'type': 'geojson',
 			'data': {
 				'type': 'Feature',
@@ -756,15 +791,15 @@ margin-left: 32px; margin-right: 32px">
 			}
 		});
 		map.addLayer({
-			'id': 'route',
+			'id': 'route' + id,
 			'type': 'line',
-			'source': 'route',
+			'source': 'route' +id,
 			'layout': {
 				'line-join': 'round',
 				'line-cap': 'round'
 			},
 			'paint': {
-				'line-color': '#e55e5e',
+				'line-color': hexaColor,
 				'line-width': 6
 			}
 		});
@@ -793,61 +828,51 @@ margin-left: 32px; margin-right: 32px">
 
 
 
-	function getGPX(id){
+	function getGPX(id_array) {
+		var users = [];
+		console.log(document.getElementById('technician').innerHTML);
+		try{
+			users = document.getElementById('technician').innerHTML.split(' &amp; ');
+		}catch (e) {
+		}
+
 		console.log("Get gpx");
-		gapi.client.drive.files.get({
-			'fileId': id,
-			'alt': 'media',
-		}).then(function(response) {
-			var gpx = response.body;
+		//(function(){}());
+		for (var i = 0; i < id_array.length; i++) {
+			(function(){
+				var routeId = i;
+			var id = id_array[i];
+			gapi.client.drive.files.get({
+				'fileId': id,
+				'alt': 'media',
+			}).then(function (response) {
+				var gpx = response.body;
+				console.log(gpx);
 
-			var trk = gpx.substring(
-					gpx.indexOf("<trkseg>") + 8,
-					gpx.lastIndexOf("</trkseg>")
-			);
-
-			trk = trk.replaceAll("<trkseg>",'');
-			trk = trk.replaceAll("</trkseg>",'');
-
-			var arrayOfLines = trk.match(/[^\r\n]+/g);
-
-			var points = [];
-
-
-			for(var w = 0; w < arrayOfLines.length; w++){
-				var line = arrayOfLines[w];
-				var lat = line.substring(
-						line.lastIndexOf('<trkpt lat="') + 12,
-						line.lastIndexOf('" lon="')
-				);
-				var ln = line.substring(
-						line.lastIndexOf('lon="') + 5,
-						line.lastIndexOf('"><time>')
+				var userTrackName = gpx.substr(
+						gpx.indexOf("<name>") + 6,
+						gpx.indexOf("</name>")
 				);
 
-				var point = [];
-				point.push(parseFloat(ln));
-				point.push(parseFloat(lat));
-				points.push(point);
+				var name = userTrackName.split("_")[3];
 
-			}
+				var trk = gpx.substring(
+						gpx.indexOf("<trkseg>") + 8,
+						gpx.lastIndexOf("</trkseg>")
+				);
 
-			var wayPoints = [];
+				trk = trk.replaceAll("<trkseg>", '');
+				trk = trk.replaceAll("</trkseg>", '');
 
-			var wpts  = gpx.substring(
-					gpx.indexOf("<wpt "),
-					gpx.lastIndexOf("</wpt>")
-			);
-			var wpts_array = wpts.split("<wpt ");
-			for(var k = 0 ; k < wpts_array.length ;k ++){
-				var line = wpts_array[k];
-				if(line != ""){
-					var file_name = line.substring(
-							line.lastIndexOf('<name>') + 6,
-							line.lastIndexOf('</name>')
-					);
+				var arrayOfLines = trk.match(/[^\r\n]+/g);
+
+				var points = [];
+
+
+				for (var w = 0; w < arrayOfLines.length; w++) {
+					var line = arrayOfLines[w];
 					var lat = line.substring(
-							line.lastIndexOf('lat="') + 5,
+							line.lastIndexOf('<trkpt lat="') + 12,
 							line.lastIndexOf('" lon="')
 					);
 					var ln = line.substring(
@@ -855,26 +880,84 @@ margin-left: 32px; margin-right: 32px">
 							line.lastIndexOf('"><time>')
 					);
 
-					var waypoint = [];
-					var file_type;
-					if(file_name.includes("photo"))
-						file_type = 0;
-					else
-						file_type = 1;
+					var point = [];
+					point.push(parseFloat(ln));
+					point.push(parseFloat(lat));
+					points.push(point);
 
-					var file = {type:file_type, name:file_name, longitude:parseFloat(ln), latitude:parseFloat(lat)};
-
-					waypoint.push(file);
-					wayPoints.push(waypoint);
 				}
 
+				var wayPoints = [];
 
-			}
-			
-			addRoute(points,wayPoints);
+				if (routeId === 0) {
+					var wpts = gpx.substring(
+							gpx.indexOf("<wpt "),
+							gpx.lastIndexOf("</wpt>")
+					);
+					var wpts_array = wpts.split("<wpt ");
+					for (var k = 0; k < wpts_array.length; k++) {
+						var line = wpts_array[k];
+						if (line != "") {
+							var file_name = line.substring(
+									line.lastIndexOf('<name>') + 6,
+									line.lastIndexOf('</name>')
+							);
+							var lat = line.substring(
+									line.lastIndexOf('lat="') + 5,
+									line.lastIndexOf('" lon="')
+							);
+							var ln = line.substring(
+									line.lastIndexOf('lon="') + 5,
+									line.lastIndexOf('"><time>')
+							);
+
+							var waypoint = [];
+							var file_type;
+							if (file_name.includes("photo"))
+								file_type = 0;
+							else
+								file_type = 1;
+
+							var file = {
+								type: file_type,
+								name: file_name,
+								longitude: parseFloat(ln),
+								latitude: parseFloat(lat)
+							};
+
+							waypoint.push(file);
+							wayPoints.push(waypoint);
+						}
 
 
-		});
+					}
+				}
+
+				var hexadecimalColor = '#e55e5e';
+				console.log(users);
+				if (users.length === 2 && name.localeCompare(users[1]) === 0)
+					hexadecimalColor = '#4d79ff';
+
+				addRoute(points, wayPoints, hexadecimalColor, name);
+				this.mPoints[name] = points;
+
+				console.log(document.getElementById('square_' + name));
+				if (document.getElementById('square_' + name) === null) {
+					var menu = document.getElementById('menu');
+					var initialsArray = name.split(" ");
+					var initials = '';
+					initialsArray.forEach(name => initials += name[0]);
+					var div = document.createElement('div');
+					div.setAttribute('class', 'color-box');
+					div.style.backgroundColor = hexadecimalColor;
+					div.innerHTML = initials;
+					div.setAttribute('id', 'square_' + name);
+					menu.insertBefore(div, menu.childNodes[0]);
+				}
+
+			});
+		}());
+		}
 	}
 
 	function getVisitJSON(id){
@@ -2119,7 +2202,7 @@ margin-left: 32px; margin-right: 32px">
 	function listFolder() {
 		var fileId = getUrlVars()['visit_id'];
 		var json_id = '';
-		var gpx_id = '';
+		var gpx_id = [];
 		var photo_id = '';
 		var audio_id = '';
 
@@ -2140,7 +2223,7 @@ margin-left: 32px; margin-right: 32px">
 						//getVisitJSON(id);
 					}
 					else if(files[i].name.includes('gpx')){
-						gpx_id = id;
+						gpx_id.push(id);
 						//getGPX(files[i].id);
 					}
 					else if(files[i].name == 'Photos'){
@@ -2238,7 +2321,7 @@ margin-left: 32px; margin-right: 32px">
 					getComments(visit.fileId,false,true);
 
 				}
-				if(gpx_id != '')
+				if(gpx_id.length > 0)
 					getGPX(gpx_id);
 				else
 					orderFiles();

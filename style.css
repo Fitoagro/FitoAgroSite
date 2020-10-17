@@ -94,6 +94,18 @@ h3, h6{
     width: fit-content;
     font-family: 'Open Sans', sans-serif;
 }
+.color-box {
+    width: 30px;
+    height: 20px;
+    color:black;
+    font-family: 'Open Sans', sans-serif;
+    top: 10%;
+    margin-right: 10px;
+    float: left;
+    background-color: #ccc;
+    position: relative;
+
+}
 
 .gallery {
     display: none;
