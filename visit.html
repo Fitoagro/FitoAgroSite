@@ -2313,8 +2313,8 @@ margin-left: 32px; margin-right: 32px">
 
 					var technicians = visit.technicians;
 					technicians = technicians.replace(';', ' & ');
-					if(technicians.localeCompare('null') === 0)
-						document.getElementById('technician').innerHTML = 'Não disponível.';
+					if(technicians.localeCompare('null') === 0 )
+						document.getElementById('technician').innerHTML = files[i].owners.displayName;
 					else
 						document.getElementById('technician').innerHTML = technicians;
 					document.getElementById('ef').innerHTML = visit.ef;
