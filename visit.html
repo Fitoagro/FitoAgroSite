@@ -331,6 +331,8 @@ margin-left: 32px; margin-right: 32px">
 	var myCommentsFolderId = '';
 	var commenting = false;
 
+	var folderOwner = '';
+
 	var mFocus;
 	var mPoints = {};
 	var mPlot;
@@ -854,7 +856,13 @@ margin-left: 32px; margin-right: 32px">
 						gpx.indexOf("</name>")
 				);
 
-				var name = userTrackName.split("_")[3];
+
+				var name = '';
+				if(visit.technicians.localeCompare('null') !== 0) {
+					name = userTrackName.split("_")[3];
+				}else
+					name = folderOwner;
+
 
 				var trk = gpx.substring(
 						gpx.indexOf("<trkseg>") + 8,
@@ -944,9 +952,11 @@ margin-left: 32px; margin-right: 32px">
 				console.log(document.getElementById('square_' + name));
 				if (document.getElementById('square_' + name) === null) {
 					var menu = document.getElementById('menu');
-					var initialsArray = name.split(" ");
 					var initials = '';
-					initialsArray.forEach(name => initials += name[0]);
+					if(name.localeCompare('') !== 0) {
+						var initialsArray = name.split(" ");
+						initialsArray.forEach(name => initials += name[0]);
+					}
 					var div = document.createElement('div');
 					div.setAttribute('class', 'color-box');
 					div.style.backgroundColor = hexadecimalColor;
@@ -2209,12 +2219,15 @@ margin-left: 32px; margin-right: 32px">
 		gapi.client.drive.files.list({
 			'folderId' : fileId,
 			'pageSize': 100,
-			'fields': "nextPageToken, files(id, name)",
+			'fields': "nextPageToken, files(id, name, owners)",
 			'q': `'${fileId}' in parents`
 		}).then(function(response) {
 			var files = response.result.files;
 			if (files && files.length > 0) {
 				for(var i = 0; i < files.length; i++){
+
+					if(folderOwner.localeCompare('') === 0 && files[i].name.localeCompare("Audio") !== 0)
+						folderOwner = files[i].owners[0].displayName;
 
 					var id = files[i].id;
 
