@@ -616,7 +616,8 @@
             title.style.paddingLeft = "3px";
             title.style.width = "165px";
 
-            var space = list[i].plot != undefined && list[i].plot.length == 2 ? '&emsp;&emsp;' : '&ensp;&emsp;';
+           // var space = list[i].plot != undefined && list[i].plot.length == 2 ? '&ensp;&emsp;' : '&ensp;&emsp;';
+            var space ='&ensp;&emsp;';
             text.innerHTML = list[i].plot + space + refactorDate(list[i].date);
             icon.innerHTML = topIcon;
             icon.style.marginLeft = '18px';
