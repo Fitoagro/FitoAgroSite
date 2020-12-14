@@ -603,8 +603,8 @@
             var title = document.createElement('span');
             var text = document.createElement('a');
             var icon = document.createElement('a');
-            var topIcon = list[i].rain === "true" ? '<img src="resources/images/rain_icon.png" style="width:30px;height:30px">'
-                    : list[i].treatment === "true" ? '<img src="resources/images/treatment_icon.png" style="width:30px;height:30px">' : '';
+            var topIcon = list[i].rain === "true" ? '<img src="resources/images/rain_icon.png" style="width:25px;height:25px">'
+                    : list[i].treatment === "true" ? '<img src="resources/images/treatment_icon.png" style="width:25px;height:25px">' : '';
             title.style.borderBottom = "1px solid grey";
             title.style.fontSize = "16px";
             title.style.color = "#008577";
@@ -616,8 +616,7 @@
             title.style.paddingLeft = "3px";
             title.style.width = "165px";
 
-           // var space = list[i].plot != undefined && list[i].plot.length == 2 ? '&ensp;&emsp;' : '&ensp;&emsp;';
-            var space ='&ensp;&emsp;';
+            var space = list[i].plot != undefined && list[i].plot.length == 2 ? '&ensp;&emsp;' : '&ensp;&emsp;';
             text.innerHTML = list[i].plot + space + refactorDate(list[i].date);
             icon.innerHTML = topIcon;
             icon.style.marginLeft = '18px';
