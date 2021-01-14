@@ -289,7 +289,7 @@ margin-left: 32px; margin-right: 32px">
 			<object class='tableauViz' width='98%' height='750' style='display:none;'>
 				<param name='host_url' value='https%3A%2F%2Feu-west-1a.online.tableau.com%2F' />
 				<param name='site_root' value='&#47;t&#47;teachingandresearchinginteractivedatavisualizationdifct' />
-				<param name='name' value='AnaliticaObservaes&#47;CapturasObservaesporinimigo' />
+				<param name='name' value='Visitaseobservaes&#47;CapturasObservaesporinimigoxVisita' />
 				<param name='tabs' value='no' />
 				<param name='toolbar' value='no' />
 				<param name='showAppBanner' value='false' />
@@ -2326,8 +2326,21 @@ margin-left: 32px; margin-right: 32px">
                     var date = visit.date.split("/");
 					var filterDate = date[0] + "-" + date[1] + "-" + date[2];
 
+					var overall = visit.overall === 'null' ? null : visit.overall.split(' / ');
+					var enemies = '';
+					if(overall !== null && overall !== undefined){
+						console.log(overall);
+						enemies = '&! Sigla Inimigo=';
+						for(var j=0; j < overall.length; j++){
+							enemies += overall[j].replace(/[0-9]/g, '');
+							if(j !== overall.length-1)
+								enemies += ",";
+						}
+						console.log(enemies);
+					}
+
                     var viz = document.getElementById('viz').getElementsByTagName('iframe').item(0);
-					viz.src += `&codigoparcela=${visit.plot}&datavisita=${filterDate}`;
+					viz.src += `&codigoparcela=${visit.plot}&datavisita=${filterDate}${enemies}`;
 
                     document.getElementById("info").style.visibility = "visible";
 
