@@ -361,7 +361,7 @@
 
       function setUsers(element, index, arr) {
         if(element != null){
-        if (element.name === "dep.tecnico.apas@gmail.com" || element.name === "carol.cothn@gmail.com" || element.name === "fitoagro.visitas@gmail.com") { /** Testing Device */
+        if (element.name === "dep.tecnico.apas@gmail.com" || element.name === "carol.cothn@gmail.com" || element.name === "fitoagro.visitas@gmail.com" ) { /** Testing Device */
             users.push({id: element.id, name: element.name, username : element.owners[0].displayName});
             //console.log(users);
             listVisits(element.id, element.id);
@@ -588,7 +588,7 @@
         var success_counter = 0;
         for(var i=0; i<list.length; i++) {
           if(list[i].plot !== undefined) {
-            success_counter ++;
+            success_counter++;
             var box = document.createElement('div');
             box.setAttribute('class', 'grid');
             box.setAttribute('id', list[i].fileId);
@@ -648,63 +648,87 @@
             if (overall === "null")
               overall = '&nbsp;';
 
-            var aux = typeof overall !== undefined ? overall.split(" / ") : undefined;
+            if (typeof overall !== undefined && overall.includes(" // ")) {
+              var overallByType = overall.split(" // ");
+              var isEOI = true;
 
+              console.log(overallByType);
 
-            if (list[i].notes === "null")
-              notestr = '&nbsp;';
-            else if(notestr.length > 18){
-              tooltip.innerText = notestr;
-              notestr = notestr.substr(0,18) + '...';
-            }/*else if(notestr.length > 18 && typeof aux !== undefined){
-              tooltip.innerText = notestr;
-              notestr = notestr.substr(0,18) + '...';
-            }*/
+              if(overallByType[0].length === 0)
+                isEOI = false;
 
-            if (typeof aux !==  "undefined" && aux.length > 2) {
-              console.log(aux);
-
-              var region_info_clone = JSON.parse(JSON.stringify(region_info));
-              //console.log(region_info_clone);
-
-
-              var main_enemies =  region_info_clone[list[i].plot];
-              if(typeof  main_enemies !==  "undefined") {
-                for (var w = 0; w < main_enemies.length; w++) {
-                  main_enemies[w] = enemy_acronym[main_enemies[w]];
-                }
+              if(overallByType.length === 1 || (overallByType.length === 2 && !isEOI) ||  (overallByType.length === 2 && overallByType[1].length === 0)) {
+                if(isEOI)
+                  overall = "EOIs: " + overallByType[0];
+                else
+                  overall = "Capturas: " + overallByType[1];
+              } else if (overallByType.length === 2) {
+                overall = "EOIs: " + overallByType[0] + "\nCapturas: " + overallByType[1];
               }
 
-              var main_enemies_string = '';
-              var not_main = '';
-              for(w = 0; w < aux.length ; w ++){
-                var actual_enemy = aux[w].replace(/[0-9]/g, '');
-                //console.log(actual_enemy);
-                if (typeof  main_enemies !==  "undefined" && main_enemies.some(e => e === actual_enemy)) {
-                  if(main_enemies_string.localeCompare('') !== 0)
-                    main_enemies_string += ' / ';
-                  main_enemies_string += aux[w];
 
-                }else{
-                  if(not_main.localeCompare('') !== 0)
-                    not_main += ' / ';
-                  not_main += aux[w];
-                }
+              if(overall.length > 14){
+                tooltip.innerText += '\n' + overall;
+                overall = overall.substr(0,14) + "...";
               }
-              if(main_enemies_string.localeCompare('') === 0)
-                overall = not_main;
-              else if(not_main.localeCompare('') === 0)
-                overall == main_enemies_string;
-              else
-                overall = main_enemies_string + ' / ' + not_main;
 
-              aux = overall.split(' / ');
-              //console.log(overall);
-              tooltip.innerText += '\n' + aux.join(" / ");
-              overall = aux[0] + " / " + aux[1] + " / ...";
-            }
+            } else{
+              var aux = typeof overall !== undefined ? overall.split(" / ") : undefined;
 
-            if(tooltip.innerText.length > 0)
+
+              if (list[i].notes === "null")
+                notestr = '&nbsp;';
+              else if (notestr.length > 18) {
+                tooltip.innerText = notestr;
+                notestr = notestr.substr(0, 18) + '...';
+              }/*else if(notestr.length > 18 && typeof aux !== undefined){
+                tooltip.innerText = notestr;
+                notestr = notestr.substr(0,18) + '...';
+              }*/
+
+              if (typeof aux !== "undefined" && aux.length > 2) {
+                var region_info_clone = JSON.parse(JSON.stringify(region_info));
+                //console.log(region_info_clone);
+
+
+                var main_enemies = region_info_clone[list[i].plot];
+                if (typeof main_enemies !== "undefined") {
+                  for (var w = 0; w < main_enemies.length; w++) {
+                    main_enemies[w] = enemy_acronym[main_enemies[w]];
+                  }
+                }
+
+                var main_enemies_string = '';
+                var not_main = '';
+                for (w = 0; w < aux.length; w++) {
+                  var actual_enemy = aux[w].replace(/[0-9]/g, '');
+                  //console.log(actual_enemy);
+                  if (typeof main_enemies !== "undefined" && main_enemies.some(e => e === actual_enemy)) {
+                    if (main_enemies_string.localeCompare('') !== 0)
+                      main_enemies_string += ' / ';
+                    main_enemies_string += aux[w];
+
+                  } else {
+                    if (not_main.localeCompare('') !== 0)
+                      not_main += ' / ';
+                    not_main += aux[w];
+                  }
+                }
+                if (main_enemies_string.localeCompare('') === 0)
+                  overall = not_main;
+                else if (not_main.localeCompare('') === 0)
+                  overall = main_enemies_string;
+                else
+                  overall = main_enemies_string + ' / ' + not_main;
+
+                aux = overall.split(' / ');
+                //console.log(overall);
+                tooltip.innerText += '\n' + aux.join(" / ");
+                overall = aux[0] + " / " + aux[1] + " / ...";
+              }
+          }
+
+            if (tooltip.innerText.length > 0)
               box.appendChild(tooltip);
 
 
