@@ -191,17 +191,14 @@ margin-left: 32px; margin-right: 32px">
 						<a id="begin"></a>
 					</span>
 
-                    <span id="duration_text" style="width: 13%; font-weight: bold; font-size: 18px; color: black">Duração:</span>
-                    <span style="width: 40%; margin-left: 1%">
-						<a id="duration" ></a>
+					<span style="width:13%; font-weight: bold; font-size: 18px; color: black">Técnico:</span>
+					<span style="width: 30%; margin-left: 1%">
+						<a id="technician" ></a>
 					</span>
 				</div>
 
 				<div style="display: flex; flex-direction: row; margin-top: 10px; align-items: baseline">
-                    <span style="width:13%; font-weight: bold; font-size: 18px; color: black">Técnico:</span>
-                    <span style="width: 30%; margin-left: 1%">
-						<a id="technician" ></a>
-					</span>
+
 
                     <span style="width:13%; font-weight: bold; font-size: 18px; color: black">E. F.:</span>
                     <span style="width:15%; margin-left: 1%">
@@ -2301,7 +2298,7 @@ margin-left: 32px; margin-right: 32px">
 					document.getElementById('number_photos').innerHTML = visit.numPhotos;
 					document.getElementById('number_voice_records').innerHTML = visit.numVoice;
 					document.getElementById('begin').innerHTML = refactorDate(visit.date) + " às " + visit.tBegin;
-					document.getElementById('duration').innerHTML = secondsToTime(visit.duration);
+					//document.getElementById('duration').innerHTML = secondsToTime(visit.duration);
 
 					if(visit.notes.localeCompare("null") !== 0) {
 						document.getElementById('no_notes').innerHTML = visit.notes;
