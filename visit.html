@@ -12,15 +12,12 @@
 
 	<script src='https://api.mapbox.com/mapbox.js/v3.3.0/mapbox.js'></script>
 	<link href='https://api.mapbox.com/mapbox.js/v3.3.0/mapbox.css' rel='stylesheet' />
-	<script src=
-					"https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
-	</script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="https://api.mapbox.com/mapbox-gl-js/v1.9.0/mapbox-gl.js"></script>
 	<link href="https://api.mapbox.com/mapbox-gl-js/v1.9.0/mapbox-gl.css" rel="stylesheet" />
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
 		  integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="style.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
 </head>
 
@@ -160,25 +157,24 @@
 	<div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; padding:6px; font-size: 16px; color: white">Estatísticas</div>
 	<div style="margin-left: auto; align-self: center">
 		<!--Add buttons to initiate auth sequence and sign out-->
-		<div id="user_name"  style="font-size: 20px; padding-top: 3px"> </div>
-		<button onclick="handleSignoutClick()" type="button" class="btn light-button" style="background-color: lightgray; color: black; display: inline-block; float: right;  " id="signout_button">Logout</button>
+		<div id="user_name"  style="font-size: 16px; padding-top: 6px; color: #cccccc"> </div>
+		<button onclick="handleSignoutClick()" type="button" class="btn light-button" style="background-color: lightgray; color: black; float: right;" id="signout_button">Logout</button>
 	</div>
 </div>
 
-<div style="display: flex; flex-direction: row; align-items: center; margin-top: 16px; padding-bottom: 8px; border-bottom: 2px solid #ecedee;
-margin-left: 32px; margin-right: 32px">
-	<span  id="last_visit_area" style="margin-right:auto; cursor: default">
-		<i class="fas fa-chevron-left" style="font-size: 20px;"></i>&emsp;
-		<a id="last_visit" style="width: 170px;font-size: 15px;"></a>
-	</span>
-	<h4 id="plot_name" style="text-align: center; color: #008577; font-weight:bold;"></h4>
-	<span id="next_visit_area" style="margin-left: auto; cursor: default">
-		<a id="next_visit" style="font-size: 15px; width: 170px; text-align: right"></a>&emsp;
-		<i class="fas fa-chevron-right" style="font-size: 20px;"></i>
-	</span>
-</div>
-
-<div class="content" style="display: flex; margin-left: 2%; margin-right: 2%">
+<div class="content" style="padding-top: 60px; display: flex; margin-left: 2%; margin-right: 2%">
+	<div style="display: flex; flex-direction: row; align-items: center; padding-bottom: 8px; border-bottom: 2px solid #ecedee;
+				margin-left: 32px; margin-right: 32px;">
+		<span  id="last_visit_area" style="margin-right:auto; cursor: default">
+			<i class="fas fa-chevron-left" style="font-size: 20px;"></i>&emsp;
+			<a id="last_visit" style="width: 170px;font-size: 15px;"></a>
+		</span>
+			<h4 id="plot_name" style="text-align: center; color: #008577; font-weight:bold;"></h4>
+			<span id="next_visit_area" style="margin-left: auto; cursor: default">
+			<a id="next_visit" style="font-size: 15px; width: 170px; text-align: right"></a>&emsp;
+			<i class="fas fa-chevron-right" style="font-size: 20px;"></i>
+		</span>
+	</div>
 <div id="info" style="display: flex; flex-direction: row;">
 
 	<div style="width: 100%; height: 100%; display: flex; flex-direction: row; flex-wrap:wrap; justify-content: space-between; justify-items: flex-start; padding: 16px 24px 0 20px;">
@@ -2515,15 +2511,18 @@ margin-left: 32px; margin-right: 32px">
                     var date = visit.date.split("/");
 					var filterDate = date[0] + "-" + date[1] + "-" + date[2];
 
-					var overall = visit.overall === 'null' ? null : visit.overall.split(' / ');
+					var overall = visit.overall === 'null' ? null : visit.overall.replace("//", "/").split(" / ");
 					var enemies = '';
 					if(overall !== null && overall !== undefined){
 						//console.log(overall);
 						enemies = '&! Sigla Inimigo=';
 						for(var j=0; j < overall.length; j++){
-							enemies += overall[j].replace(/[0-9]/g, '');
-							if(j !== overall.length-1)
-								enemies += ",";
+							var sigla = overall[j].replace(/[0-9]/g, '');
+							if(!enemies.includes(sigla)) {
+								enemies += sigla;
+								if (j !== overall.length - 1)
+									enemies += ",";
+							}
 						}
 						//console.log(enemies);
 					}
