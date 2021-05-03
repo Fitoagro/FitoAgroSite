@@ -151,6 +151,29 @@
 
 </div>
 
+<div id="specific_note_modal" class="modal">
+
+	<div id="specific_note_modal_content" class="modal-content-notes">
+
+		<span style="border-bottom: 1px solid #ecedee; display: flex; flex-direction: row">
+			<a id="specific_modal_title" style="position: relative; justify-content:center; width: 95%; color: #00574B; font-size:24px; font-weight: bold; text-align: center "></a>
+			<a id="specific_note_modal_close" onclick="specificNoteClose()" style="cursor:pointer; color: dimgrey; font-size:40px;
+			margin-top: -16px; text-align: center; margin-left: auto; ">x</a>
+		</span>
+
+
+		<div style="position: relative; margin-top: 30px;font-size:20px; text-align: justify;text-justify: inter-word;">
+
+			<a id="specific_note_modal_description" style="color: black; max-height: 75px; overflow-y: scroll"></a>
+			<br>
+
+			<hr />
+
+		</div>
+	</div>
+
+</div>
+
 <div class="header">
 	<img src="resources/images/fitoagro_logo.png" style="height: 40px; padding-bottom: 4px; align-self: center; margin-right: 64px">
 	<div id="visits_tab" onclick="window.location.href = 'index.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Visitas</div>
@@ -350,6 +373,7 @@
 	var users = [];
 	var visit = [];
 	var plotVisits = [];
+	var allNotes = [];
 	var myCommentsFolderId = '';
 	var commenting = false;
 
@@ -787,72 +811,163 @@
 
 		////console.log("Lock released");
 
-
-		var points_in_map = [];
-		for(var i = 0 ; i < wayPoints.length; i++) {
-			(function () {
-			var id = files_map[wayPoints[i][0].name];
-			if (id in files_info) {
-				var el = document.createElement('div');
-				var isPhoto;
-				if (wayPoints[i][0].type > 0) {
-					el.className = 'marker_voice';
-					isPhoto = false;
-				} else {
-					el.className = 'marker_image';
-					isPhoto = true;
+		visitContentPromise().then((res) => {
+			let json = JSON.parse(res);
+			console.log(json);
+			if(typeof json['notes'] !== "undefined"){
+				allNotes =  json['notes'];
+				for(let j = 0; j < allNotes.length; j++){
+					let id = allNotes[j].id;
+					files_map[id] = id;
+					files_info[id] = allNotes[j];
 				}
-				el.addEventListener("click", function () {
-					onPhotoClick(id, files_info[id].name, files_info[id].description, files_info[id].mine, files_info[id].b64Response, isPhoto);
-				}, false);
+			}
+
+			console.log(files_info);
+			var points_in_map = [];
+			for(var i = 0 ; i < wayPoints.length; i++) {
+				(function () {
+					var id = files_map[wayPoints[i][0].name];
+					if (id in files_info) {
+						var el = document.createElement('div');
+						var isPhoto = false;
+						var isNote = false;
+						if (wayPoints[i][0].type === 0) {
+							el.className = 'marker_image';
+							isPhoto = true;
+						} else if(wayPoints[i][0].type === 1){
+							el.className = 'marker_voice';
+						}else{
+							el.className = 'marker_note';
+							isNote = true;
+						}
+						if(!isNote) {
+							el.addEventListener("click", function () {
+								onPhotoClick(id, files_info[id].name, files_info[id].description, files_info[id].mine, files_info[id].b64Response, isPhoto);
+							}, false);
+						}
+						else{
+							el.addEventListener("click", function () {
+								onNoteClick(files_info[id]);
+							},false);
+						}
 
 
-				var point = [wayPoints[i][0].longitude, wayPoints[i][0].latitude];
+						var point = [wayPoints[i][0].longitude, wayPoints[i][0].latitude];
 
 
-				for(var w = 0; w < points_in_map.length; w++){
-					if(points_in_map[w][0] === point[0] && points_in_map[w][1] === point[1]){
-						point[0]+= 0.00001000;
-						break;
+						for(var w = 0; w < points_in_map.length; w++){
+							if(points_in_map[w][0] === point[0] && points_in_map[w][1] === point[1]){
+								point[0]+= 0.00001000;
+								break;
+							}
+						}
+
+						points_in_map[i] = point;
+						points_by_id[id] = wayPoints[i][0];
+
+						new mapboxgl.Marker(el)
+								.setLngLat(point)
+								.addTo(map);
+					}
+				})();
+
+			}
+
+
+
+
+			map.addSource('route' + id, {
+				'type': 'geojson',
+				'data': {
+					'type': 'Feature',
+					'properties': {},
+					'geometry': {
+						'type': 'LineString',
+						'coordinates': points
 					}
 				}
+			});
+			map.addLayer({
+				'id': 'route' + id,
+				'type': 'line',
+				'source': 'route' +id,
+				'layout': {
+					'line-join': 'round',
+					'line-cap': 'round'
+				},
+				'paint': {
+					'line-color': hexaColor,
+					'line-width': 6
+				}
+			});
 
-				points_in_map[i] = point;
-				points_by_id[id] = wayPoints[i][0];
+		}).catch((error) => {
+		});
 
-				new mapboxgl.Marker(el)
-						.setLngLat(point)
-						.addTo(map);
+
+
+	}
+
+	function isUndefined(object){
+		return typeof object === "undefined";
+	}
+
+	function getObservationText(observation){
+		console.log(observation);
+		if(observation != null) {
+			let processedObservation = null;
+			try {
+				let infoJSON = JSON.parse(observation);
+				if (!isUndefined(infoJSON["eoi"])) {
+					let message = "Árvore " + (parseInt(infoJSON["eoi"]) + 1) + " " + infoJSON["protocol_name"] + ": " + infoJSON["observation_name"];
+					if(observation.includes("title"))
+						message+= " - " + infoJSON["title"];
+					processedObservation = message;
+				}else if(!isUndefined(infoJSON["title"])){
+					processedObservation ="Armadilha: " + infoJSON["title"];
+				}else if(!isUndefined(infoJSON["occurrence_type"])){
+					let occ_type = parseInt(infoJSON["occurrence_type"]) === 0 ? "Ação: " : "Evento: ";
+					processedObservation = occ_type + infoJSON["occurrence_name"];
+
+				}
+				return processedObservation;
+
+			} catch (e) {
+				console.log(e);
+
+				return undefined;
 			}
-			})();
 
 		}
+		return undefined
+	}
 
+	function onNoteClick(note){
+		var modal = document.getElementById('specific_note_modal');
+		var modal_description = document.getElementById('specific_note_modal_description');
 
-		map.addSource('route' + id, {
-			'type': 'geojson',
-			'data': {
-				'type': 'Feature',
-				'properties': {},
-				'geometry': {
-					'type': 'LineString',
-					'coordinates': points
-				}
-			}
-		});
-		map.addLayer({
-			'id': 'route' + id,
-			'type': 'line',
-			'source': 'route' +id,
-			'layout': {
-				'line-join': 'round',
-				'line-cap': 'round'
-			},
-			'paint': {
-				'line-color': hexaColor,
-				'line-width': 6
-			}
-		});
+		var modal_title = document.getElementById('specific_modal_title');
+
+		var begin = note['creation_timestamp'].replace('_','');
+		var year = begin.substring(0,4);
+		var month = begin.substring(4,6);
+		var day = begin.substring(6,8);
+		var hour = begin.substring(8,10);
+		var min = begin.substring(10,12);
+
+		modal_title.innerHTML = "Nota de " + note['owner'] + " às " + hour +":"+min;
+
+		if(typeof note['observation'] !== "undefined")
+			modal_description.innerText = getObservationText(note['observation']) + '\n'+ note.content;
+		else
+			modal_description.innerText = note.content;
+
+		modal.style.display='block';
+	}
+
+	function specificNoteClose(){
+		document.getElementById('specific_note_modal').style.display = 'none';
 	}
 
 	function msToTime(s) {
@@ -971,8 +1086,9 @@
 							var file_type;
 							if (file_name.includes("photo"))
 								file_type = 0;
-							else
+							else if(file_name.includes("audio"))
 								file_type = 1;
+							else file_type = 2;
 
 							var file = {
 								type: file_type,

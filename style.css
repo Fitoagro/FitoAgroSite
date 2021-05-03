@@ -209,6 +209,16 @@ h3{
     cursor: pointer;
 }
 
+.marker_note {
+    background-image: url('resources/images/blue_marker_note.png');
+    background-size: cover;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+
 #user_name {
     display: none;
     overflow: hidden;
