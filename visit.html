@@ -2627,13 +2627,13 @@
                     var date = visit.date.split("/");
 					var filterDate = date[0] + "-" + date[1] + "-" + date[2];
 
-					var overall = visit.overall === 'null' ? null : visit.overall.replace("//", "/").split(" / ");
+					var overall = visit.overall === 'null' ? null : visit.overall.replace("//", "/").split("/");
 					var enemies = '';
 					if(overall !== null && overall !== undefined){
 						//console.log(overall);
 						enemies = '&! Sigla Inimigo=';
 						for(var j=0; j < overall.length; j++){
-							var sigla = overall[j].replace(/[0-9]/g, '');
+							var sigla = overall[j].replace(/[0-9]/g, '').trim();
 							if(!enemies.includes(sigla)) {
 								enemies += sigla;
 								if (j !== overall.length - 1)
