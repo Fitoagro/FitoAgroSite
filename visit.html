@@ -843,7 +843,7 @@
 						}
 						if(!isNote) {
 							el.addEventListener("click", function () {
-								onPhotoClick(id, files_info[id].name, files_info[id].description, files_info[id].mine, files_info[id].b64Response, isPhoto);
+								onPhotoClick(id, files_info[id].name, files_info[id].description,files_info[id].properties, files_info[id].mine, files_info[id].b64Response, isPhoto);
 							}, false);
 						}
 						else{
@@ -1369,17 +1369,43 @@
 
 	}
 
+	function getObservationText(observation){
+		if(!isUndefined(observation)) {
+			let processedObservation = null;
+			try {
+				if (!isUndefined(observation["eoi"])) {
+					let message = "Árvore " + (parseInt(observation["eoi"]) + 1) + " " + observation["protocol_name"] + ": " + observation["observation_name"];
+					if(!isUndefined(observation["title"]))
+						message+= " - " + observation["title"];
+					processedObservation = message;
+				}else if(!isUndefined(observation["title"])){
+					processedObservation ="Armadilha: " + observation["title"];
+				}else if(!isUndefined(observation["occurrence_type"])){
+					let occ_type = parseInt(observation["occurrence_type"]) === 0 ? "Ação: " : "Evento: ";
+					processedObservation = occ_type + observation["occurrence_name"];
+				}
+				return processedObservation;
+
+			} catch (e) {
+				console.log(e);
+
+				return undefined;
+			}
+
+		}
+		return undefined
+	}
+
 
 	function getPhotos(id){
 		gapi.client.drive.files.list({
 			'folderId' : id,
 			'pageSize': 100,
-			'fields': "nextPageToken, files(id, name, description, owners, hasThumbnail, thumbnailLink)",
+			'fields': "nextPageToken, files(id, name, description, owners, hasThumbnail, thumbnailLink, properties)",
 			'q': `'${id}' in parents`
 		}).then(function(response) {
 			var files = response.result.files;
 			if (files && files.length > 0) {
-
 				document.getElementById("gallery_header").style.display = "flex";
 				document.getElementById("gallery").style.display = "flex";
 
@@ -1398,6 +1424,7 @@
                         var name = files[i].name;
                         files_map[name] = id;
                         var description = files[i].description;
+                        var observation = getObservationText(files[i].properties);
 
                         var imgContainer = document.createElement('a');
 						imgContainer.style.width = '64px';
@@ -1444,11 +1471,11 @@
                             outputImg.src = 'data:image/png;base64,' + b64Response;
                             outputImg.setAttribute("class", 'image_thumbnail');
 
-							files_info[id] = {name:name, description:description,mine:mine,b64Response:b64Response};
+							files_info[id] = {name:name, description:description,mine:mine,b64Response:b64Response,properties:observation};
 
 
 							outputImg.addEventListener("click", function (e) {
-								onPhotoClick(id,name,files_info[id].description,mine,b64Response,true);
+								onPhotoClick(id,name,files_info[id].description,files_info[id].properties,mine,b64Response,true);
 
                             });
                             outputImg.style.objectFit = 'cover';
@@ -2105,7 +2132,7 @@
 
 
 
-	function onPhotoClick(id,name,description,mine,b64Response,photo){
+	function onPhotoClick(id,name,description,observation,mine,b64Response,photo){
 		actual_file_id = id;
 
 		var modal = document.getElementById("myModal");
@@ -2121,14 +2148,18 @@
 
 		if(typeof points_by_id[actual_file_id] !== "undefined") {
 			modal_locate.style.display = "block";
+			//console.log(name+" : " + points_by_id[actual_file_id].latitude +", " + points_by_id[actual_file_id].longitude);
 		}
 
 
 		modal_date.innerHTML = getDate(name);
-		if (typeof description !== "undefined") {
-			//modal_description.innerText = "The bar chart represents both the number of visitors per month for each website, and the total number of visitors per website for the entire quarter. Website visitors for each month are represented using columns lined up horizontally, with heights indicating the number of visitors. A fourth column is provided for each website with the accumulated site visitors for the quarter.";
+		if (!isUndefined(description) && !isUndefined(observation))
+			modal_description.innerText = observation + '\n' + description;
+		else if(!isUndefined(description))
 			modal_description.innerText = description;
-		} else
+		else if(!isUndefined(observation))
+			modal_description.innerText = observation;
+		else
 			modal_description.innerText = "Sem descrição.";
 
 		if(photo) {
@@ -2143,11 +2174,13 @@
 
 		}
 
-		if(mine){
-			modal_edit.style.display='block';
-		}else {
-			modal_edit.style.display = 'none';
-		}
+		modal_edit.style.display = 'none';
+
+		// if(mine){
+		// 	modal_edit.style.display='block';
+		// }else {
+		// 	modal_edit.style.display = 'none';
+		// }
 
 
 		//TODO actualizar o número de comentarios
@@ -2372,7 +2405,7 @@
 		gapi.client.drive.files.list({
 			'folderId' : id,
 			'pageSize': 100,
-			'fields': "nextPageToken, files(id, name, description, owners)",
+			'fields': "nextPageToken, files(id, name, description, owners, properties)",
 			'q': `'${id}' in parents`
 		}).then(function(response) {
 			var files = response.result.files;
@@ -2397,6 +2430,7 @@
 						var name = files[i].name;
 						files_map[name] = id;
 						var description = files[i].description;
+						var observation = getObservationText(files[i].properties);
 
 						var imgContainer = document.createElement('a');
 
@@ -2444,10 +2478,10 @@
 							outputImg.src = 'resources/images/audio_icon.png';
 							outputImg.setAttribute("class", 'image_thumbnail');
 
-							files_info[id] = {name:name, description:description,mine:mine,b64Response:b64Response};
+							files_info[id] = {name:name, description:description,mine:mine,b64Response:b64Response,properties:observation};
 
 							outputImg.addEventListener("click", function (e) {
-								onPhotoClick(id,name,files_info[id].description,mine,b64Response,false);
+								onPhotoClick(id,name,files_info[id].description,files_info[id].properties,mine,b64Response,false);
 							});
 
 
