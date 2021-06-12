@@ -16,7 +16,8 @@
     <div class="header">
       <img src="resources/images/fitoagro_logo.png" style="height: 40px; padding-bottom: 4px; align-self: center; margin-right: 64px">
       <div id="visits_tab" onclick="window.location.reload()" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; text-decoration: underline; color: white">Visitas</div>
-      <div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; padding:6px; font-size: 16px; color: white">Estatísticas</div>
+      <!--<div id="analytic_tab" onclick="window.location.href = 'analytic_viz.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Analítica das Observações</div>
+      --><div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; padding:6px; font-size: 16px; color: white">Estatísticas</div>
       <div style="margin-left: auto; align-self: center">
           <!--Add buttons to initiate auth sequence and sign out-->
           <div id="user_name" style="font-size: 16px; padding-top: 6px; color: #cccccc"> </div>
@@ -30,7 +31,7 @@
         <br><br>
         <h4>Por favor faça login:</h4>
         <br>
-          <button type="button" class="btn light-button" style=" width: 100%; display: none;" id="authorize_button">Entrar</button>
+          <button type="button" class="btn white-button" style=" width: 100%; display: none;" id="authorize_button">Entrar</button>
       </div>
     </div>
 
@@ -95,8 +96,6 @@
       <div id="renderList" style="position: absolute; top: 80px; left: 6%; right: 6%; margin-top: 70px; margin-left:6px; display: flex; flex-direction: column"></div>
 
     </div>
-
-    /** ---------------------JAVASCRIPT---------------------------- **/
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
@@ -864,6 +863,7 @@
 
             if (list[i].visited === "false") {
               overview.innerText = "Visita não efetuada";
+              label.style.backgroundColor = "dimgrey";
             }else if(overall.trim().length === 0){
               overview.innerText = "Sem Observações"
             }else
