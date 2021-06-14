@@ -606,9 +606,14 @@
         var end = $('#filterdates').data('daterangepicker').endDate.format('YYYY/MM/DD');
         var success_counter = 0;
         for(var i=0; i<list.length; i++) {
+
+            let conflict = false;//list[i].technicians.split(";").includes(fullName); //TODO
+            let hasPermissions = list[i].technicians.split(";").includes(fullName); // TODO comparar emails
+
+
           if(list[i].plot !== undefined) {
             // check date filter
-            if(document.getElementById('filterdates').value !== '') {
+            if (document.getElementById('filterdates').value !== '') {
               // filter contains interval
               if (list[i].date < start || list[i].date > end) {
                 // visit not within filter interval
@@ -620,18 +625,32 @@
             box.setAttribute('class', 'box');
             var label = document.createElement('div');
             label.setAttribute('class', 'box-label');
+            if (conflict)
+              label.style.backgroundColor = '#881600';
             var summary = document.createElement('div');
             summary.setAttribute('class', 'box-content');
             box.setAttribute('id', list[i].fileId);
+
+
             box.onclick = function () {
-              var visit = visits.find(value => value.fileId === this.id);
-              sessionStorage.setItem('visit', JSON.stringify(visit));
-              sessionStorage.setItem('users', JSON.stringify(users));
-              var plotVisits = visits.filter(value => value.plot === visit.plot).sort(function (v1, v2) {
-                return ((v1.date < v2.date) ? -1 : ((v1.date > v2.date) ? 1 : 0));
-              });
-              sessionStorage.setItem('plotVisits', JSON.stringify(plotVisits));
-              window.location.href = `visit.html?visit_id=${this.id}`;
+              if (!conflict) {
+                var visit = visits.find(value => value.fileId === this.id);
+                sessionStorage.setItem('visit', JSON.stringify(visit));
+                sessionStorage.setItem('users', JSON.stringify(users));
+                var plotVisits = visits.filter(value => value.plot === visit.plot).sort(function (v1, v2) {
+                  return ((v1.date < v2.date) ? -1 : ((v1.date > v2.date) ? 1 : 0));
+                });
+                sessionStorage.setItem('plotVisits', JSON.stringify(plotVisits));
+                window.location.href = `visit.html?visit_id=${this.id}`;
+              } else {
+                if (hasPermissions) {
+                  if (confirm("A visita selecionada apresenta um conflito que necessita de ser resolvido para poder consultar a informação. Pretende continuar?")) {
+                    window.location.href = `conflict.html?visit_id=${this.id}`;
+                  }
+                } else {
+                  alert("A visita selecionada apresenta um conflito que necessita de ser resolvido para poder consultar a informação. Aguarde que um dos técnicos resolva o conflito.")
+                }
+              }
             };
 
             //var title = document.createElement('span');
@@ -639,7 +658,7 @@
             day.style.fontSize = '24px'
             day.style.color = "white";
             day.style.marginBottom = '6px';
-            if(list[i].date !== undefined)
+            if (list[i].date !== undefined)
               day.innerText = list[i].date.split('/')[2];
             label.appendChild(day);
 
@@ -705,20 +724,23 @@
             }
 
             var eventIcon = document.createElement('div');
-            eventIcon.setAttribute("class", "tool");
-            eventIcon.style.float = "right";
-            eventIcon.innerHTML = list[i].rain === "true" ? '<img src="resources/images/rain_icon.png" style="width:25px;height:25px; padding-bottom: 3px">'
-                    : list[i].treatment === "true" ? '<img src="resources/images/treatment_icon.png" style="width:25px;height:25px; padding-bottom: 3px">' : '';
 
-            if(eventIcon.innerHTML !== "") {
-              var tooltip = document.createElement('span');
-              tooltip.setAttribute('class', 'tooltiptext');
-              tooltip.innerText = list[i].rain === "true" ? "Chuva" : list[i].treatment === "true" ? "Tratamento" : "";
-              eventIcon.appendChild(tooltip);
+            if(!conflict) {
+              eventIcon.setAttribute("class", "tool");
+              eventIcon.style.float = "right";
+              eventIcon.innerHTML = list[i].rain === "true" ? '<img src="resources/images/rain_icon.png" style="width:25px;height:25px; padding-bottom: 3px">'
+                      : list[i].treatment === "true" ? '<img src="resources/images/treatment_icon.png" style="width:25px;height:25px; padding-bottom: 3px">' : '';
             }
+              if (eventIcon.innerHTML !== "") {
+                var tooltip = document.createElement('span');
+                tooltip.setAttribute('class', 'tooltiptext');
+                tooltip.innerText = list[i].rain === "true" ? "Chuva" : list[i].treatment === "true" ? "Tratamento" : "";
+                eventIcon.appendChild(tooltip);
+              }
 
-            topBar.appendChild(eventIcon);
-            summary.appendChild(topBar);
+              topBar.appendChild(eventIcon);
+              summary.appendChild(topBar);
+
 
             /*--------------------------*/
 
@@ -732,7 +754,7 @@
             gpsIcon.style.float = "right";
             gpsIcon.innerHTML = list[i].gps === "false" ? '<img src="resources/images/no_gps_icon.png" style="width:25px;height:25px">' : '';
 
-            if(gpsIcon.innerHTML !== "") {
+            if (gpsIcon.innerHTML !== "") {
               var tooltip = document.createElement('span');
               tooltip.setAttribute('class', 'tooltiptext');
               tooltip.innerText = list[i].gps === "false" ? "Sem Trajetória GPS" : "";
@@ -776,29 +798,41 @@
               var overallByType = overall.split(" // ");
               overall = '';
 
-              if(overallByType[0].length > 0) {
+
+              if (overallByType[0].length > 0) {
                 content.style.paddingTop = "8px";
-                if(overallByType[1].length === 0)
+                if (overallByType[1].length === 0)
                   content.style.paddingTop = "20px";
-                if(overallByType[0].length > 14) {
-                    overall += "<p><b style='color: #008577'>EOIs:</b> " + overallByType[0].substr(0, 14) + "...</p>";
-                }else
-                    overall += "<p><b style='color: #008577'>EOIs:</b> " + overallByType[0] + "</p>";
+                if (!conflict)
+                  overall += "<p><b style='color: #008577'>EOIs:</b> ";
+                else
+                  overall += "<p><b style='color: #881600'>EOIs:</b> ";
+
+                if (overallByType[0].length > 14) {
+                  overall += overallByType[0].substr(0, 14) + "...</p>";
+                } else
+                  overall += overallByType[0] + "</p>";
               }
 
-               if(overallByType[1].length > 0){
-                 content.style.paddingTop = "8px";
-                 if(overallByType[0].length === 0)
-                   content.style.paddingTop = "20px";
-                 if(overallByType[1].length > 14) {
-                   overall += "<p><b style='color: #008577'>Capturas:</b> " + overallByType[1].substr(0, 14) + "...</p>";
-                 }else
-                    overall += "<p><b style='color: #008577'>Capturas:</b> " + overallByType[1] + "</p>";
-                }
+              if (overallByType[1].length > 0) {
+                content.style.paddingTop = "8px";
+                if (overallByType[0].length === 0)
+                  content.style.paddingTop = "20px";
+
+                if (!conflict)
+                  overall += "<p><b style='color: #008577'>Capturas:</b> ";
+                else
+                  overall += "<p><b style='color: #881600'>Capturas:</b> ";
+
+                if (overallByType[1].length > 14) {
+                  overall += overallByType[1].substr(0, 14) + "...</p>";
+                } else
+                  overall += overallByType[1] + "</p>";
+              }
 
 
-              if(overall.includes("...")){
-                if(overallByType[0].length > 0)
+              if (overall.includes("...")) {
+                if (overallByType[0].length > 0)
                   tooltipObs.innerHTML = "<p><b>EOIs:</b> " + overallByType[0] + "</p>";
                 tooltipObs.innerHTML += "<b>Capturas:</b> " + overallByType[1];
               }
@@ -808,7 +842,7 @@
                 content.style.alignSelf = "left";
               }
 
-            } else{
+            } else {
               var aux = typeof overall !== undefined ? overall.split(" / ") : undefined;
 
               if (typeof aux !== "undefined" && aux.length > 2) {
@@ -846,31 +880,39 @@
                 else
                   overall = main_enemies_string + ' / ' + not_main;
 
-                if(overall.length > 20) {
+                if (overall.length > 20) {
                   aux = overall.split(" / ");
                   var temp = "";
-                  for(var k = 0; k < aux.length; k++){
+                  for (var k = 0; k < aux.length; k++) {
                     temp += aux[k] + ' / ';
-                    if(temp.length >= 20)
+                    if (temp.length >= 20)
                       break;
                   }
                   tooltipObs.innerText = aux.join(" / ");
                   overall = temp + "...";
                 }
               }
+            }
+
+
+           if(!conflict) {
+               if (list[i].visited === "false") {
+                   overview.innerText = "Visita não efetuada";
+                   label.style.backgroundColor = "dimgrey";
+               } else if (overall.trim().length === 0) {
+                   overview.innerText = "Sem Observações"
+               } else
+                   overview.innerHTML = overall;
+
+               if (tooltipObs.innerText.length > 0)
+                   overview.appendChild(tooltipObs);
+           } else{
+              overview.innerHTML= '<span style="color: #881600;font-size: 25px; padding-bottom: 3px">Conflito</span>';
+              content.style.textAlign = 'center';
+              content.style.paddingTop = "20px";
+              content.style.paddingRight = "10px";
+
           }
-
-
-            if (list[i].visited === "false") {
-              overview.innerText = "Visita não efetuada";
-              label.style.backgroundColor = "dimgrey";
-            }else if(overall.trim().length === 0){
-              overview.innerText = "Sem Observações"
-            }else
-              overview.innerHTML = overall;
-
-            if(tooltipObs.innerText.length > 0)
-              overview.appendChild(tooltipObs);
 
             content.appendChild(overview);
 

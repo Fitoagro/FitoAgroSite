@@ -150,34 +150,36 @@ function fillNotes(genericNote, specificNotes){
 
     if(!isUndefined(specificNotes)) {
         Object.keys(specificNotes).sort().forEach(function (noteIndex) {
-            let row = note_table.insertRow();
-            let cell;
-            let observation = specificNotes[noteIndex]['observation'];
-            observation = getObservationText(observation);
-            if (!isUndefined(observation)) {
-                let observationText = document.createTextNode(observation);
+            if(specificNotes[noteIndex].id.includes("_note_")) {
+                let row = note_table.insertRow();
+                let cell;
+                let observation = specificNotes[noteIndex]['observation'];
+                observation = getObservationText(observation);
+                if (!isUndefined(observation)) {
+                    let observationText = document.createTextNode(observation);
+                    cell = row.insertCell();
+                    cell.style.textAlign = 'center';
+                    cell.appendChild(observationText);
+                } else {
+                    let empty = document.createTextNode("- - -");
+                    cell = row.insertCell();
+                    cell.style.textAlign = 'center';
+                    cell.appendChild(empty);
+                }
+
+                let timestamp = specificNotes[noteIndex]['creation_timestamp']; //20210426_092643
+                let timestampText = document.createTextNode(timestamp.substr(9, 2) + ":" + timestamp.substr(11, 2));
+
                 cell = row.insertCell();
                 cell.style.textAlign = 'center';
-                cell.appendChild(observationText);
-            }else{
-                let empty = document.createTextNode("- - -");
+                cell.appendChild(timestampText);
+
+                let value = specificNotes[noteIndex]['content'];
+                let valueText = document.createTextNode(value);
+
                 cell = row.insertCell();
-                cell.style.textAlign = 'center';
-                cell.appendChild(empty);
+                cell.appendChild(valueText);
             }
-
-            let timestamp = specificNotes[noteIndex]['creation_timestamp']; //20210426_092643
-            let timestampText = document.createTextNode(timestamp.substr(9, 2) + ":" + timestamp.substr(11, 2));
-
-            cell = row.insertCell();
-            cell.style.textAlign = 'center';
-            cell.appendChild(timestampText);
-
-            let value = specificNotes[noteIndex]['content'];
-            let valueText = document.createTextNode(value);
-
-            cell = row.insertCell();
-            cell.appendChild(valueText);
         });
     }
 
@@ -224,14 +226,14 @@ function getProcessedEois(rawJson){
     var caliber = defaultObservations['Calibre'];
     var genericNote = defaultObservations['Notas'];
 
-    document.getElementById("date").innerText = rawDate.substring(0,4) + "/" + rawDate.substring(4,6) + "/" + rawDate.substring(6,8);
-    document.getElementById("pob").innerText = rawJson['plot_name'];
-    document.getElementById("crop").innerText = rawJson['crops'];
-    document.getElementById("ef").innerText = defaultObservations['EF'].value;
-    document.getElementById("rain").innerText = defaultObservations['Chuva'].value  === "true" ? "Sim" : "Não";
-    document.getElementById("treatment").innerText = defaultObservations['Tratamento'].value  === "true" ? "Sim" : "Não";
-    document.getElementById("caliber").innerText = typeof  caliber === 'undefined' ? 'Não registado' : caliber.value;
-    //document.getElementById("notes").innerText = typeof  notes === 'undefined' ? 'Não registado' : notes.value;
+    // document.getElementById("date").innerText = rawDate.substring(0,4) + "/" + rawDate.substring(4,6) + "/" + rawDate.substring(6,8);
+    // document.getElementById("pob").innerText = rawJson['plot_name'];
+    // document.getElementById("crop").innerText = rawJson['crops'];
+    // document.getElementById("ef").innerText = defaultObservations['EF'].value;
+    // document.getElementById("rain").innerText = defaultObservations['Chuva'].value  === "true" ? "Sim" : "Não";
+    // document.getElementById("treatment").innerText = defaultObservations['Tratamento'].value  === "true" ? "Sim" : "Não";
+    // document.getElementById("caliber").innerText = typeof  caliber === 'undefined' ? 'Não registado' : caliber.value;
+    // //document.getElementById("notes").innerText = typeof  notes === 'undefined' ? 'Não registado' : notes.value;
 
     fillNotes(genericNote,rawJson['notes']);
 

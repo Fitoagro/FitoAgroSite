@@ -273,6 +273,14 @@
 							<a id="ef"></a>
 						</span>
 						</td>
+
+						<td>
+							<span style="font-weight: bold; font-size: 18px; color: black;">Calibre:</span>
+							<span style="margin-left: 1%">
+							<a id="caliber">Não registado</a>
+						</span>
+						</td>
+
 						<td>
 						<span id="nea_text" style="font-weight: bold; font-size: 18px; color: black; display: none">NEA:</span>
 						<span style="margin-left: 1%">
@@ -283,6 +291,28 @@
 					<tr class="blank_row">
 						<td>&nbsp;</td>
 					</tr>
+
+					<tr>
+
+						<td>
+							<span style="width:13%; font-weight: bold; font-size: 18px; color: black">Chuva:</span>
+							<span style="width:15%; margin-left: 1%">
+							<a id="rain">Não</a>
+						</span>
+						</td>
+						<td>
+							<span style="font-weight: bold; font-size: 18px; color: black;">Tratamento:</span>
+							<span style="margin-left: 1%">
+							<a id="treatment">Não</a>
+						</span>
+						</td>
+					</tr>
+
+					<tr class="blank_row">
+						<td>&nbsp;</td>
+					</tr>
+
+
 				</table>
 				<div  id="note_gallery" style="display: flex; flex-direction: row; align-items: baseline">
 					<span style="font-weight: bold; font-size: 18px; color: black"> Notas: </span>
@@ -2700,7 +2730,17 @@
 						document.getElementById('nea').innerText = visit.nea.includes("%") ? visit.nea : visit.nea +"%";
 					}
 
-                    var date = visit.date.split("/");
+					if(visit.rain === "true")
+						document.getElementById("rain").innerHTML = "Sim";
+
+					if(visit.treatment === "true")
+						document.getElementById("treatment").innerHTML = "Sim";
+
+					if(visit.caliber !== "null")
+						document.getElementById("caliber").innerHTML = visit.caliber;
+
+
+					var date = visit.date.split("/");
 					var filterDate = date[0] + "-" + date[1] + "-" + date[2];
 
 					var overall = visit.overall === 'null' ? null : visit.overall.replace("//", "/").split("/");
