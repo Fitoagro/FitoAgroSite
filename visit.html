@@ -449,6 +449,8 @@
 	var myCommentsFolderId = '';
 	var commenting = false;
 
+	var countsPerTraps;
+
 	var folderOwner = '';
 
 	var filesIds;
@@ -895,6 +897,12 @@
 				}
 			}
 
+			if(typeof json['traps'] !== "undefined"){
+				console.log("Entrou");
+				countsPerTraps = json['traps'];
+				console.log(countsPerTraps);
+			}
+
 			console.log(files_info);
 			var points_in_map = [];
 			for(var i = 0 ; i < wayPoints.length; i++) {
@@ -975,6 +983,7 @@
 			});
 
 		}).catch((error) => {
+			console.log(error);
 		});
 
 
@@ -2225,8 +2234,19 @@
 
 
 		modal_date.innerHTML = getDate(name);
-		if (!isUndefined(description) && !isUndefined(observation))
+
+		if(!isUndefined(observation)){
+			if(observation.includes("Armadilha: ")){
+				let enemy = observation.substr(11,observation.length);
+				if(countsPerTraps[enemy] !== "undefined"){
+					observation+= " ("+ countsPerTraps[enemy].value + ")";
+				}
+			}
+		}
+
+		if (!isUndefined(description) && !isUndefined(observation)) {
 			modal_description.innerText = observation + '\n' + description;
+		}
 		else if(!isUndefined(description))
 			modal_description.innerText = description;
 		else if(!isUndefined(observation))
@@ -2239,11 +2259,34 @@
 			modal_photo.style.display = "block";
 			modal_photo.src = 'data:image/png;base64,' + b64Response;
 			modal_photo.width = 300;
+			modal_photo.addEventListener('click', function(){
+				var w = window.open('about:blank');
+				console.log(b64Response);
+				setTimeout(function(){
+					 let img = w.document.body.appendChild(w.document.createElement('img'));
+					 img.src = 'data:image/png;base64,' + b64Response;
+					let originalWidth = img.width;
+					let originalHeight = img.height;
+
+					img.setAttribute("height","768");
+					let smallWidth = img.width;
+
+					img.addEventListener('click', function() {
+						if(img.width === originalWidth && img.height === originalHeight){
+							img.width = smallWidth;
+							img.setAttribute("height","768")
+						}else{
+							img.width = originalWidth;
+							img.height = originalHeight;
+						}
+					});
+				}, 0);
+			});
 		}else{
 			modal_audio.style.display = "block";
 			modal_photo.style.display = "none";
 			modal_audio.src = 'data:audio/mp3;base64,' + b64Response;
-
+			modal_audio.getElementById('btnDownload').addEventListener('click',null);
 		}
 
 		modal_edit.style.display = 'none';
@@ -2254,8 +2297,6 @@
 		// 	modal_edit.style.display = 'none';
 		// }
 
-
-		//TODO actualizar o número de comentarios
 
 		getComments(id,true,false);
 
