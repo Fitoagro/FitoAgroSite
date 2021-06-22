@@ -2213,6 +2213,8 @@
 
 
 
+	let lastFunction;
+
 	function onPhotoClick(id,name,description,observation,mine,b64Response,photo){
 		actual_file_id = id;
 
@@ -2258,34 +2260,16 @@
 			modal_audio.style.display = "none";
 			modal_photo.style.display = "block";
 
-			let f = function(){
-				let w = window.open('',name);
-				//console.log(b64Response);
-					if (w.document.body.getElementsByTagName('img').length === 0) {
-						let img = w.document.body.appendChild(w.document.createElement('img'));
-						img.src = 'data:image/png;base64,' + b64Response;
-						let originalWidth = img.width;
-						let originalHeight = img.height;
+			if(!isUndefined(lastFunction))
+				modal_photo.removeEventListener("click",lastFunction);
 
-						img.setAttribute("height", "768");
-						let smallWidth = img.width;
-
-						img.addEventListener('click', function () {
-							if (img.width === originalWidth && img.height === originalHeight) {
-								img.width = smallWidth;
-								img.setAttribute("height", "768")
-							} else {
-								img.width = originalWidth;
-								img.height = originalHeight;
-							}
-						});
-					}
+			lastFunction = function(){
+				openImage(name,b64Response);
 			};
 
-			modal_photo.removeEventListener("click",f);
 			modal_photo.src = 'data:image/png;base64,' + b64Response;
 			modal_photo.width = 300;
-			modal_photo.addEventListener('click',f);
+			modal_photo.addEventListener('click',lastFunction);
 		}else{
 			modal_audio.style.display = "block";
 			modal_photo.style.display = "none";
@@ -2307,6 +2291,30 @@
 		modal.style.display = "block";
 
 
+	}
+
+	function openImage(name,b64Response){
+		let w = window.open('',name);
+		//console.log(b64Response);
+		if (w.document.body.getElementsByTagName('img').length === 0) {
+			let img = w.document.body.appendChild(w.document.createElement('img'));
+			img.src = 'data:image/png;base64,' + b64Response;
+			let originalWidth = img.width;
+			let originalHeight = img.height;
+
+			img.setAttribute("height", "768");
+			let smallWidth = img.width;
+
+			img.addEventListener('click', function () {
+				if (img.width === originalWidth && img.height === originalHeight) {
+					img.width = smallWidth;
+					img.setAttribute("height", "768")
+				} else {
+					img.width = originalWidth;
+					img.height = originalHeight;
+				}
+			});
+		}
 	}
 
 	function onNoteModalClose(){
