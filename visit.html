@@ -1132,10 +1132,21 @@
 							line.lastIndexOf('"><time>')
 					);
 
-					var point = [];
-					point.push(parseFloat(ln));
-					point.push(parseFloat(lat));
-					points.push(point);
+					var valid = true;
+					if(line.includes("<valid>")) {
+						var valid_string = line.substring(
+								line.lastIndexOf('<valid>') + 7,
+								line.lastIndexOf('</valid>')
+						);
+						valid = (valid_string === 'true');
+					}
+
+					if(valid) {
+						var point = [];
+						point.push(parseFloat(ln));
+						point.push(parseFloat(lat));
+						points.push(point);
+					}
 
 				}
 
