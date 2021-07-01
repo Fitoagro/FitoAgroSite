@@ -2788,7 +2788,11 @@
 						document.getElementById('technician').innerHTML = folderOwner; 
 					else
 						document.getElementById('technician').innerHTML = technicians;
-					document.getElementById('ef').innerHTML = visit.ef;
+					if(visit.ef !== "null")
+						document.getElementById('ef').innerHTML = visit.ef;
+					else
+						document.getElementById('ef').innerHTML = "Não indicado";
+					
 					if(visit.nea !== "null"){
 						document.getElementById('nea_text').style.display = 'inline';
 						document.getElementById('nea').innerText = visit.nea.includes("%") ? visit.nea : visit.nea +"%";
