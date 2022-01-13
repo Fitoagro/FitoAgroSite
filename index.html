@@ -363,7 +363,7 @@
       function setUsers(element, index, arr) {
         if(element != null){
           /** Hide Testing Devices */
-          if (element.name !== "mas.correia@campus.fct.unl.pt" && element.name !== "miguel_correia754@hotmail.com" && element.name !== "luisasilvacoopvalfitoagro@gmail.com") {
+          if (element.name !== "mas.correia@campus.fct.unl.pt" && element.name !== "miguel_correia754@hotmail.com") {
               users.push({id: element.id, name: element.name, username : element.owners[0].displayName});
               //console.log(users);
               listVisits(element.id, element.id);
