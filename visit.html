@@ -22,6 +22,10 @@
 
 	<script type="text/javascript">
 
+		const plotsFile = '1Uu9L5e2u3stdskQQpDcQwBdShxMtWmyk'
+		const commentsFolderId = '1nD2l8AXjrqnP5B9bXJ-0YVzBwqOfEEfY';
+
+
 		var workbook, sheet;
 
 		function initViz() {
@@ -421,7 +425,6 @@
 
 <script type='text/javascript'>
 
-	const COMMENTS_FOLDER_ID = '1Fl4pNIhHQG2OWc9oLrGUBT8pddqzoMvW';
 
 	mapboxgl.accessToken = 'pk.eyJ1IjoibWlndWVsYXNjb3JyZWlhIiwiYSI6ImNrN25iYzh4NTAxMHIzc210bzJpM3EyZDcifQ.pVWzek_lEMfJixSnBu1ZMA';
 
@@ -898,12 +901,9 @@
 			}
 
 			if(typeof json['traps'] !== "undefined"){
-				console.log("Entrou");
 				countsPerTraps = json['traps'];
-				console.log(countsPerTraps);
 			}
 
-			console.log(files_info);
 			var points_in_map = [];
 			for(var i = 0 ; i < wayPoints.length; i++) {
 				(function () {
@@ -995,7 +995,7 @@
 	}
 
 	function getObservationText(observation){
-		console.log(observation);
+		//console.log(observation);
 		if(observation != null) {
 			let processedObservation = null;
 			try {
@@ -1255,7 +1255,7 @@
 			var plots_jsons;
 
 			gapi.client.drive.files.get({
-				'fileId': '1O_mPNeJGPNftP01cfBQz5h-s36JhaCSB',
+				'fileId': plotsFile,
 				'alt': 'media',
 			}).then(function(response) {
 				plots_jsons = JSON.parse(response.body);
@@ -1597,9 +1597,9 @@
 
 	function getComments(file_id, isFile, initial){
 			gapi.client.drive.files.list({
-				'folderId' : COMMENTS_FOLDER_ID,
+				'folderId' : commentsFolderId,
 				'pageSize': 100,
-				'q': `'${COMMENTS_FOLDER_ID}' in parents and mimeType = 'application/vnd.google-apps.folder' and not trashed`
+				'q': `'${commentsFolderId}' in parents and mimeType = 'application/vnd.google-apps.folder' and not trashed`
 
 			}).then(function(response) {
 				var files = response.result.files;
@@ -1939,17 +1939,17 @@
 				commenting = true;
 
 				gapi.client.drive.files.list({
-					'folderId' : COMMENTS_FOLDER_ID,
+					'folderId' : commentsFolderId,
 					'pageSize': 100,
 					'fields': "nextPageToken, files(id, name)",
-					'q': `'${COMMENTS_FOLDER_ID}' in parents and name = '` + userEmail + `' and not trashed`
+					'q': `'${commentsFolderId}' in parents and name = '` + userEmail + `' and not trashed`
 				}).then(function(response) {
 					var files = response.result.files;
 					if(files.length === 0){
 						gapi.client.drive.files.create({
 							"name" : userEmail,
 							"mimeType" : "application/vnd.google-apps.folder",
-							"parents" : [COMMENTS_FOLDER_ID],
+							"parents" : [commentsFolderId],
 						}).then(function (response) {
 							myCommentsFolderId = response.result.id;
 							var comments = { comments:[{timestamp: timestamp, username: userName, description: description}] };
@@ -2142,17 +2142,17 @@
 				commenting = true;
 
 				gapi.client.drive.files.list({
-					'folderId' : COMMENTS_FOLDER_ID,
+					'folderId' : commentsFolderId,
 					'pageSize': 100,
 					'fields': "nextPageToken, files(id, name)",
-					'q': `'${COMMENTS_FOLDER_ID}' in parents and name = '` + userEmail + `' and not trashed`
+					'q': `'${commentsFolderId}' in parents and name = '` + userEmail + `' and not trashed`
 				}).then(function(response) {
 					var files = response.result.files;
 					if(files.length === 0){
 						gapi.client.drive.files.create({
 							"name" : userEmail,
 							"mimeType" : "application/vnd.google-apps.folder",
-							"parents" : [COMMENTS_FOLDER_ID],
+							"parents" : [commentsFolderId],
 						}).then(function (response) {
 							var comments = { comments:[{timestamp: timestamp, username: userName, description: description}] };
 
