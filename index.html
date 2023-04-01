@@ -1,63 +1,96 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Página principal</title>
+    <title>Visitas</title>
     <meta charset="utf-8" />
+
+    <!-- Fontawesome and Bootstrap styles -->
     <script src="https://kit.fontawesome.com/16512b04b3.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css">
     <link rel="stylesheet" type="text/css" href="style.css">
-
   </head>
 
   <body>
-    <div class="header">
-      <img src="resources/images/fitoagro_logo.png" style="height: 40px; padding-bottom: 4px; align-self: center; margin-right: 64px">
-      <div id="visits_tab" onclick="window.location.reload()" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; text-decoration: underline; color: white">Visitas</div>
-      <!--<div id="analytic_tab" onclick="window.location.href = 'analytic_viz.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Analítica das Observações</div>
-      --><div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; padding:6px; font-size: 16px; color: white">Estatísticas</div>
-      <div style="margin-left: auto; align-self: center">
-          <!--Add buttons to initiate auth sequence and sign out-->
-          <div id="user_name" style="font-size: 16px; padding-top: 6px; color: #cccccc"> </div>
-          <button type="button" class="btn light-button" style="background-color: lightgray; color: black; float: right" id="signout_button">Logout</button>
-      </div>
-    </div>
+    <!--<div id="g_id_onload"
+           data-client_id="683847325816-66urtf71ciqlbrjp8dqks5v4nmoks9ih.apps.googleusercontent.com">
+    </div>-->
 
-    <div id="login" style="display: none; flex-direction: column; justify-content: center; align-items: center">
+    <div id="login" style="display: flex; flex-direction: column; justify-content: center; align-items: center">
       <div style="display:flex; flex-direction:column; justify-content: center; align-items: center; padding: 48px; margin-top: 10%; background-color: lightgray; border-radius: 3px; box-shadow: 5px 5px 5px darkgrey">
           <i class="fa fa-lock" style="font-size: 70px; color: #008577;"></i>
         <br><br>
         <h4>Por favor faça login:</h4>
         <br>
-          <button type="button" class="btn white-button" style=" width: 100%; display: none;" id="authorize_button">Entrar</button>
+        <!-- Sign in button -->
+        <!--<div id="sign_in" class="g_id_signin"
+             data-type="standard"
+             data-shape="rectangular"
+             data-theme="outline"
+             data-text="continue_with"
+             data-size="large"
+             data-locale="pt-PT"
+             data-logo_alignment="left" onclick="handleAuth()">
+        </div>-->
+        <button type="button" class="btn white-button" style=" width: 100%;" id="sign_in" onclick="handleAuth()">Entrar</button>
       </div>
     </div>
 
-    <div id="content" class="content" >
+    <div class="header">
+      <img src="resources/images/fitoagro_logo.png" style="height: 40px; padding-bottom: 4px; align-self: center; margin-right: 64px">
+      <div id="visits_tab" onclick="window.location.reload()" style="visibility:hidden; cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; text-decoration: underline; color: white">Visitas</div>
+      <!--<div id="analytic_tab" onclick="window.location.href = 'analytic_viz.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Analítica das Observações</div>
+      --><div id="stats_tab" onclick="window.location.href = 'stats.html'" style="visibility:hidden; cursor:pointer; padding:6px; font-size: 16px; color: white">Estatísticas</div>
+      <div style="margin-left: auto; align-self: center">
+        <!--Add buttons to initiate auth sequence and sign out-->
+        <div id="user_name" style="visibility:hidden; font-size: 16px; padding-top: 6px; color: #cccccc"> </div>
+        <button id="signout_button" type="button" class="btn white-button" style="visibility:hidden; width: 100%;">Sair</button>
+      </div>
+    </div>
+    <!--<div id="login" style="display: none; flex-direction: column; justify-content: center; align-items: center">
+        <div style="display:flex; flex-direction:column; justify-content: center; align-items: center; padding: 48px; margin-top: 10%; background-color: lightgray; border-radius: 3px; box-shadow: 5px 5px 5px darkgrey">
+            <i class="fa fa-lock" style="font-size: 70px; color: #008577;"></i>
+            <br><br>
+                <h4>Por favor faça login:</h4>
+                <br>
+                    <div class="g_id_signin"
+                         data-type="standard"
+                         data-shape="rectangular"
+                         data-theme="outline"
+                         data-text="continue_with."
+                         data-size="large"
+                         data-locale="pt-PT"
+                         data-logo_alignment="left">
+                    </div>
+            <button type="button" class="btn white-button" style=" width: 100%; display: none;" id="authorize_button">Entrar</button>
+        </div>
+    </div>-->
+
+    <div id="content" class="content" style="visibility: collapse" >
       <div style="position: fixed; top:40px; left: 6%; right:6%; z-index: 9000; background-color: whitesmoke;
-          display: flex; flex-direction: row; align-items: flex-start; border-bottom: 1px solid #00574B;
-          padding-bottom: 1rem; padding-top:20px; margin-bottom:24px">
+                  display: flex; flex-direction: row; align-items: flex-start; border-bottom: 1px solid #00574B;
+                  padding-bottom: 1rem; padding-top:20px; margin-bottom:24px">
         <pre id="visits" style="padding-left: 24px; margin: 0; white-space: pre-wrap;"></pre>
         <div style="margin-left: auto;">
           <i style="color: #008577; font-size: 16px; padding-right: 6px;" class="fas fa-calendar"></i>
           <span class="btn dropdown-toggle btn-light" style="cursor: pointer; text-align: left">
-            <input id="filterdates" readonly="readonly" type="text" name="daterange" value="" placeholder="Todas as Datas"
-                   style="z-index:9998; cursor: pointer; border: none; background-color: transparent"/>
-          </span>
+                    <input id="filterdates" readonly="readonly" type="text" name="daterange" value="" placeholder="Todas as Datas"
+                           style="z-index:9998; cursor: pointer; border: none; background-color: transparent"/>
+                  </span>
         </div>
         <div style="margin-left: 24px;">
-            <i style="color: #008577; font-size: 16px; padding-right: 6px;" class="fas fa-filter"></i>
-            <select id="filterplots" class="selectpicker" data-live-search-placeholder="Pesquisar..." title="Todas as parcelas" onchange="filterPlots()" multiple
-                    data-live-search="true" data-live-search-normalize="true" data-actions-box="true" data-none-results-text="Sem resultados"
-                    data-deselect-all-text="Limpar" data-select-all-text="Todas">
-            </select>
+          <i style="color: #008577; font-size: 16px; padding-right: 6px;" class="fas fa-filter"></i>
+          <select id="filterplots" class="selectpicker" data-live-search-placeholder="Pesquisar..." title="Todas as parcelas" onchange="filterPlots()" multiple
+                  data-live-search="true" data-live-search-normalize="true" data-actions-box="true" data-none-results-text="Sem resultados"
+                  data-deselect-all-text="Limpar" data-select-all-text="Todas">
+          </select>
         </div>
         <div class="dropdown" style="margin-right: 48px; margin-left: 24px; height: 40px">
           <i style="color: #008577; font-size: 16px; padding-right: 6px;" class="fas fa-list"></i>
           <button type="button" class="btn light-button" style="width:200px; text-align: left !important;
-           background-color: #f8f9fa; font-weight: normal; color: black" id="sorting">Não Agrupado
+                   background-color: #f8f9fa; font-weight: normal; color: black" id="sorting">Não Agrupado
             <i style="position: absolute; right: 8px; top: 12px" class="fas fa-caret-down"></i></button>
           <ul class="dropdown-menu" role="menu" style="width:200px; margin-left:28px">
             <li id="groupby-none" onclick="updateList(this.id)" style="cursor: pointer; padding: 8px 8px 8px 24px">
@@ -108,6 +141,86 @@
 
     <script type="text/javascript">
 
+      // Client ID and API key from the Developer Console
+      var CLIENT_ID = '683847325816-66urtf71ciqlbrjp8dqks5v4nmoks9ih.apps.googleusercontent.com';
+      var API_KEY = 'AIzaSyDid5jJUjIBp7BCKZwR1LI0G87b4yEBAhY'; /** LOCALHOST ONLY **/
+
+              // Array of API discovery doc URLs for APIs used by the quickstart
+      var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+
+      // Authorization scopes required by the API; multiple scopes can be included, separated by spaces.
+      const SCOPES = 'https://www.googleapis.com/auth/userinfo.profile ' +
+              'https://www.googleapis.com/auth/userinfo.email ' +
+              'https://www.googleapis.com/auth/drive'
+
+      let tokenClient;
+      let token;
+      let gapiInited = false;
+      let gisInited = false;
+
+      function gisLoaded(){
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: '', //defined in handleAuth(),
+        });
+        gisInited = true;
+      }
+
+      /**
+       * Callback after api.js is loaded.
+       */
+      function gapiLoaded() {
+        gapi.load('client', initializeGapiClient);
+      }
+
+      /**
+       * Callback after the API client is loaded. Loads the
+       * discovery doc to initialize the API.
+       */
+      async function initializeGapiClient() {
+        await gapi.client.init({
+          apiKey: API_KEY,
+          discoveryDocs: DISCOVERY_DOCS,
+        });
+        gapiInited = true;
+        //skip login if there is a token
+        token = sessionStorage.getItem("token");
+        if (token !== null) {
+          gapi.client.setToken(JSON.parse(token));
+          await getVisits();
+        }
+      }
+
+      async function handleAuth() {
+        if (gapiInited && gisInited) {
+            tokenClient.callback = async (tokenResponse) => {
+              if (tokenResponse.error !== undefined) {
+                throw (tokenResponse.error);
+              }
+              document.getElementById('signout_button').style.visibility = 'visible';
+              token = tokenResponse;
+              gapi.client.setToken(tokenResponse);
+              sessionStorage.setItem("token", JSON.stringify(tokenResponse));
+              if (tokenResponse && tokenResponse.access_token) {
+                if (google.accounts.oauth2.hasGrantedAllScopes(tokenResponse,
+                        "https://www.googleapis.com/auth/drive")) {
+                  await getVisits();
+                }
+              }
+            }
+
+            if (gapi.client.getToken() === null) {
+              // Prompt the user to select a Google Account and ask for consent to share their data
+              // when establishing a new session.
+              tokenClient.requestAccessToken({prompt: 'select_account'});
+            } else {
+              // Skip display of account chooser and consent dialog for an existing session.
+              tokenClient.requestAccessToken({prompt: 'none'});
+            }
+        }
+      }
+
       const appUploadFolder = '1G_jn23JzqHhyGidtzV85rPGIMIOE6Pt-'
       const regionInfoFile = '1ic6NxWicelaOBh6zvxYkdqSv7P4O5TF7'
       const enemyAcronymsFile = '1JPzl55H0zMviO5R8euyWqTLE9t94XJN1'
@@ -119,22 +232,11 @@
       var orderDirection = 0; //1 = descending ; 0 = asccending
       var currentGrouping = "groupby-none";
 
-      // Client ID and API key from the Developer Console
-      var CLIENT_ID = '683847325816-66urtf71ciqlbrjp8dqks5v4nmoks9ih.apps.googleusercontent.com';
-      var API_KEY = 'AIzaSyDid5jJUjIBp7BCKZwR1LI0G87b4yEBAhY';
-      /** LOCALHOST ONLY **/
-
-      // Array of API discovery doc URLs for APIs used by the quickstart
-      var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
-
-      // Authorization scopes required by the API; multiple scopes can be
-      // included, separated by spaces.
-      var SCOPES = 'https://www.googleapis.com/auth/drive';
-
       var loginForm = document.getElementById('login');
       var authorizeButton = document.getElementById('authorize_button');
       var userName = document.getElementById('user_name');
       var signoutButton = document.getElementById('signout_button');
+      signoutButton.onclick = handleSignoutClick;
       var content = document.getElementById('content');
 
       var users = [];
@@ -148,61 +250,60 @@
       var region_info = {};
       var enemy_acronym = {};
 
-      /**
-       *  On load, called to load the auth2 library and API client library.
-       */
-      function handleClientLoad() {
-        sessionStorage.clear();
-        gapi.load('client:auth2', initClient);
+      // TODO: should use jwt.io to validade token but requires node.js
+      function parseJwt (token) {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        return JSON.parse(jsonPayload);
+      }
+
+      function updateUI(){
+        //TODO: get account info
+        /*const response = parseJwt(token);
+        console.log("ID: " + response.sub);
+        console.log('Full Name: ' + response.name);
+        console.log('Given Name: ' + response.given_name);
+        console.log('Family Name: ' + response.family_name);
+        console.log("Image URL: " + response.picture);
+        console.log("Email: " + response.email);
+        fullName = response.name;
+        userName.innerHTML = fullName;*/
+
+        document.getElementById("visits_tab").style.visibility = "visible";
+        document.getElementById("stats_tab").style.visibility = "visible";
+        signoutButton.style.visibility = 'visible';
+        userName.style.visibility = 'visible';
+        loginForm.style.visibility = 'collapse';
+
+        content.style.display = 'flex';
+        content.style.visibility = 'visible';
       }
 
       /**
-       *  Initializes the API client library and sets up sign-in state
-       *  listeners.
+       *  Sign out the user upon button click.
        */
-      function initClient() {
-        gapi.client.init({
-          apiKey: API_KEY,
-          clientId: CLIENT_ID,
-          discoveryDocs: DISCOVERY_DOCS,
-          scope: SCOPES
-        }).then(function () {
-          // Listen for sign-in state changes.
-          gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-
-
-          // Handle the initial sign-in state.
-          updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-          authorizeButton.onclick = handleAuthClick;
-          signoutButton.onclick = handleSignoutClick;
-        }, function(error) {
-          console.log(error)
-          appendPre(JSON.stringify(error, null, 2),false);
-        });
+      function handleSignoutClick() {
+        const token = gapi.client.getToken();
+        if (token !== null) {
+          google.accounts.oauth2.revoke(token.access_token);
+          gapi.client.setToken('');
+          sessionStorage.removeItem("token");
+          document.getElementById("renderList").innerHTML = "";
+          document.getElementById('visits').innerHTML = "";
+          //document.getElementById('visits').removeChild('h3');
+          visits = [];
+          plots = [];
+        }
       }
 
-      /**
-       *  Called when the signed in status changes, to update the UI
-       *  appropriately. After a sign-in, the API is called.
-       */
-      function updateSigninStatus(isSignedIn) {
-        if (isSignedIn) {
+      async function getVisits() {
+          updateUI();
 
-          var currentUser = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
-          fullName = currentUser.getName();
-
-          document.getElementById("visits_tab").style.visibility = "visible";
-          document.getElementById("stats_tab").style.visibility = "visible";
-
-          authorizeButton.style.display = 'none';
-          loginForm.style.display = 'none';
-          signoutButton.style.visibility = 'visible';
-          userName.innerHTML = fullName;
-          userName.style.display = 'inline-block';
-
-          content.style.display = 'flex';
-
-
+          // Get files from drive
           gapi.client.drive.files.get({
             'fileId': regionInfoFile,
             'alt': 'media',
@@ -214,7 +315,6 @@
               var actual_region = response.result[i];
               region_info[actual_region['codigo']] = actual_region['inimigo'];
             }
-
 
             gapi.client.drive.files.get({
               'fileId': enemyAcronymsFile,
@@ -234,45 +334,10 @@
               listUsers();
             });
 
-
-
           },function(error){
             console.error(error)
             listUsers();
           });
-
-
-
-        } else {
-          document.getElementById("visits_tab").style.visibility = "hidden";
-          document.getElementById("stats_tab").style.visibility = "hidden";
-          authorizeButton.style.display = 'inline-block';
-          loginForm.style.display = 'flex';
-          userName.innerText ="";
-          userName.style.display = 'none';
-          signoutButton.style.visibility = 'hidden';
-          content.style.display = 'none';
-        }
-      }
-
-      /**
-       *  Sign in the user upon button click.
-       */
-      function handleAuthClick(event) {
-        gapi.auth2.getAuthInstance().signIn();
-
-      }
-
-      /**
-       *  Sign out the user upon button click.
-       */
-      function handleSignoutClick(event) {
-        gapi.auth2.getAuthInstance().signOut();
-		document.getElementById("renderList").innerHTML = "";
-		document.getElementById('visits').innerHTML = "";
-        //document.getElementById('visits').removeChild('h3');
-		visits = [];
-		plots = [];
       }
 
       /**
@@ -355,26 +420,24 @@
                 visitsDiv.style.width = "100%";
                 div.appendChild(visitsDiv);
                 //console.log('no list')
-               // render(visitsDiv, userVisits);
+                // render(visitsDiv, userVisits);
                 setFilter();
                 updateList(currentGrouping);
               });
             }
           }
-
         });
       }
 
       function setUsers(element, index, arr) {
         if(element != null){
-            users.push({id: element.id, name: element.name, username : element.owners[0].displayName});
-            //console.log(users);
-            listVisits(element.id, element.id);
+          users.push({id: element.id, name: element.name, username : element.owners[0].displayName});
+          //console.log(users);
+          listVisits(element.id, element.id);
         }
       }
 
       function updateList(id) {
-
         var div = document.getElementById('renderList');
         div.innerHTML = "";
 
@@ -406,15 +469,15 @@
                 document.getElementById(id + "-icon").setAttribute("class", "fas fa-sort-amount-up");
               }
               break;
-            /*case "orderby-name":
-              if ((currentOrder === id && orderDirection === 1) || currentOrder !== id) {
-                orderDirection = 0;
-                document.getElementById(id + "-icon").setAttribute("class", "fas fa-sort-amount-up");
-              } else {
-                orderDirection = 1;
-                document.getElementById(id + "-icon").setAttribute("class", "fas fa-sort-amount-down");
-              }
-              break;*/
+                  /*case "orderby-name":
+                    if ((currentOrder === id && orderDirection === 1) || currentOrder !== id) {
+                      orderDirection = 0;
+                      document.getElementById(id + "-icon").setAttribute("class", "fas fa-sort-amount-up");
+                    } else {
+                      orderDirection = 1;
+                      document.getElementById(id + "-icon").setAttribute("class", "fas fa-sort-amount-down");
+                    }
+                    break;*/
           }
           document.getElementById(currentOrder + "-icon").style.visibility = "hidden";
           document.getElementById(id + "-icon").style.visibility = "visible";
@@ -422,35 +485,35 @@
         }
 
         switch (currentGrouping) {
-          /*case "groupby-technician":
-            var total = 0;
-            for(var i=0; i< users.length; i++){
-              filtered = visits.filter(value => value.user === users[i].id);
-              filtered = sort(id, filtered);
-              if(filtered.length > 0) {
-                var techName = document.createElement('h5');
-                techName.innerText = users[i].name + '\n';
-                techName.style.fontFamily = fontFamily;
-                div.appendChild(techName);
-                var techDiv = document.createElement('div');
-                techDiv.style.display = "flex";
-                techDiv.style.flexDirection = "row";
-                techDiv.style.flexWrap = "wrap";
-                techDiv.style.marginTop = "6px";
-                techDiv.style.justifyContent = "flex-start";
-                techDiv.style.alignItems = "flex-start";
-                techDiv.style.width = "100%";
-                div.appendChild(techDiv);
-                //console.log('no group1');
-                render(techDiv, filtered);
-                total += filtered.length;
-              }
-            }
-            document.getElementById('header').innerText  = 'Visitas de Campo (' + total + ')'
+                /*case "groupby-technician":
+                  var total = 0;
+                  for(var i=0; i< users.length; i++){
+                    filtered = visits.filter(value => value.user === users[i].id);
+                    filtered = sort(id, filtered);
+                    if(filtered.length > 0) {
+                      var techName = document.createElement('h5');
+                      techName.innerText = users[i].name + '\n';
+                      techName.style.fontFamily = fontFamily;
+                      div.appendChild(techName);
+                      var techDiv = document.createElement('div');
+                      techDiv.style.display = "flex";
+                      techDiv.style.flexDirection = "row";
+                      techDiv.style.flexWrap = "wrap";
+                      techDiv.style.marginTop = "6px";
+                      techDiv.style.justifyContent = "flex-start";
+                      techDiv.style.alignItems = "flex-start";
+                      techDiv.style.width = "100%";
+                      div.appendChild(techDiv);
+                      //console.log('no group1');
+                      render(techDiv, filtered);
+                      total += filtered.length;
+                    }
+                  }
+                  document.getElementById('header').innerText  = 'Visitas de Campo (' + total + ')'
 
-            if(!id.includes("groupby"))
-              updateSort();
-            break;*/
+                  if(!id.includes("groupby"))
+                    updateSort();
+                  break;*/
           case "groupby-plot":
             var list = visits.filter(value => plotsFilter.includes(value.plotName));
             var total = 0;
@@ -526,7 +589,7 @@
         $('.selectpicker').selectpicker('refresh');
         updateList(currentGrouping);
       }
-      
+
       function filterPlots() {
         plotsFilter = [];
         var select = document.getElementById("filterplots");
@@ -557,48 +620,48 @@
           type = id.split("-")[1];
 
         switch (type) {
-              case "date":
-                if(id.includes("groupby")){
-                  visits = orderDirection === 1 ? sortByDateDesc(visits) : sortByDateAsc(visits);
-                } else if((currentOrder === id && orderDirection === 0) || currentOrder !== id) {
-                  visits = sortByDateAsc(visits);
-                } else{
-                  visits = sortByDateDesc(visits);
-                }
-                function sortByDateAsc(visits) {
-                visits.sort(function (a, b) { //sort by name asc
-                    return ((a.date < b.date) ? 1 : ((a.date > b.date) ? -1 : 0));
-                });
-                return visits;
-              }
-                function sortByDateDesc(visits) {
-                visits.sort(function (a, b) { //sort by name desc
-                    return ((a.date < b.date) ? -1 : ((a.date > b.date) ? 1 : 0));
-                });
-                return visits;
-              }
-                break;
-              case "name":
-                if(id.includes("groupby")) {
-                  visits = orderDirection === 0 ? sortByNameAsc(visits) : sortByNameDesc(visits);
-                } else if((currentOrder === id && orderDirection === 1) || currentOrder !== id) {
-                  visits = sortByNameAsc(visits);
-                }else{
-                  visits = sortByNameDesc(visits);
-                }
-                function sortByNameAsc(visits) {
-                  visits.sort(function (a, b) { //sort by name asc
-                      return ((a.plot < b.plot) ? -1 : ((a.plot > b.plot) ? 1 : 0));
-                  });
-                  return visits;
-                }
-                function sortByNameDesc(visits) {
-                  visits.sort(function (a, b) { //sort by name desc
-                      return ((a.plot < b.plot) ? 1 : ((a.plot > b.plot) ? -1 : 0));
-                  });
-                  return visits;
-                }
-                break;
+          case "date":
+            if(id.includes("groupby")){
+              visits = orderDirection === 1 ? sortByDateDesc(visits) : sortByDateAsc(visits);
+            } else if((currentOrder === id && orderDirection === 0) || currentOrder !== id) {
+              visits = sortByDateAsc(visits);
+            } else{
+              visits = sortByDateDesc(visits);
+            }
+          function sortByDateAsc(visits) {
+            visits.sort(function (a, b) { //sort by name asc
+              return ((a.date < b.date) ? 1 : ((a.date > b.date) ? -1 : 0));
+            });
+            return visits;
+          }
+          function sortByDateDesc(visits) {
+            visits.sort(function (a, b) { //sort by name desc
+              return ((a.date < b.date) ? -1 : ((a.date > b.date) ? 1 : 0));
+            });
+            return visits;
+          }
+            break;
+          case "name":
+            if(id.includes("groupby")) {
+              visits = orderDirection === 0 ? sortByNameAsc(visits) : sortByNameDesc(visits);
+            } else if((currentOrder === id && orderDirection === 1) || currentOrder !== id) {
+              visits = sortByNameAsc(visits);
+            }else{
+              visits = sortByNameDesc(visits);
+            }
+          function sortByNameAsc(visits) {
+            visits.sort(function (a, b) { //sort by name asc
+              return ((a.plot < b.plot) ? -1 : ((a.plot > b.plot) ? 1 : 0));
+            });
+            return visits;
+          }
+          function sortByNameDesc(visits) {
+            visits.sort(function (a, b) { //sort by name desc
+              return ((a.plot < b.plot) ? 1 : ((a.plot > b.plot) ? -1 : 0));
+            });
+            return visits;
+          }
+            break;
         }
         return visits;
       }
@@ -608,10 +671,8 @@
         var end = $('#filterdates').data('daterangepicker').endDate.format('YYYY/MM/DD');
         var success_counter = 0;
         for(var i=0; i<list.length; i++) {
-
-            let conflict = false;//list[i].technicians.split(";").includes(fullName); //TODO
-            let hasPermissions = list[i].technicians.split(";").includes(fullName); // TODO comparar emails
-
+          let conflict = false;//list[i].technicians.split(";").includes(fullName); //TODO
+          let hasPermissions = list[i].technicians.split(";").includes(fullName); // TODO comparar emails
 
           if(list[i].plot !== undefined) {
             // check date filter
@@ -646,9 +707,8 @@
                 window.location.href = `visit.html?visit_id=${this.id}`;
               } else {
                 if (hasPermissions) {
-                  if (confirm("A visita selecionada apresenta um conflito que necessita de ser resolvido para poder consultar a informação. Pretende continuar?")) {
+                  if (confirm("A visita selecionada apresenta um conflito que necessita de ser resolvido para poder consultar a informação. Pretende continuar?"))
                     window.location.href = `conflict.html?visit_id=${this.id}`;
-                  }
                 } else {
                   alert("A visita selecionada apresenta um conflito que necessita de ser resolvido para poder consultar a informação. Aguarde que um dos técnicos resolva o conflito.")
                 }
@@ -733,15 +793,15 @@
               eventIcon.innerHTML = list[i].rain === "true" ? '<img src="resources/images/rain_icon.png" style="width:25px;height:25px; padding-bottom: 3px">'
                       : list[i].treatment === "true" ? '<img src="resources/images/treatment_icon.png" style="width:25px;height:25px; padding-bottom: 3px">' : '';
             }
-              if (eventIcon.innerHTML !== "") {
-                var tooltip = document.createElement('span');
-                tooltip.setAttribute('class', 'tooltiptext');
-                tooltip.innerText = list[i].rain === "true" ? "Chuva" : list[i].treatment === "true" ? "Tratamento" : "";
-                eventIcon.appendChild(tooltip);
-              }
+            if (eventIcon.innerHTML !== "") {
+              var tooltip = document.createElement('span');
+              tooltip.setAttribute('class', 'tooltiptext');
+              tooltip.innerText = list[i].rain === "true" ? "Chuva" : list[i].treatment === "true" ? "Tratamento" : "";
+              eventIcon.appendChild(tooltip);
+            }
 
-              topBar.appendChild(eventIcon);
-              summary.appendChild(topBar);
+            topBar.appendChild(eventIcon);
+            summary.appendChild(topBar);
 
 
             /*--------------------------*/
@@ -895,26 +955,23 @@
                 }
               }
             }
+            if(!conflict) {
+              if (list[i].visited === "false") {
+                overview.innerText = "Visita não efetuada";
+                label.style.backgroundColor = "dimgrey";
+              } else if (overall.trim().length === 0) {
+                overview.innerText = "Sem Observações"
+              } else
+                overview.innerHTML = overall;
 
-
-           if(!conflict) {
-               if (list[i].visited === "false") {
-                   overview.innerText = "Visita não efetuada";
-                   label.style.backgroundColor = "dimgrey";
-               } else if (overall.trim().length === 0) {
-                   overview.innerText = "Sem Observações"
-               } else
-                   overview.innerHTML = overall;
-
-               if (tooltipObs.innerText.length > 0)
-                   overview.appendChild(tooltipObs);
-           } else{
+              if (tooltipObs.innerText.length > 0)
+                overview.appendChild(tooltipObs);
+            } else{
               overview.innerHTML= '<span style="color: #881600;font-size: 25px; padding-bottom: 3px">Conflito</span>';
               content.style.textAlign = 'center';
               content.style.paddingTop = "20px";
               content.style.paddingRight = "10px";
-
-          }
+            }
 
             content.appendChild(overview);
 
@@ -957,7 +1014,6 @@
                 notes.appendChild(tooltipNotes);
 
               bottomBar.appendChild(notes);
-
             }
 
             var userIcon = document.createElement('div');
@@ -992,7 +1048,6 @@
             //li.innerHTML=li.innerHTML + element.name;
           }
         }
-
         document.getElementById('header').innerText  = `Visitas de Campo (${success_counter})`;
       }
 
@@ -1045,14 +1100,8 @@
 
     </script>
 
-    <script async defer src="https://apis.google.com/js/api.js"
-      onload="this.onload=function(){};handleClientLoad()"
-      onreadystatechange="if (this.readyState === 'complete') this.onload()">
-    </script>
-
     <script>
       $(function() {
-
         $('#filterdates').daterangepicker({
           showDropdowns: true,
           autoUpdateInput: false,
@@ -1084,45 +1133,15 @@
           updateList(currentGrouping)
         });
       });
-
     </script>
+
+    <!-- GOOGLE CLIENT -->
+    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+    <!--<script async defer src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};handleClientLoad()"
+      onreadystatechange="if (this.readyState === 'complete') this.onload()">
+    </script>-->
+
   </body>
 </html>
-
-
-
-<!--<DOCTYPE! html>
-
-<html>
-
-<head>
-
-	<style>
-      #map {
-        width: 100%;
-        height: 400px;
-        background-color: grey;
-      }
-    </style>
-	
-	<script src="js/javascript.js"></script>
-
-</head>
-
-<body>
-
-
-
-    <h3>My Google Maps Demo</h3>
-    <div id="map"></div>
-	<script language="javascript">
-		initMap();
-	</script>
-	<script async defer
-		src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
-    </script>
-
-</body>
-
-
-</html>-->

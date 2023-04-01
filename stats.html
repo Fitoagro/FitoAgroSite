@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Estatísticas</title>
-    <script type='text/javascript' src='https://eu-west-1a.online.tableau.com/javascripts/api/viz_v1.js'></script>
+    <script type='text/javascript' src='https://prod-uk-a.online.tableau.com/javascripts/api/viz_v1.js'></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="style.css">
@@ -17,15 +17,15 @@
         <div style="margin-left: auto; align-self: center">
             <!--Add buttons to initiate auth sequence and sign out-->
             <div id="user_name" style="font-size: 16px; padding-top: 6px; color: #cccccc"> </div>
-            <button type="button" class="btn light-button" style="background-color: lightgray; color: black; float: right" id="signout_button">Logout</button>
+            <button onclick="handleSignoutClick()" type="button" class="btn light-button" style="background-color: lightgray; color: black; float: right;" id="signout_button">Logout</button>
         </div>
     </div>
         <div class='tableauPlaceholder' style='width: 1450px; height: 960px; overflow-y: scroll; margin: 32px; padding-top: 60px'>
             <object class='tableauViz' width='98%' height='960' style='display:none;'>
-                <param name='host_url' value='https%3A%2F%2Feu-west-1a.online.tableau.com%2F' />
+                <param name='host_url' value='https%3A%2F%2Fprod-uk-a.online.tableau.com%2F' />
                 <param name='embed_code_version' value='3' />
-                <param name='site_root' value='&#47;t&#47;teachingandresearchinginteractivedatavisualizationdifct' />
-                <param name='name' value='AnalticadasObservaes&#47;Estatsticas' />
+                <param name='site_root' value='&#47;t&#47;tableauforteachingandresearchatnova' />
+                <param name='name' value='AnaliticadosDadosdeCampo&#47;Estatsticas' />
                 <param name='tabs' value='no' />
                 <param name='toolbar' value='no' />
                 <param name='showAppBanner' value='false' />
@@ -44,26 +44,87 @@
         var userName = '';
         var user = document.getElementById('user_name');
 
-        function handleClientLoad() {
-            gapi.load('client:auth2', initClient);
+        let tokenClient;
+        let token;
+        let gapiInited = false;
+        let gisInited = false;
+
+        function gisLoaded(){
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                prompt: 'none',
+                callback: '', //defined in handleAuth(),
+            });
+            gisInited = true;
         }
 
+        /**
+         * Callback after api.js is loaded.
+         */
+        function gapiLoaded() {
+            gapi.load('client', initializeGapiClient);
+        }
 
-        function initClient() {
-            gapi.client.init({
+        /**
+         * Callback after the API client is loaded. Loads the
+         * discovery doc to initialize the API.
+         */
+        async function initializeGapiClient() {
+            await gapi.client.init({
                 apiKey: API_KEY,
-                clientId: CLIENT_ID,
                 discoveryDocs: DISCOVERY_DOCS,
-                scope: SCOPES
-            }).then(function () {
-                // Listen for sign-in state changes.
-                gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-
-                // Handle the initial sign-in state.
-                updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-            }, function(error) {
-                appendPre(JSON.stringify(error, null, 2));
             });
+            gapiInited = true;
+            await handleAuth();
+        }
+
+        async function handleAuth() {
+            if (gapiInited && gisInited) {
+                token = sessionStorage.getItem("token");
+                if (token !== undefined) {
+                    gapi.client.setToken(JSON.parse(token));
+                } else {
+                    tokenClient.callback = async (tokenResponse) => {
+                        if (tokenResponse.error !== undefined) {
+                            throw (tokenResponse.error);
+                        }
+                        document.getElementById('signout_button').style.visibility = 'visible';
+                        token = tokenResponse;
+                        gapi.client.setToken(tokenResponse);
+                        sessionStorage.setItem("token", JSON.stringify(tokenResponse));
+                    }
+
+                    if (gapi.client.getToken() === null) {
+                        // Prompt the user to select a Google Account and ask for consent to share their data
+                        // when establishing a new session.
+                        tokenClient.requestAccessToken({prompt: 'select_account'});
+                    } else {
+                        // Skip display of account chooser and consent dialog for an existing session.
+                        tokenClient.requestAccessToken({prompt: 'none'});
+                    }
+                }
+            }
+        }
+
+        /**
+         *  Sign out the user upon button click.
+         */
+        /**
+         *  Sign out the user upon button click.
+         */
+        function handleSignoutClick() {
+            const token = gapi.client.getToken();
+            if (token !== null) {
+                google.accounts.oauth2.revoke(token.access_token);
+                gapi.client.setToken('');
+                sessionStorage.removeItem("token");
+                document.getElementById("renderList").innerHTML = "";
+                document.getElementById('visits').innerHTML = "";
+                //document.getElementById('visits').removeChild('h3');
+                visits = [];
+                plots = [];
+            }
         }
 
         function updateSigninStatus(isSignedIn) {
@@ -77,20 +138,11 @@
                 window.location.href = "index.html";
         }
 
-        /**
-         *  Sign out the user upon button click.
-         */
-        function handleSignoutClick() {
-            gapi.auth2.getAuthInstance().signOut();
-            window.location.href = 'index.html';
-        }
     </script>
 
-
-    <script async defer src="https://apis.google.com/js/api.js"
-            onload="this.onload=function(){};handleClientLoad()"
-            onreadystatechange="if (this.readyState === 'complete') this.onload()">
-    </script>
+    <!-- GOOGLE CLIENT -->
+    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
 
 </body>
 </html>
