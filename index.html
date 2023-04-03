@@ -18,7 +18,7 @@
            data-client_id="683847325816-66urtf71ciqlbrjp8dqks5v4nmoks9ih.apps.googleusercontent.com">
     </div>-->
 
-    <div id="login" style="display: flex; flex-direction: column; justify-content: center; align-items: center">
+    <div id="login" style="visibility: collapse; display: flex; flex-direction: column; justify-content: center; align-items: center">
       <div style="display:flex; flex-direction:column; justify-content: center; align-items: center; padding: 48px; margin-top: 10%; background-color: lightgray; border-radius: 3px; box-shadow: 5px 5px 5px darkgrey">
           <i class="fa fa-lock" style="font-size: 70px; color: #008577;"></i>
         <br><br>
@@ -34,7 +34,7 @@
              data-locale="pt-PT"
              data-logo_alignment="left" onclick="handleAuth()">
         </div>-->
-        <button type="button" class="btn white-button" style=" width: 100%;" id="sign_in" onclick="handleAuth()">Entrar</button>
+        <button type="button" style="border: none; background: transparent; width: 100%;" id="sign_in">Entrar</button>
       </div>
     </div>
 
@@ -43,10 +43,13 @@
       <div id="visits_tab" onclick="window.location.reload()" style="visibility:hidden; cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; text-decoration: underline; color: white">Visitas</div>
       <!--<div id="analytic_tab" onclick="window.location.href = 'analytic_viz.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Analítica das Observações</div>
       --><div id="stats_tab" onclick="window.location.href = 'stats.html'" style="visibility:hidden; cursor:pointer; padding:6px; font-size: 16px; color: white">Estatísticas</div>
-      <div style="margin-left: auto; align-self: center">
+      <div id="profile_form" style="align-items: center; justify-content:center; visibility: collapse;
+      display: flex; flex-direction: row; margin-left: auto;">
         <!--Add buttons to initiate auth sequence and sign out-->
-        <div id="user_name" style="visibility:hidden; font-size: 16px; padding-top: 6px; color: #cccccc"> </div>
-        <button onclick="handleSignoutClick()" type="button" class="btn light-button" style="background-color: lightgray; color: black; float: right;" id="signout_button">Logout</button>
+        <img id="user_photo" referrerPolicy="no-referrer" class="user-img"/>
+        <div id="user_name" style="padding-left:10px; font-size: 16px; color: #cccccc"> </div>
+        <img onclick="handleSignoutClick()" type="button" class="g_id_signout" id="signout_button" src="resources/images/sign_out.svg"
+             alt="Sair" style="cursor:pointer; border:none; filter: invert(1); width: 30px; height: 30px; padding: 5px" />
       </div>
     </div>
     <!--<div id="login" style="display: none; flex-direction: column; justify-content: center; align-items: center">
@@ -68,7 +71,7 @@
         </div>
     </div>-->
 
-    <div id="content" class="content" style="visibility: collapse" >
+    <div id="content" class="content" style="display: flex; visibility: collapse" >
       <div style="position: fixed; top:40px; left: 6%; right:6%; z-index: 9000; background-color: whitesmoke;
                   display: flex; flex-direction: row; align-items: flex-start; border-bottom: 1px solid #00574B;
                   padding-bottom: 1rem; padding-top:20px; margin-bottom:24px">
@@ -151,12 +154,24 @@
       // Authorization scopes required by the API; multiple scopes can be included, separated by spaces.
       const SCOPES = 'https://www.googleapis.com/auth/userinfo.profile ' +
               'https://www.googleapis.com/auth/userinfo.email ' +
-              'https://www.googleapis.com/auth/drive'
+              'https://www.googleapis.com/auth/drive.readonly'
 
       let tokenClient;
       let token;
       let gapiInited = false;
       let gisInited = false;
+
+      function initAuthentication(){
+        google.accounts.id.initialize({
+          client_id: CLIENT_ID,
+          callback: handleAuth,
+        });
+        gisLoaded();
+        google.accounts.id.renderButton(
+                document.getElementById("sign_in"),
+                { theme: "outline", size: "large", locale: 'pt', text: 'continue_with'}  // customization attributes
+        );
+      }
 
       function gisLoaded(){
         tokenClient = google.accounts.oauth2.initTokenClient({
@@ -189,30 +204,39 @@
         if (token !== null) {
           gapi.client.setToken(JSON.parse(token));
           await getVisits();
+        }else{
+          updateUI("collapse");
         }
       }
 
-      async function handleAuth() {
+      async function handleAuth(jwtToken) {
+        // save decoded authentication token to get account info
+        const decoded = parseJwt(jwtToken.credential);
+        sessionStorage.setItem("user", JSON.stringify(decoded));
+
         if (gapiInited && gisInited) {
+          //get authorization token
             tokenClient.callback = async (tokenResponse) => {
               if (tokenResponse.error !== undefined) {
                 throw (tokenResponse.error);
               }
-              document.getElementById('signout_button').style.visibility = 'visible';
               token = tokenResponse;
               gapi.client.setToken(tokenResponse);
+              //save authorization token for api calls
               sessionStorage.setItem("token", JSON.stringify(tokenResponse));
               if (tokenResponse && tokenResponse.access_token) {
-                if (google.accounts.oauth2.hasGrantedAllScopes(tokenResponse,
-                        "https://www.googleapis.com/auth/drive")) {
+                if (google.accounts.oauth2.hasGrantedAnyScope(tokenResponse,
+                        "https://www.googleapis.com/auth/drive.readonly")) {
                   await getVisits();
+                }else{
+                  // Ask for consent to share their data when establishing a new session.
+                  tokenClient.requestAccessToken({prompt: 'consent'});
                 }
               }
             }
 
             if (gapi.client.getToken() === null) {
-              // Prompt the user to select a Google Account and ask for consent to share their data
-              // when establishing a new session.
+              // Prompt the user to select a Google Account
               tokenClient.requestAccessToken({prompt: 'select_account'});
             } else {
               // Skip display of account chooser and consent dialog for an existing session.
@@ -233,10 +257,9 @@
       var currentGrouping = "groupby-none";
 
       var loginForm = document.getElementById('login');
-      var authorizeButton = document.getElementById('authorize_button');
+      var profileForm = document.getElementById('profile_form');
+      var userPhoto = document.getElementById('user_photo');
       var userName = document.getElementById('user_name');
-      var signoutButton = document.getElementById('signout_button');
-      signoutButton.onclick = handleSignoutClick;
       var content = document.getElementById('content');
 
       var users = [];
@@ -245,6 +268,7 @@
       var plotsFilter = [];
 
       var lastDevice;
+      var email;
       var fullName;
 
       var region_info = {};
@@ -261,26 +285,25 @@
         return JSON.parse(jsonPayload);
       }
 
-      function updateUI(){
-        //TODO: get account info
-        /*const response = parseJwt(token);
-        console.log("ID: " + response.sub);
-        console.log('Full Name: ' + response.name);
-        console.log('Given Name: ' + response.given_name);
-        console.log('Family Name: ' + response.family_name);
-        console.log("Image URL: " + response.picture);
-        console.log("Email: " + response.email);
-        fullName = response.name;
-        userName.innerHTML = fullName;*/
+      function updateUI(visibility){
+        const userToken = sessionStorage.getItem("user");
+        if (userToken != null) {
+          const info = JSON.parse(userToken);
+          /*console.log("ID: " + response.sub);
+          console.log('Full Name: ' + response.name);
+          console.log('Given Name: ' + response.given_name);
+          console.log('Family Name: ' + response.family_name);*/
+          email = info.email;
+          fullName = info.name;
+          userName.innerHTML = fullName;
+          userPhoto.src = info.picture;
+        }
 
-        document.getElementById("visits_tab").style.visibility = "visible";
-        document.getElementById("stats_tab").style.visibility = "visible";
-        signoutButton.style.visibility = 'visible';
-        userName.style.visibility = 'visible';
-        loginForm.style.visibility = 'collapse';
-
-        content.style.display = 'flex';
-        content.style.visibility = 'visible';
+        document.getElementById("visits_tab").style.visibility = visibility;
+        document.getElementById("stats_tab").style.visibility = visibility;
+        profileForm.style.visibility = visibility;
+        content.style.visibility = visibility;
+        loginForm.style.visibility = visibility === "visible" ? "collapse" : "visible";
       }
 
       /**
@@ -291,19 +314,18 @@
         if (token !== null) {
           google.accounts.oauth2.revoke(token.access_token);
           gapi.client.setToken('');
+          sessionStorage.removeItem("user");
           sessionStorage.removeItem("token");
-          document.getElementById("renderList").innerHTML = "";
-          document.getElementById('visits').innerHTML = "";
-          //document.getElementById('visits').removeChild('h3');
+          updateUI("collapse");
           visits = [];
           plots = [];
         }
       }
 
       async function getVisits() {
-          updateUI();
+          updateUI('visible');
 
-          // Get files from drive
+        // Get files from drive
           gapi.client.drive.files.get({
             'fileId': regionInfoFile,
             'alt': 'media',
@@ -1137,7 +1159,7 @@
 
     <!-- GOOGLE CLIENT -->
     <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
-    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="initAuthentication()"></script>
     <!--<script async defer src="https://apis.google.com/js/api.js"
       onload="this.onload=function(){};handleClientLoad()"
       onreadystatechange="if (this.readyState === 'complete') this.onload()">

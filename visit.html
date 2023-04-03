@@ -224,16 +224,19 @@
 
 	<div class="header">
 		<img src="resources/images/fitoagro_logo.png" style="height: 40px; padding-bottom: 4px; align-self: center; margin-right: 64px">
-		<div id="visits_tab" onclick="window.location.href = 'index.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Visitas</div>
-		<div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; padding:6px; font-size: 16px; color: white">Estatísticas</div>
-		<div style="margin-left: auto; align-self: center">
+		<div id="visits_tab" onclick="window.location.href = 'index.html'" style="visibility: hidden; cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Visitas</div>
+		<div id="stats_tab" onclick="window.location.href = 'stats.html'" style="visibility: hidden; cursor:pointer; padding:6px; font-size: 16px; color: white">Estatísticas</div>
+		<div id="profile_form" style="align-items: center; justify-content:center; visibility: hidden;
+      display: flex; flex-direction: row; margin-left: auto;">
 			<!--Add buttons to initiate auth sequence and sign out-->
-			<div id="user_name"  style="font-size: 16px; padding-top: 6px; color: #cccccc"> </div>
-			<button onclick="handleSignoutClick()" type="button" class="btn light-button" style="background-color: lightgray; color: black; float: right;" id="signout_button">Logout</button>
+			<img id="user_photo" referrerPolicy="no-referrer" class="user-img"/>
+			<div id="user_name" style="padding-left:10px; font-size: 16px; color: #cccccc"> </div>
+			<img onclick="handleSignoutClick()" type="button" class="g_id_signout" id="signout_button" src="resources/images/sign_out.svg"
+				 alt="Sair" style="cursor:pointer; border:none; filter: invert(1); width: 30px; height: 30px; padding: 5px" />
 		</div>
 	</div>
 
-	<div class="content" style="padding-top: 60px; display: flex; margin-left: 2%; margin-right: 2%">
+	<div id="content" class="content" style="visibility:hidden; padding-top: 60px; display: flex; margin-left: 2%; margin-right: 2%">
 		<div style="display: flex; flex-direction: row; align-items: center; padding-bottom: 8px; border-bottom: 2px solid #ecedee;
 					margin-left: 32px; margin-right: 32px;">
 			<span  id="last_visit_area" style="margin-right:auto; cursor: default">
@@ -433,8 +436,10 @@
 		var API_KEY = 'AIzaSyDid5jJUjIBp7BCKZwR1LI0G87b4yEBAhY';
 
 		var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",'https://sheets.googleapis.com/$discovery/rest?version=v4'];
-		var SCOPES = 'https://www.googleapis.com/auth/drive';
-
+		// Authorization scopes required by the API; multiple scopes can be included, separated by spaces.
+		const SCOPES = 'https://www.googleapis.com/auth/userinfo.profile ' +
+				'https://www.googleapis.com/auth/userinfo.email ' +
+				'https://www.googleapis.com/auth/drive.readonly'
 		let tokenClient;
 		let token;
 		let gapiInited = false;
@@ -473,34 +478,11 @@
 		async function handleAuth() {
 			if (gapiInited && gisInited) {
 				token = sessionStorage.getItem("token");
-				if (token !== undefined) {
+				if (token !== undefined && token !== null) {
 					gapi.client.setToken(JSON.parse(token));
 					await listFolder();
 				} else {
-					tokenClient.callback = async (tokenResponse) => {
-						if (tokenResponse.error !== undefined) {
-							throw (tokenResponse.error);
-						}
-						document.getElementById('signout_button').style.visibility = 'visible';
-						token = tokenResponse;
-						gapi.client.setToken(tokenResponse);
-						sessionStorage.setItem("token", JSON.stringify(tokenResponse));
-						if (tokenResponse && tokenResponse.access_token) {
-							if (google.accounts.oauth2.hasGrantedAllScopes(tokenResponse,
-									"https://www.googleapis.com/auth/drive")) {
-								await listFolder();
-							}
-						}
-					}
-
-					if (gapi.client.getToken() === null) {
-						// Prompt the user to select a Google Account and ask for consent to share their data
-						// when establishing a new session.
-						tokenClient.requestAccessToken({prompt: 'select_account'});
-					} else {
-						// Skip display of account chooser and consent dialog for an existing session.
-						tokenClient.requestAccessToken({prompt: 'none'});
-					}
+					window.location.replace("index.html");
 				}
 			}
 		}
@@ -517,11 +499,8 @@
 				google.accounts.oauth2.revoke(token.access_token);
 				gapi.client.setToken('');
 				sessionStorage.removeItem("token");
-				document.getElementById("renderList").innerHTML = "";
-				document.getElementById('visits').innerHTML = "";
-				//document.getElementById('visits').removeChild('h3');
-				visits = [];
-				plots = [];
+
+				window.location.replace("index.html");
 			}
 		}
 
@@ -813,47 +792,6 @@
 					getJSONsContents();
 
 		}
-
-		function handleClientLoad() {
-			gapi.load('client:auth2', initClient);
-		}
-
-
-		function initClient() {
-			gapi.client.init({
-				apiKey: API_KEY,
-				clientId: CLIENT_ID,
-				discoveryDocs: DISCOVERY_DOCS,
-				scope: SCOPES
-			}).then(function () {
-				// Listen for sign-in state changes.
-				gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-
-				// Handle the initial sign-in state.
-				updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-			}, function(error) {
-				appendPre(JSON.stringify(error, null, 2));
-			});
-		}
-
-		function updateSigninStatus(isSignedIn) {
-			auth2 = gapi.auth2.getAuthInstance();
-			if (isSignedIn) {
-				var profile = auth2.currentUser.get().getBasicProfile();
-				userName = profile.getName();
-				userEmail = profile.getEmail();
-				user.innerHTML = userName;
-				user.style.display = 'inline-block';
-				listFolder();
-			}else
-				window.location.href = "index.html";
-		}
-
-		//		  function appendPre(message) {
-		//			var pre = document.getElementById('content');
-		//			var textContent = document.createTextNode(message + '\n');
-		//			pre.appendChild(textContent);
-		//		  }
 
 		function getUrlVars() {
 			var vars = {};
@@ -2756,6 +2694,20 @@
 			});
 		}
 
+		function showUI(){
+			const userToken = sessionStorage.getItem("user");
+			if (userToken != null) {
+				const info = JSON.parse(userToken);
+				document.getElementById('user_name').innerHTML = info.name;
+				document.getElementById('user_photo').src = info.picture;
+			}
+
+			document.getElementById("visits_tab").style.visibility = 'visible';
+			document.getElementById("stats_tab").style.visibility = 'visible';
+			document.getElementById("profile_form").style.visibility = 'visible';
+			document.getElementById("content").style.visibility = 'visible';
+		}
+
 		function appendPre(message) {
 			var pre = document.getElementById('content');
 			var textContent = document.createTextNode(message + '\n');
@@ -2763,6 +2715,8 @@
 		}
 
 		async function listFolder() {
+			showUI();
+
 			var fileId = getUrlVars()['visit_id'];
 			var json_id = '';
 			var gpx_id = [];

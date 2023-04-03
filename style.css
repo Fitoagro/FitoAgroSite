@@ -120,6 +120,14 @@ h3{
     clear: both;
 }
 
+.user-img{
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    border: 1px solid darkslategrey;
+    box-shadow: 0 1px 5px darkslategrey;
+}
+
 .example-table {  border: 2px solid #cccccc; border-spacing: 30px;   border-collapse: separate; }
 
 .tab {
@@ -220,7 +228,6 @@ h3{
 
 
 #user_name {
-    display: none;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
