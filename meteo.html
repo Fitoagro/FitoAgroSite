@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Estatísticas</title>
+    <title>Meteorologia</title>
     <script type='text/javascript' src='https://prod-uk-a.online.tableau.com/javascripts/api/viz_v1.js'></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -12,11 +12,11 @@
     <div class="header">
         <img src="resources/images/fitoagro_logo.png" style="height: 40px; padding-bottom: 4px; align-self: center; margin-right: 64px">
         <div id="tabs" style="display: flex; flex-direction:row; visibility: hidden">
-            <div id="visits_tab" onclick="window.location.href = 'index.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Visitas</div>
-            <div id="stats_tab" onclick="window.location.reload()" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; text-decoration: underline; color: white">Estatísticas</div>
-            <div id="meteo_tab" onclick="window.location.href = 'meteo.html'" style="cursor:pointer; padding:6px; font-size: 16px; color: white">Meteorologia</div>
+        <div id="visits_tab" onclick="window.location.href = 'index.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Visitas</div>
+        <div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Estatísticas</div>
+        <div id="meteo_tab" onclick="window.location.reload()" style="cursor:pointer; text-decoration: underline; padding:6px; font-size: 16px; color: white">Meteorologia</div>
         </div>
-        <div id="profile_form" style="align-items: center; justify-content:center; visibility: hidden;
+            <div id="profile_form" style="align-items: center; justify-content:center; visibility: hidden;
       display: flex; flex-direction: row; margin-left: auto;">
             <!--Add buttons to initiate auth sequence and sign out-->
             <img id="user_photo" referrerPolicy="no-referrer" class="user-img"/>
@@ -26,19 +26,19 @@
         </div>
     </div>
 
-    <div id="content" style="visibility: hidden">
-        </div>
-            <div class='tableauPlaceholder' style='width: 1450px; height: 960px; overflow-y: scroll; margin: 32px; padding-top: 60px'>
-                <object class='tableauViz' width='98%' height='960' style='display:none;'>
+    <div id="content" style="visibility: hidden; width: 100%; height: 100%; padding: 60px 30px 30px 30px !important; ">
+            <div class='tableauPlaceholder' style='width: 1500px; height: 700px; overflow-y: scroll; '>
+                <object class='tableauViz' width='100%' height='700' style='display:none;'>
                     <param name='host_url' value='https%3A%2F%2Fprod-uk-a.online.tableau.com%2F' />
                     <param name='embed_code_version' value='3' />
                     <param name='site_root' value='&#47;t&#47;tableauforteachingandresearchatnova' />
-                    <param name='name' value='VisualizaesWebsite&#47;Estatsticas' />
-                    <param name='tabs' value='no' />
+                    <param name='name' value='DadosMeteorolgicosPublish&#47;StatusEstaesMeteorolgicas' />
+                    <param name='tabs' value='yes' />
                     <param name='toolbar' value='no' />
                     <param name='showAppBanner' value='false' />
                 </object>
             </div>
+    </div>
 
     <script type="text/javascript">
 
@@ -109,6 +109,7 @@
             }
 
             document.getElementById("tabs").style.visibility = 'visible';
+            document.getElementById("stats_tab").style.visibility = 'visible';
             document.getElementById("profile_form").style.visibility = 'visible';
             document.getElementById("content").style.visibility = 'visible';
         }

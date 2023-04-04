@@ -40,10 +40,12 @@
 
     <div class="header">
       <img src="resources/images/fitoagro_logo.png" style="height: 40px; padding-bottom: 4px; align-self: center; margin-right: 64px">
-      <div id="visits_tab" onclick="window.location.reload()" style="visibility:hidden; cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; text-decoration: underline; color: white">Visitas</div>
-      <!--<div id="analytic_tab" onclick="window.location.href = 'analytic_viz.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Analítica das Observações</div>
-      --><div id="stats_tab" onclick="window.location.href = 'stats.html'" style="visibility:hidden; cursor:pointer; padding:6px; font-size: 16px; color: white">Estatísticas</div>
-      <div id="profile_form" style="align-items: center; justify-content:center; visibility: collapse;
+      <div id="tabs" style="display: flex; flex-direction:row; visibility: hidden">
+        <div id="visits_tab" onclick="window.location.reload()" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; text-decoration: underline; color: white">Visitas</div>
+        <div id="stats_tab" onclick="window.location.href = 'stats.html'" style="cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Estatísticas</div>
+        <div id="meteo_tab" onclick="window.location.href = 'meteo.html'" style="cursor:pointer; padding:6px; font-size: 16px; color: white">Meteorologia</div>
+      </div>
+        <div id="profile_form" style="align-items: center; justify-content:center; visibility: collapse;
       display: flex; flex-direction: row; margin-left: auto;">
         <!--Add buttons to initiate auth sequence and sign out-->
         <img id="user_photo" referrerPolicy="no-referrer" class="user-img"/>
@@ -299,8 +301,7 @@
           userPhoto.src = info.picture;
         }
 
-        document.getElementById("visits_tab").style.visibility = visibility;
-        document.getElementById("stats_tab").style.visibility = visibility;
+        document.getElementById("tabs").style.visibility = visibility;
         profileForm.style.visibility = visibility;
         content.style.visibility = visibility;
         loginForm.style.visibility = visibility === "visible" ? "collapse" : "visible";

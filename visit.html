@@ -36,7 +36,7 @@
 			var plot = v.plotName;
 
 			var containerDiv = document.getElementById("viz"),
-					url = "https://prod-uk-a.online.tableau.com/t/tableauforteachingandresearchatnova/views/AnaliticadosDadosdeCampo/DetalhesVisitaWebsite",
+					url = "https://prod-uk-a.online.tableau.com/t/tableauforteachingandresearchatnova/views/VisualizaesWebsite/DetalhesVisitaWebsite",
 					options = {
 						hideTabs: true,
 						hideToolbar: true,
@@ -224,8 +224,11 @@
 
 	<div class="header">
 		<img src="resources/images/fitoagro_logo.png" style="height: 40px; padding-bottom: 4px; align-self: center; margin-right: 64px">
-		<div id="visits_tab" onclick="window.location.href = 'index.html'" style="visibility: hidden; cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Visitas</div>
-		<div id="stats_tab" onclick="window.location.href = 'stats.html'" style="visibility: hidden; cursor:pointer; padding:6px; font-size: 16px; color: white">Estatísticas</div>
+		<div id="tabs" style="display: flex; flex-direction:row; visibility: hidden">
+			<div id="visits_tab" onclick="window.location.href = 'index.html'" style="visibility: hidden; cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Visitas</div>
+			<div id="stats_tab" onclick="window.location.href = 'stats.html'" style="visibility: hidden; cursor:pointer; margin-right: 20px; padding:6px; font-size: 16px; color: white">Estatísticas</div>
+			<div id="meteo_tab" onclick="window.location.href = 'meteo.html'" style="visibility: hidden; cursor:pointer; padding:6px; font-size: 16px; color: white">Meteorologia</div>
+		</div>
 		<div id="profile_form" style="align-items: center; justify-content:center; visibility: hidden;
       display: flex; flex-direction: row; margin-left: auto;">
 			<!--Add buttons to initiate auth sequence and sign out-->
@@ -409,8 +412,8 @@
 					<!--<object class='tableauViz' width='98%' height='750' style='display:none;'>
 						<param name='host_url' value='https%3A%2F%2Fprod-uk-a.online.tableau.com%2F' />
 						<param name='site_root' value='&#47;t&#47;tableauforteachingandresearchatnova' />
-						//<param name='name' value='Visitaseobservaes&#47;CapturasObservaesporinimigoxVisita' />
-						<param name='name' value='RegistosdasVisitas&#47;DetalhesVisitaWebsite' />
+						//<param name='name' value='VisualizaesWebsite&#47;CapturasObservaesporinimigoxVisita' />
+						<param name='name' value='VisualizaesWebsite&#47;DetalhesVisitaWebsite' />
 						<param name='tabs' value='no' />
 						<param name='toolbar' value='no' />
 						<param name='showAppBanner' value='false' />
@@ -2702,8 +2705,7 @@
 				document.getElementById('user_photo').src = info.picture;
 			}
 
-			document.getElementById("visits_tab").style.visibility = 'visible';
-			document.getElementById("stats_tab").style.visibility = 'visible';
+			document.getElementById("tabs").style.visibility = 'visible';
 			document.getElementById("profile_form").style.visibility = 'visible';
 			document.getElementById("content").style.visibility = 'visible';
 		}
